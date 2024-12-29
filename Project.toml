@@ -1,0 +1,7 @@
+name = "SolarPosition"
+uuid = "7479b45c-9729-5219-acaa-214f6cdedf5b"
+authors = ["Stefan de Lange <langestefan@msn.com>"]
+version = "0.1.0"
+
+[compat]
+julia = "1.10"
