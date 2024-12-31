@@ -20,11 +20,6 @@ end
 
 function sunpos(algorithm::BasicAlgorithm, timestamp::ZonedDateTime)
     loc = algorithm.location
-    # return SunPosition(
-    #     elevation = Quantity(0.0, deg = 1),
-    #     azimuth = Quantity(0.0, deg = 1),
-    #     timestamp = timestamp
-    # )
     return (Quantity(0.0, deg = 1), Quantity(0.0, deg = 1))
 end
 

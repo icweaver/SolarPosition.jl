@@ -14,5 +14,5 @@ using SolarPosition.PositionInterface
 end
 
 @testset "PositionInterfaces" begin
-    @test Interfaces.test(PositionInterface)
+    @test Interfaces.test()
 end
