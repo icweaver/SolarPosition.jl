@@ -3,7 +3,7 @@ module PositionInterface
 using Interfaces
 using DynamicQuantities: Quantity
 
-export SolarPositionInterface, SolarPositionAlgorithm
+export SolarPositionInterface, SolarPositionAlgorithm, sunpos
 
 abstract type SolarPositionAlgorithm end
 
