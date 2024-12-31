@@ -2,8 +2,12 @@ module PositionInterface
 
 using Interfaces
 using DynamicQuantities: Quantity
+using Dates
+using PVSimBase
 
 export SolarPositionInterface, SolarPositionAlgorithm, sunpos
+
+include("time.jl")
 
 abstract type SolarPositionAlgorithm end
 
