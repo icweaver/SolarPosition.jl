@@ -3,5 +3,20 @@ uuid = "7479b45c-9729-5219-acaa-214f6cdedf5b"
 authors = ["Stefan de Lange <langestefan@msn.com>"]
 version = "0.1.0"
 
+[deps]
+Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
+DocStringExtensions = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
+DynamicQuantities = "06fc5a27-2a28-4c7c-a15d-362465fb6821"
+Interfaces = "85a1e053-f937-4924-92a5-1367d23b7b87"
+PVSimBase = "2810a8f8-ed9d-50a5-b7a6-1da2da8222f3"
+TimeZones = "f269a46b-ccf7-5d73-abea-4c690281aa53"
+Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
+
 [compat]
+Dates = "1.11.0"
+DocStringExtensions = "0.9.3"
+DynamicQuantities = "1.4.0"
+Interfaces = "0.3.2"
+TimeZones = "1.20.0"
+Unitful = "1.21.1"
 julia = "1.10"

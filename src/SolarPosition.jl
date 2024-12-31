@@ -1,11 +1,6 @@
 module SolarPosition
 
-"""
-    hi = hello_world()
-A simple function to return "Hello, World!"
-"""
-function hello_world()
-    return "Hello, World!"
-end
+include("PositionInterface/PositionInterface.jl")
+include("Basic/Basic.jl")
 
-end
+end # module SolarPosition

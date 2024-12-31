@@ -1,2 +1,5 @@
 [deps]
+Interfaces = "85a1e053-f937-4924-92a5-1367d23b7b87"
+PVSimBase = "2810a8f8-ed9d-50a5-b7a6-1da2da8222f3"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+TimeZones = "f269a46b-ccf7-5d73-abea-4c690281aa53"
