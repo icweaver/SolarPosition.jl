@@ -10,6 +10,7 @@
 
 using Dates: DateTime
 using DynamicQuantities: Quantity
+using SolarPosition.PositionInterface
 
 @testset "Function equation_of_time" begin
     deg_to_min = (24 * 60) / 360

@@ -1,11 +1,13 @@
-export equation_of_time
+export equation_of_time, offset_hours
 
 """
     equation_of_time(t::Union{Number, DateTime})
 
 Compute the difference between the Sun apparent local time and the Sun mean local time
-[rad], which is called Equation of Time, at the time `t`, which can be represented by a
+[deg], which is called Equation of Time, at the time `t`, which can be represented by a
 Julian Day or `DateTime`. The algorithm was adapted from **[1, p. 178, 277-279]**.
+
+The output is a `Quantity` with the unit of degrees.
 
 Implementation attribution goes to: https://github.com/JuliaSpace/SatelliteToolbox.jl
 
@@ -14,8 +16,6 @@ Implementation attribution goes to: https://github.com/JuliaSpace/SatelliteToolb
 - **[1]** Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. 4th ed.
     Microcosm Press, Hawthorne, CA.
 """
-equation_of_time(t::DateTime) = equation_of_time(datetime2julian(t))
-
 function equation_of_time(jd::Number)
     # Number of Julian centuries from J2000 epoch.
     t_ut1 = (jd - JD_J2000) / 36525.0
@@ -42,3 +42,19 @@ function equation_of_time(jd::Number)
 
     return Quantity(eot, deg = 1)
 end
+
+"""
+    equation_of_time(t::DateTime)
+
+Convert `t` to the Julian Day and compute the Equation of Time.
+"""
+equation_of_time(t::DateTime) = equation_of_time(datetime2julian(t))
+equation_of_time(t::ZonedDateTime) = equation_of_time(DateTime(t))
+
+"""
+    offset_hours(tz::TimeZone)
+
+Return the offset in hours of the timezone `tz` with respect to UTC-0.
+"""
+offset_hours(tz::FixedTimeZone) = Hour(tz.offset.std).value
+offset_hours(t::ZonedDateTime) = offset_hours(FixedTimeZone(t))

@@ -4,10 +4,12 @@ using Interfaces
 using DynamicQuantities: Quantity
 using Dates
 using PVSimBase
+using TimeZones
 
 export SolarPositionInterface, SolarPositionAlgorithm, sunpos
 
 include("time.jl")
+include("angles.jl")
 
 abstract type SolarPositionAlgorithm end
 
