@@ -1,7 +1,7 @@
 module PositionInterface
 
 using Interfaces
-using DynamicQuantities: Quantity
+using DynamicQuantities
 using Dates
 using PVSimBase
 using TimeZones

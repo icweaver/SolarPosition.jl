@@ -15,7 +15,7 @@ The output is a `Quantity` with the unit of degrees.
 function declination(d::Number)
     (0 <= d <= 365) || throw(ArgumentError("day of the year must be in the range [0, 365]"))
     δ = -23.45cosd((360 / 365) * (d + 10))
-    return Quantity(δ, deg = 1)
+    return Quantity(δ, SymbolicDimensions, deg = 1)
 end
 
 """

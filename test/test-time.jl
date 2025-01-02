@@ -9,7 +9,7 @@
 """
 
 using Dates: DateTime
-using DynamicQuantities: Quantity
+using DynamicQuantities
 using SolarPosition.PositionInterface
 
 @testset "Function equation_of_time" begin

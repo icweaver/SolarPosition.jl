@@ -13,11 +13,12 @@ export BasicAlgorithm
 using PVSimBase.GeoLocation: Location
 using DocStringExtensions
 using TimeZones
-using DynamicQuantities: Quantity
+using DynamicQuantities
 using Interfaces
 
 using SolarPosition.PositionInterface: SolarPositionAlgorithm, SolarPositionInterface,
-                                       declination, equation_of_time, offset_hours
+                                       declination, equation_of_time, offset_hours,
+                                       standard_time, fractional_hour
 import ..PositionInterface
 
 """
@@ -28,18 +29,47 @@ struct BasicAlgorithm <: SolarPositionAlgorithm
 end
 
 function PositionInterface.sunpos(algorithm::BasicAlgorithm, timestamp::ZonedDateTime)
-    longitude = algorithm.location.longitude
-    latitude = algorithm.location.latitude
 
     # declination [deg]
     β = declination(timestamp)
 
-    # Local standard Time Merdidian [deg]
-    LSTM = 15 * offset_hours(timestamp)
+    # Longitude of the standard Time Merdidian [deg]
+    λ_LSTM = 15 * offset_hours(timestamp)us"deg"
 
-    # equation of time 
-    E_qt = equation_of_time(timestamp)
-    return (Quantity(0.0, deg = 1), Quantity(0.0, deg = 1))
+    # Local longitude  / latitude [deg]
+    λ_local = algorithm.location.longitude
+    ϕ_local = algorithm.location.latitude
+
+    # Local time, without daylights saving time [h]
+    T_local = fractional_hour(standard_time(timestamp)) * us"h"
+
+    # equation of time from [deg] to [h], 360 deg = 24 h
+    E_qt = equation_of_time(timestamp) * 24us"h" / 360us"deg"
+    println("Timestamp: ", timestamp)
+    println("E_qt: ", E_qt)
+    println("T_local: ", T_local)
+    println("λ_LSTM: ", λ_LSTM)
+    println("λ_local: ", λ_local)
+    println("ϕ_local: ", ϕ_local)
+    println("β: ", β)
+
+    # solar time [h]
+    T_solar = T_local + E_qt + (λ_LSTM - λ_local) / 15us"deg/h"
+    println("T_solar: ", T_solar)
+
+    # hour angle [deg]
+    H = 15us"deg/h" * (12us"h" - T_solar)
+    println("H: ", H)
+
+    # solar elevation angle [deg]
+    α = asind(sind(β.value) * sind(ϕ_local.value) +
+              cosd(β.value) * cosd(ϕ_local.value) * cosd(H.value))
+
+    # solar azimuth angle [deg]
+    A = acosd((sind(β.value) * cosd(ϕ_local.value) -
+               cosd(β.value) * sind(ϕ_local.value) * cosd(H.value)) / cosd(α))
+    return (
+        Quantity(α, SymbolicDimensions, deg = 1), Quantity(A, SymbolicDimensions, deg = 1))
 end
 
 algorithm = BasicAlgorithm(Location(latitude = 0.0, longitude = 0.0))

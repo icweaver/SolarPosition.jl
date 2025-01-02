@@ -1,4 +1,4 @@
-export equation_of_time, offset_hours
+export equation_of_time, offset_hours, standard_time, fractional_hour
 
 """
     equation_of_time(t::Union{Number, DateTime})
@@ -36,11 +36,11 @@ function equation_of_time(jd::Number)
     # Ecliptic latitude of the Sun.
     λ_ecliptic = mod(λ_m + 1.914666471sin_Ms + 0.019994643sin_2Ms, 360) |> deg2rad
 
-    # Compute the equation of time [rad].
+    # Compute the equation of time [deg].
     eot = -1.914666471sin_Ms - 0.019994643sin_2Ms + 2.466sin(2λ_ecliptic) -
           0.0053sin(4λ_ecliptic)
 
-    return Quantity(eot, deg = 1)
+    return Quantity(eot, SymbolicDimensions, deg = 1)
 end
 
 """
@@ -58,3 +58,23 @@ Return the offset in hours of the timezone `tz` with respect to UTC-0.
 """
 offset_hours(tz::FixedTimeZone) = Hour(tz.offset.std).value
 offset_hours(t::ZonedDateTime) = offset_hours(FixedTimeZone(t))
+
+"""
+    standard_time(t::ZonedDateTime)
+
+Get the standard time of a given `ZonedDateTime` object.
+"""
+standard_time(t::ZonedDateTime) = t.utc_datetime + t.zone.offset.std
+
+"""
+    fractional_hour(t::DateTime)
+
+Get the current time as a fraction x/24 of the day.
+"""
+# fractional_hour(t::ZonedDateTime) = hour(t) + minute(t) / 60 + second(t) / 3600
+# dt = t - floor(t, Hour(24))
+function fractional_hour(t::DateTime)
+    dt = t - floor(t, Hour(24))
+    return Float64(dt.value) / (60 * 60 * 1000)
+end
+fractional_hour(t::ZonedDateTime) = fractional_hour(DateTime(t))
