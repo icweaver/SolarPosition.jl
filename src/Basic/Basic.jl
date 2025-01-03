@@ -46,7 +46,7 @@ function PositionInterface.sunpos(algorithm::BasicAlgorithm, timestamp::ZonedDat
     # equation of time from [deg] to [h], 360 deg = 24 h
     E_qt = equation_of_time(timestamp) * 24us"h" / 360us"deg"
     println("Timestamp: ", timestamp)
-    println("E_qt: ", E_qt)
+    println("E_qt: ", E_qt * 60us"min/h")
     println("T_local: ", T_local)
     println("λ_LSTM: ", λ_LSTM)
     println("λ_local: ", λ_local)
@@ -61,15 +61,21 @@ function PositionInterface.sunpos(algorithm::BasicAlgorithm, timestamp::ZonedDat
     H = 15us"deg/h" * (12us"h" - T_solar)
     println("H: ", H)
 
-    # solar elevation angle [deg]
-    α = asind(sind(β.value) * sind(ϕ_local.value) +
-              cosd(β.value) * cosd(ϕ_local.value) * cosd(H.value))
-
-    # solar azimuth angle [deg]
-    A = acosd((sind(β.value) * cosd(ϕ_local.value) -
-               cosd(β.value) * sind(ϕ_local.value) * cosd(H.value)) / cosd(α))
     return (
-        Quantity(α, SymbolicDimensions, deg = 1), Quantity(A, SymbolicDimensions, deg = 1))
+        Quantity(0.0, SymbolicDimensions, deg = 1),
+        Quantity(0.0, SymbolicDimensions, deg = 1))
+
+    # # solar zenith angle [deg]
+    # θ_z = acosd(sind(ϕ_local.value) * sind(β.value) +
+    #             cosd(ϕ_local.value) * cosd(β.value) * cosd(H.value))
+    # println("θ_z: ", θ_z)
+
+    # # solar azimuth angle [deg]
+    # θ_a = atan2d(sind(H.value),
+    #              cosd(H.value) * sind(ϕ_local.value) - tand(β.value) * cosd(ϕ_local.value))
+    # return (
+    #     Quantity(θ_z, SymbolicDimensions, deg = 1),
+    #     Quantity(A, SymbolicDimensions, deg = 1))
 end
 
 algorithm = BasicAlgorithm(Location(latitude = 0.0, longitude = 0.0))

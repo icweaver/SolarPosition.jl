@@ -1,4 +1,4 @@
-export equation_of_time, offset_hours, standard_time, fractional_hour
+export equation_of_time, offset_hours, standard_time, fractional_hour, declination
 
 """
     equation_of_time(t::Union{Number, DateTime})
@@ -78,3 +78,37 @@ function fractional_hour(t::DateTime)
     return Float64(dt.value) / (60 * 60 * 1000)
 end
 fractional_hour(t::ZonedDateTime) = fractional_hour(DateTime(t))
+
+"""
+    declination(t::Union{Number, DateTime})
+
+Compute the declination angle [1] of the Sun [deg] at the time `t`, which can be 
+represented by the day of the year (`Float`) or `DateTime`. 
+
+The output is a `Quantity` with the unit of degrees.
+
+# References
+
+- **[1]** pveducation. Declination angle. URL: https://www.pveducation.org/pvcdrom/properties-of-sunlight/declination-angle.
+"""
+function declination(d::Number)
+    (0 <= d <= 365) || throw(ArgumentError("day of the year must be in the range [0, 365]"))
+    δ = -23.45cosd((360 / 365) * (d + 10))
+    return Quantity(δ, SymbolicDimensions, deg = 1)
+end
+
+"""
+    declination(t::DateTime)
+
+Convert `t` to the day of the year and compute the declination angle.
+"""
+declination(t::DateTime) = declination(datetime2julian(t) -
+                                       datetime2julian(DateTime(year(t), 1, 1)))
+declination(t::ZonedDateTime) = declination(DateTime(t))
+
+"""
+    local_time(t::DateTime)
+
+Convert `t` to the local time in hours as a fraction x/24, where x is the number of hours.
+"""
+local_time(t::DateTime) = (hour(t) + minute(t) / 60 + second(t) / 3600) / 24

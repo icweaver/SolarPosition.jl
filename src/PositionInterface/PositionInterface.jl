@@ -8,8 +8,7 @@ using TimeZones
 
 export SolarPositionInterface, SolarPositionAlgorithm, sunpos
 
-include("time.jl")
-include("angles.jl")
+include("time_angles.jl")
 
 abstract type SolarPositionAlgorithm end
 

@@ -1,0 +1,12 @@
+{
+    "spa-test-data-1": {
+        "latitude": 39.743,
+        "longitude": -105.178,
+        "timezone": "UTC-7",
+        "name": "NREL",
+        "pressure": 835.8,
+        "temperature": 10.0,
+        "dUT1": 0.0,
+        "dTT": 64.797
+    }
+}
