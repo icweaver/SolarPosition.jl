@@ -2,43 +2,11 @@
 
 using Dates
 using DynamicQuantities
-using CSV
-using DataFrames
-using JSON
+using TimeZones
 
 using SolarPosition.PositionInterface
 
 const deg_to_min = (24 * 60) / 360 * us"min/deg"
-
-function format_data(df::DataFrame)
-    names = Dict(
-        "Observer hour angle" => "HRA",
-        "Topocentric zenith angle" => "θ_z",
-        "Time (H:MM:SS)" => "time",
-        "Date (M/D/YYYY)" => "date",
-        "Top. azimuth angle (westward from S)" => "θ_a",
-        "Topocentric sun declination" => "δ",
-        "Topocentric sun right ascension" => "RA",
-        "Equation of time" => "EoT"
-    )
-    rename!(df, names)
-    select!(df, collect(values(names)))
-    df.timestamp = [DateTime("$(row.date) $(row.time)", DateFormat("m/d/y H:M:S"))
-                    for row in eachrow(df)]
-    select!(df, Not(:date, :time))
-    return df
-end
-
-function load_test_data()
-    meta = JSON.parsefile("../data/meta.json")
-
-    for file in keys(meta)
-        df = CSV.read("../data/$(file).csv", DataFrame)
-        meta[file]["df"] = format_data(df)
-    end
-
-    return meta
-end
 
 """Tests related to the equation of time.
 
@@ -91,5 +59,51 @@ end
         @test PositionInterface.declination(80)≈0 * us"deg" atol=1.0us"deg"
         @test_throws ArgumentError PositionInterface.declination(-1)
         @test_throws ArgumentError PositionInterface.declination(366)
+    end
+end
+
+"""Offset hours tests.
+
+The offset in hours is the difference between UTC-0 and the UTC-`tz` timezone of the observer.
+"""
+
+@testset "Function offset_hours" begin
+    cases = [
+        (DateTime("2021-01-01T00:00:00"), 0),
+        (DateTime("2021-01-01T12:00:00"), 0),
+        (ZonedDateTime(2020, 2, 13, 4, 0, TimeZone("UTC-7")), -7),
+        (ZonedDateTime(2020, 2, 13, 4, 0, TimeZone("UTC+1")), 1),
+        (ZonedDateTime(2020, 2, 13, 4, 0, TimeZone("UTC+2")), 2),
+        (ZonedDateTime(2020, 2, 13, 4, 0, TimeZone("UTC+3")), 3),
+        (ZonedDateTime(2020, 2, 13, 4, 0, TimeZone("Europe/Madrid")), 1),
+        (ZonedDateTime(2020, 2, 13, 4, 0, TimeZone("America/New_York")), -5),
+        (ZonedDateTime(2020, 2, 13, 4, 0, TimeZone("America/Los_Angeles")), -8),
+        (ZonedDateTime(2020, 2, 13, 4, 0, TimeZone("Australia/Sydney")), 10)
+    ]
+
+    for (dt, offset) in cases
+        @test PositionInterface.offset_hours(dt) == Hour(offset)
+    end
+end
+
+"""Fractional hour tests.
+
+The fractional hour is the time of the day as a fraction of 24 hours.
+"""
+
+@testset "Function fractional_hour" begin
+    cases = [
+        (DateTime("2021-01-01T00:00:00"), 0.0),
+        (DateTime("2021-01-01T12:00:00"), 12.0),
+        (ZonedDateTime(2020, 2, 13, 1, 0, TimeZone("UTC-7")), 1.0),
+        (ZonedDateTime(2020, 2, 13, 4, 0, TimeZone("UTC-7")), 4.0),
+        (ZonedDateTime(2020, 2, 13, 12, 0, TimeZone("UTC-7")), 12.0),
+        (ZonedDateTime(2020, 2, 13, 23, 59, TimeZone("UTC-7")), 23 + 59 / 60),
+        (ZonedDateTime(2020, 2, 13, 12, 50, 50, TimeZone("UTC-7")),
+            12 + 50 / 60 + 50 / 3600)
+    ]
+
+    for (dt, frac) in cases
+        @test PositionInterface.fractional_hour(dt)≈frac atol=1e-5
     end
 end

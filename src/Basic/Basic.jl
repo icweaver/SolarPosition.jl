@@ -28,54 +28,69 @@ struct BasicAlgorithm <: SolarPositionAlgorithm
     location::Location
 end
 
+""" Calculate the solar position vector (zenith, azimuth) using the basic algorithm.
+
+The basic algorithm is based on the reference implementation by Sandia PVPMC [1]. Some 
+of the equations are obtained from NREL's SPA algorithm [2] and the Wikipedia page on 
+computing solar zenith angles [3] and solar azimuth angles [4].
+
+# References
+
+- **[1]** Sandia PVPMC. Basic Solar Position Models. URL: https://pvpmc.sandia.gov/modeling-guide/1-weather-design-inputs/sun-position/basic-solar-position-models/
+- **[2]** NREL. Solar Position Algorithm for Solar Radiation Applications. URL: https://www.nrel.gov/docs/fy08osti/34302.pdf
+- **[3]** Wikipedia. Solar zenith angle. URL: https://en.wikipedia.org/wiki/Solar_zenith_angle
+- **[4]** Wikipedia. Solar azimuth angle. URL: https://en.wikipedia.org/wiki/Solar_azimuth_angle
+"""
 function PositionInterface.sunpos(algorithm::BasicAlgorithm, timestamp::ZonedDateTime)
 
-    # declination [deg]
-    β = declination(timestamp)
-
-    # Longitude of the standard Time Merdidian [deg]
-    λ_LSTM = 15 * offset_hours(timestamp)us"deg"
+    # collect location-agnostic quantities
+    β = declination(timestamp) # declination [deg]
 
     # Local longitude  / latitude [deg]
-    λ_local = algorithm.location.longitude
     ϕ_local = algorithm.location.latitude
 
-    # Local time, without daylights saving time [h]
-    T_local = fractional_hour(standard_time(timestamp)) * us"h"
+    # hour angle [deg]
+    HRA = hour_angle(timestamp, algorithm.location)
 
+    # solar zenith angle [deg]
+    θ_z = acosd(sind(ϕ_local.value) * sind(β.value) +
+                cosd(ϕ_local.value) * cosd(β.value) * cosd(HRA.value))
+
+    # solar azimuth angle [deg]
+    # θ_a is measured westward from south
+    θ_a = atand(sind(HRA.value),
+        cosd(HRA.value) * sind(ϕ_local.value) - tand(β.value) * cosd(ϕ_local.value))
+
+    # apply correction θ_a to the range [0 to 360]
+    # atand(x,y) outputs values in the range [-180, 180], so we have to apply a correction
+    if θ_a < 0
+        θ_a *= -1
+    else
+        θ_a = 360 - θ_a
+    end
+
+    return (
+        Quantity(θ_z, SymbolicDimensions, deg = 1),
+        Quantity(θ_a, SymbolicDimensions, deg = 1))
+end
+
+function hour_angle(timestamp::ZonedDateTime, location::Location)
     # equation of time from [deg] to [h], 360 deg = 24 h
     E_qt = equation_of_time(timestamp) * 24us"h" / 360us"deg"
-    println("Timestamp: ", timestamp)
-    println("E_qt: ", E_qt * 60us"min/h")
-    println("T_local: ", T_local)
-    println("λ_LSTM: ", λ_LSTM)
-    println("λ_local: ", λ_local)
-    println("ϕ_local: ", ϕ_local)
-    println("β: ", β)
+
+    # Longitude of the standard Time Merdidian [deg]
+    λ_LSTM = 15 * offset_hours(timestamp).value * us"deg"
+
+    # local standard time [h]
+    T_local = fractional_hour(standard_time(timestamp)) * us"h"
+    λ_local = location.longitude
 
     # solar time [h]
     T_solar = T_local + E_qt + (λ_LSTM - λ_local) / 15us"deg/h"
-    println("T_solar: ", T_solar)
 
     # hour angle [deg]
-    H = 15us"deg/h" * (12us"h" - T_solar)
-    println("H: ", H)
-
-    return (
-        Quantity(0.0, SymbolicDimensions, deg = 1),
-        Quantity(0.0, SymbolicDimensions, deg = 1))
-
-    # # solar zenith angle [deg]
-    # θ_z = acosd(sind(ϕ_local.value) * sind(β.value) +
-    #             cosd(ϕ_local.value) * cosd(β.value) * cosd(H.value))
-    # println("θ_z: ", θ_z)
-
-    # # solar azimuth angle [deg]
-    # θ_a = atan2d(sind(H.value),
-    #              cosd(H.value) * sind(ϕ_local.value) - tand(β.value) * cosd(ϕ_local.value))
-    # return (
-    #     Quantity(θ_z, SymbolicDimensions, deg = 1),
-    #     Quantity(A, SymbolicDimensions, deg = 1))
+    HRA = 15us"deg/h" * (T_solar - 12us"h")
+    # return HRA < 0us"deg" ? HRA + 360us"deg" : mod(HRA, 360us"deg")
 end
 
 algorithm = BasicAlgorithm(Location(latitude = 0.0, longitude = 0.0))

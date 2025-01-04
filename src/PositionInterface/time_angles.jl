@@ -56,8 +56,9 @@ equation_of_time(t::ZonedDateTime) = equation_of_time(DateTime(t))
 
 Return the offset in hours of the timezone `tz` with respect to UTC-0.
 """
-offset_hours(tz::FixedTimeZone) = Hour(tz.offset.std).value
+offset_hours(tz::FixedTimeZone) = Hour(tz.offset.std)
 offset_hours(t::ZonedDateTime) = offset_hours(FixedTimeZone(t))
+offset_hours(t::DateTime) = Hour(0)
 
 """
     standard_time(t::ZonedDateTime)
@@ -71,8 +72,6 @@ standard_time(t::ZonedDateTime) = t.utc_datetime + t.zone.offset.std
 
 Get the current time as a fraction x/24 of the day.
 """
-# fractional_hour(t::ZonedDateTime) = hour(t) + minute(t) / 60 + second(t) / 3600
-# dt = t - floor(t, Hour(24))
 function fractional_hour(t::DateTime)
     dt = t - floor(t, Hour(24))
     return Float64(dt.value) / (60 * 60 * 1000)
@@ -105,10 +104,3 @@ Convert `t` to the day of the year and compute the declination angle.
 declination(t::DateTime) = declination(datetime2julian(t) -
                                        datetime2julian(DateTime(year(t), 1, 1)))
 declination(t::ZonedDateTime) = declination(DateTime(t))
-
-"""
-    local_time(t::DateTime)
-
-Convert `t` to the local time in hours as a fraction x/24, where x is the number of hours.
-"""
-local_time(t::DateTime) = (hour(t) + minute(t) / 60 + second(t) / 3600) / 24

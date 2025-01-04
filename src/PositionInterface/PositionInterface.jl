@@ -15,13 +15,13 @@ abstract type SolarPositionAlgorithm end
 function sunpos end
 
 components = (
-    mandatory = (
+    mandatory = (;
         sunpos_check = (
-        "interface implements the sunpos function" => a::Arguments -> sunpos(
-        a.algorithm, a.timestamp) isa Tuple{Quantity, Quantity}
+            "interface implements the sunpos function" => a::Arguments -> sunpos(
+            a.algorithm, a.timestamp) isa Tuple{Quantity, Quantity}
+        ),
     ),
-    ),
-    optional = ()
+    optional = (;)
 )
 
 description = """

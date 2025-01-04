@@ -2,10 +2,22 @@
     "spa-test-data-1": {
         "latitude": 39.743,
         "longitude": -105.178,
+        "altitude": 1829.0,
         "timezone": "UTC-7",
         "name": "NREL",
         "pressure": 835.8,
         "temperature": 10.0,
+        "dUT1": 0.0,
+        "dTT": 64.797
+    },
+    "spa-test-data-2": {
+        "latitude": 52.3581,
+        "longitude": 4.88119,
+        "altitude": 0.0,
+        "timezone": "UTC+1",
+        "name": "van-gogh-museum",
+        "pressure": 1005,
+        "temperature": 15.0,
         "dUT1": 0.0,
         "dTT": 64.797
     }
