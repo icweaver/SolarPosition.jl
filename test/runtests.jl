@@ -1,12 +1,6 @@
 using SolarPosition
 using Test
 
-using CSV
-using DataFrames
-using JSON
-
-include("utils.jl")
-
 #=
 Don't add your tests to runtests.jl. Instead, create files named
 

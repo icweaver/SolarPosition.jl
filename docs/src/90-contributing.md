@@ -4,11 +4,11 @@ First of all, thanks for the interest!
 
 We welcome all kinds of contribution, including, but not limited to code, documentation, examples, configuration, issue creating, etc.
 
-Be polite and respectful, and follow the code of conduct.
+Be polite and respectful.
 
 ## Bug reports and discussions
 
-If you think you found a bug, feel free to open an [issue](https://github.com/PVSMC/SolarPosition.jl/issues).
+If you think you found a bug, feel free to open an [issue](https://github.com/JuliaSolarPV/SolarPosition.jl/issues).
 Focused suggestions and requests can also be opened as issues.
 Before opening a pull request, start an issue or a discussion on the topic, please.
 

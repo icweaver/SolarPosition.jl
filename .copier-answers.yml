@@ -1,15 +1,40 @@
 # Changes here will be overwritten by Copier
-AnswerStrategy: recommended
-Authors: Stefan de Lange <langestefan@msn.com>
-CodeOfConductContact: langestefan@msn.com
+AddAllcontributors: false
+AddCitationCFF: true
+AddCodeOfConduct: false
+AddCompatHelperCI: true
+AddContributionDocs: true
+AddCopierCI: true
+AddDependabot: true
+AddDocs: true
+AddDocsCI: true
+AddFormatterAndLinterConfigFiles: true
+AddGitHubPRTemplate: true
+AddGitHubTemplates: true
+AddLintCI: true
+AddLychee: true
+AddMacToCI: false
+AddPrecommit: true
+AddTagBotCI: true
+AddTestCI: true
+AddWinToCI: true
+Authors: Stefan de Lange
+AutoIncludeTests: true
+CheckExplicitImports: true
 ConfigIndentation: 2
+ExplicitImportsChecklist: exclude_all_qualified_accesses_are_public
 JuliaIndentation: 4
+JuliaMinCIVersion: lts
 JuliaMinVersion: '1.10'
 License: MIT
 LicenseCopyrightHolders: Stefan de Lange
 MarkdownIndentation: 2
 PackageName: SolarPosition
-PackageOwner: PVSMC
-PackageUUID: 7479b45c-9729-5219-acaa-214f6cdedf5b
-_commit: v0.14.1
-_src_path: https://github.com/JuliaBesties/BestieTemplate.jl
+PackageOwner: JuliaSolarPV
+PackageUUID: 5b9d1343-a731-5a90-8730-7bf8d89bf3eb
+RunJuliaNightlyOnCI: false
+StrategyConfirmIncluded: true
+StrategyLevel: 1
+StrategyReviewExcluded: true
+UseCirrusCI: false
+_src_path: /home/langestefan/.julia/packages/BestieTemplate/jdG8v

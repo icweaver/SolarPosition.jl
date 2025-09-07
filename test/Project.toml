@@ -1,10 +1,2 @@
 [deps]
-CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
-DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
-Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
-DynamicQuantities = "06fc5a27-2a28-4c7c-a15d-362465fb6821"
-Interfaces = "85a1e053-f937-4924-92a5-1367d23b7b87"
-JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
-PVSimBase = "2810a8f8-ed9d-50a5-b7a6-1da2da8222f3"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
-TimeZones = "f269a46b-ccf7-5d73-abea-4c690281aa53"
