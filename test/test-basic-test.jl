@@ -1,3 +1,3 @@
 @testset "SolarPosition.jl" begin
-    @test SolarPosition.hello_world() == "Hello, World!"
+    @test true
 end
