@@ -49,15 +49,18 @@ const PSA_PARAMS = Dict{Int,SVector{15,Float64}}(
 end
 
 """
-    _solar_position(obs::Observer{T}, alg::PSA, t::ZonedDateTime, opts::CommonOptions{T}, algopts::PSAOptions{T}) -> SolarPos{T}
-
+    _solar_position(
+        obs::Observer{T},
+        dt::ZonedDateTime,
+        ::PSA,
+    ) -> SolarPos{T}
 PSA algorithm implementation stub.
 """
 function _solar_position(
     obs::Observer{T},
-    ::PSA,
-    t::ZonedDateTime,
-    coeffs::PSACoeffTypes,
+    dt::ZonedDateTime,
+    ::PSA;
+    coeffs::PSACoeffTypes = Y2020,
 ) where {T}
     azimuth = T(π / 3)     # 60 degrees
     elevation = T(π / 4)   # 45 degrees
