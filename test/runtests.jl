@@ -1,5 +1,8 @@
 using SolarPosition
 using Test
+using DataFrames
+using TimeZones
+using Dates
 
 include("setup.jl")
 

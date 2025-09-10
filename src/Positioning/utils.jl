@@ -6,3 +6,6 @@
 # degree helpers
 deg2rad(x::Real) = float(x) * (π / 180)
 rad2deg(x::Real) = float(x) * (180 / π)
+
+# fractional hour helper
+fractional_hour(dt::ZonedDateTime) = hour(dt) + minute(dt) / 60 + second(dt) / 3600

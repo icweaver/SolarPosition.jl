@@ -1,6 +1,5 @@
 """Unit tests for PSA.jl"""
 
-using DataFrames
 using SolarPosition.Positioning: solar_position, Observer, PSA
 
 function expected_2020()
@@ -61,13 +60,31 @@ end
 
 @testset "PSA" begin
     coeffs = Dict(2020 => expected_2020, 2001 => expected_2001)
-    obs = Observer(52.5, 4.9, elev = 0.0)  # Amsterdam
 
     @testset "Coeff $i" for (i, f) in coeffs
         df_expected = f()
+        conds = test_conditions()
         @test size(df_expected, 1) == 19
         @test size(df_expected, 2) == 3
-        dt = ZonedDateTime(2024, 6, 21, 12, 0, 0, tz"UTC")
-        res = solar_position(obs, dt; alg = PSA())
+        @test size(conds, 1) == 19
+        @test size(conds, 2) == 4
+
+        # conds = time, latitude, longitude, altitude
+        for (dt, lat, lon, alt) in eachrow(conds)
+            if ismissing(alt)
+                obs = Observer(lat, lon)
+            else
+                obs = Observer(lat, lon, altitude = alt)
+            end
+
+            res = solar_position(obs, dt; alg = PSA(), coeffs = i)
+            # @test isapprox(
+            #     rad2deg(res.elevation),
+            #     df_expected.elevation[row.row],
+            #     atol = 1e-4,
+            # )
+            # @test isapprox(rad2deg(res.zenith), df_expected.zenith[row.row], atol = 1e-4)
+            # @test isapprox(rad2deg(res.azimuth), df_expected.azimuth[row.row], atol = 1e-4)
+        end
     end
 end

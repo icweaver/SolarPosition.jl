@@ -15,12 +15,18 @@ abstract type SolarAlgorithm end
 Observer location (degrees, meters). Use `Float64` for speed unless you need higher precision.
 """
 struct Observer{T<:AbstractFloat}
-    lat_deg::T      # geodetic latitude (+N)
-    lon_deg::T      # longitude (+E)
-    elev_m::T       # elevation above MSL
+    latitude::T         # geodetic latitude (+N)
+    longitude::T        # longitude (+E)
+    altitude::T         # altitude above MSL
+    latitude_rad::T     # latitude in radians
+    longitude_rad::T    # longitude in radians
+    function Observer{T}(lat::T, lon::T, alt::T = zero(T)) where {T<:AbstractFloat}
+        new{T}(lat, lon, alt, deg2rad(lat), deg2rad(lon))
+    end
 end
 
-Observer(lat, lon; elev = 0.0) = Observer{Float64}(lat, lon, elev)
+Observer(lat::T, lon::T; altitude = 0.0) where {T} = Observer{T}(lat, lon, altitude)
+Observer(lat::T, lon::T, alt::T) where {T} = Observer{T}(lat, lon, alt)
 
 # include utility functions shared by algorithms
 include("utils.jl")

@@ -43,11 +43,6 @@ const PSA_PARAMS = Dict{Int,SVector{15,Float64}}(
     ),
 )
 
-@enum PSACoeffTypes::Int begin
-    Y2020 = 2020
-    Y2001 = 2001
-end
-
 """
     _solar_position(
         obs::Observer{T},
@@ -60,11 +55,44 @@ function _solar_position(
     obs::Observer{T},
     dt::ZonedDateTime,
     ::PSA;
-    coeffs::PSACoeffTypes = Y2020,
+    coeffs::Int = 2020,
 ) where {T}
-    azimuth = T(π / 3)     # 60 degrees
-    elevation = T(π / 4)   # 45 degrees
-    zenith = T(π / 2) - elevation
-    result = SolarPos(azimuth, elevation, zenith)
-    return result
+
+    p = PSA_PARAMS[coeffs]
+
+    phi = obs.latitude_rad
+    lambda_t = obs.longitude_rad
+
+    # extract date components
+    h = fractional_hour(dt)
+
+    # julian day calculation
+    jd = Dates.datetime2julian(dt)
+    n = jd - 2451545.0
+
+    # ecliptic longitude and obliquity
+    omega = p[1] + p[2] * n
+    L = p[3] + p[4] * n
+    g = p[5] + p[6] * n
+    lambda_e = L + p[7] * sin(g) + p[8] * sin(2 * g) + p[9] + p[10] * sin(omega)
+    epsilon = p[11] + p[12] * n + p[13] * cos(omega)
+
+    # right ascension and declination
+    ra = atan(cos(epsilon) * sin(lambda_e), cos(lambda_e)) % (2 * pi)
+    δ = asin(sin(epsilon) * sin(lambda_e))
+
+    # local coordinates
+    gmst = p[14] + p[15] * n + h
+    lmst = gmst + lambda_t  # check units if gmst in hours
+    w = lmst - ra
+
+    theta_z = acos(cos(phi) * cos(w) * cos(δ) + sin(δ) * sin(phi))
+    gamma = atan(-sin(w), (tan(δ) * cos(phi) - sin(phi) * cos(w)))
+
+    # Earth mean radius correction
+    EMR = 6371.01
+    AU = 149597890
+    theta_z += (EMR / AU) * sin(theta_z)
+
+    return SolarPos{T}(pi / 2 - theta_z, theta_z, gamma)  # elevation, zenith, azimuth in radians
 end

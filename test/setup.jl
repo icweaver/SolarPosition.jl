@@ -1,7 +1,6 @@
 """Common test setup code for SolarPosition.jl"""
 
-using DataFrames
-using TimeZones
+
 
 function test_conditions()
     inputs = DataFrame(
@@ -27,46 +26,46 @@ function test_conditions()
             "2020-10-17T12:30+00:00",
         ],
         latitude = [
-            45,
-            45,
-            45,
-            45,
-            45,
-            90,
-            0,
-            -90,
-            -45,
-            45,
-            45,
-            45,
-            45,
-            45,
-            45,
-            45,
-            45,
-            45,
-            45,
+            45.0,
+            45.0,
+            45.0,
+            45.0,
+            45.0,
+            90.0,
+            0.0,
+            -90.0,
+            -45.0,
+            45.0,
+            45.0,
+            45.0,
+            45.0,
+            45.0,
+            45.0,
+            45.0,
+            45.0,
+            45.0,
+            45.0,
         ],
         longitude = [
-            10,
-            10,
-            10,
-            10,
-            10,
-            10,
-            10,
-            10,
-            10,
-            -15,
-            -180,
-            180,
-            10,
-            10,
-            10,
-            10,
-            10,
-            10,
-            10,
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+            -15.0,
+            -180.0,
+            180.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0,
         ],
         altitude = [
             missing,
@@ -85,13 +84,19 @@ function test_conditions()
             missing,
             missing,
             missing,
-            0,
-            -100,
-            4000,
+            0.0,
+            -100.0,
+            4000.0,
         ],
     )
 
     # parse times as ZonedDateTime
-    inputs.time = ZonedDateTime.(inputs.time)
+    inputs.time = [
+        try
+            ZonedDateTime(t, dateformat"yyyy-mm-ddTHH:MM:SSzzzzz")
+        catch
+            ZonedDateTime(t, dateformat"yyyy-mm-ddTHH:MMzzzzz")
+        end for t in inputs.time
+    ]
     return inputs
 end
