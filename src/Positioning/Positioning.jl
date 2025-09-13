@@ -55,20 +55,20 @@ Angles are in radians.
 """
 function solar_position(
     obs::Observer{T},
+    dt::DateTime;
+    alg::SolarAlgorithm = PSA(),
+    kwargs...,
+) where {T}
+    _solar_position(obs, dt, alg; kwargs...)
+end
+
+function solar_position(
+    obs::Observer{T},
     dt::ZonedDateTime;
     alg::SolarAlgorithm = PSA(),
     kwargs...,
 ) where {T}
-    Positioning.solar_position(obs, dt, alg; kwargs...)
-end
-
-"""
-    solar_position(obs, alg, t, opts, algopts) -> SolarPos
-
-Internal dispatch function for solar position calculation.
-"""
-function solar_position(obs, dt::ZonedDateTime, alg::SolarAlgorithm; kwargs...)
-    _solar_position(obs, dt, alg; kwargs...)
+    _solar_position(obs, DateTime(dt, UTC), alg; kwargs...)
 end
 
 export NOAA, PSA, Observer, solar_position

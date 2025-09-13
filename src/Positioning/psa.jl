@@ -1,7 +1,14 @@
 """
     PSA
 
-Solar position algorithm based on PSA's implementation.
+Solar position algorithm based on PSA's implementation [1].
+
+[1] M. Blanco, D. Alarcón, T. López, and M. Lara, "Computing the Solar
+Vector," Solar Energy, vol. 70, no. 5, 2001,
+:doi:`10.1016/S0038-092X(00)00156-0`
+[2] M. Blanco, K. Milidonis, and A. Bonanos, "Updating the PSA sun
+position algorithm," Solar Energy, vol. 212, 2020,
+:doi:`10.1016/j.solener.2020.10.084`
 """
 
 struct PSA <: SolarAlgorithm end
@@ -46,53 +53,48 @@ const PSA_PARAMS = Dict{Int,SVector{15,Float64}}(
 """
     _solar_position(
         obs::Observer{T},
-        dt::ZonedDateTime,
+        dt::DateTime,
         ::PSA,
     ) -> SolarPos{T}
 PSA algorithm implementation stub.
 """
 function _solar_position(
     obs::Observer{T},
-    dt::ZonedDateTime,
+    dt::DateTime,
     ::PSA;
     coeffs::Int = 2020,
 ) where {T}
-
     p = PSA_PARAMS[coeffs]
 
-    phi = obs.latitude_rad
-    lambda_t = obs.longitude_rad
-
-    # extract date components
-    h = fractional_hour(dt)
-
-    # julian day calculation
+    # elapsed julian days (n) since J2000.0
     jd = Dates.datetime2julian(dt)
-    n = jd - 2451545.0
+    n = jd - 2451545.0                                                  # Eq. 2 
 
-    # ecliptic longitude and obliquity
-    omega = p[1] + p[2] * n
-    L = p[3] + p[4] * n
-    g = p[5] + p[6] * n
-    lambda_e = L + p[7] * sin(g) + p[8] * sin(2 * g) + p[9] + p[10] * sin(omega)
-    epsilon = p[11] + p[12] * n + p[13] * cos(omega)
+    # ecliptic coordinates of the sun
+    # ecliptic longitude (λₑ), and obliquity of the ecliptic (ϵ)
+    Ω = p[1] + p[2] * n                                                 # Eq. 3
+    L = p[3] + p[4] * n                                                 # Eq. 4
+    g = p[5] + p[6] * n                                                 # Eq. 5
+    λₑ = L + p[7] * sin(g) + p[8] * sin(2 * g) + p[9] + p[10] * sin(Ω)  # Eq. 6
+    ϵ = p[11] + p[12] * n + p[13] * cos(Ω)                              # Eq. 7
 
-    # right ascension and declination
-    ra = atan(cos(epsilon) * sin(lambda_e), cos(lambda_e)) % (2 * pi)
-    δ = asin(sin(epsilon) * sin(lambda_e))
+    # celestial right ascension (ra) and declination (d)
+    ra = atan(cos(ϵ) * sin(λₑ), cos(λₑ))                                # Eq. 8
+    ra = mod(ra, 2π)
+    δ = asin(sin(ϵ) * sin(λₑ))                                          # Eq. 9
 
-    # local coordinates
-    gmst = p[14] + p[15] * n + h
-    lmst = gmst + lambda_t  # check units if gmst in hours
-    w = lmst - ra
+    # computes the local coordinates: azimuth (γ) and zenith angle (θz)
+    ϕ = obs.latitude_rad
+    hour = fractional_hour(dt)
+    gmst = p[14] + p[15] * n + hour                                     # Eq. 10
+    λt = rad2deg(obs.longitude_rad)
+    lmst = (gmst * 15 + λt) * π / 180                                   # Eq. 11
+    ω = lmst - ra                                                       # Eq. 12
+    θz = acos(cos(ϕ) * cos(ω) * cos(δ) + sin(δ) * sin(ϕ))               # Eq. 13
+    γ = atan(-sin(ω), (tan(δ) * cos(ϕ) - sin(ϕ) * cos(ω)))              # Eq. 14
 
-    theta_z = acos(cos(phi) * cos(w) * cos(δ) + sin(δ) * sin(phi))
-    gamma = atan(-sin(w), (tan(δ) * cos(phi) - sin(phi) * cos(w)))
+    # parallax correction
+    θz = θz + (EMR / AU) * sin(θz)                                      # Eq. 15,16
 
-    # Earth mean radius correction
-    EMR = 6371.01
-    AU = 149597890
-    theta_z += (EMR / AU) * sin(theta_z)
-
-    return SolarPos{T}(pi / 2 - theta_z, theta_z, gamma)  # elevation, zenith, azimuth in radians
+    return SolarPos(mod(rad2deg(γ), 360), rad2deg(π / 2 - θz), rad2deg(θz))
 end

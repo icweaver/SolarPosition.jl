@@ -61,8 +61,8 @@ end
 @testset "PSA" begin
     coeffs = Dict(2020 => expected_2020, 2001 => expected_2001)
 
-    @testset "Coeff $i" for (i, f) in coeffs
-        df_expected = f()
+    @testset "Coeff $i" for (i, expected) in coeffs
+        df_expected = expected()
         conds = test_conditions()
         @test size(df_expected, 1) == 19
         @test size(df_expected, 2) == 3
@@ -70,7 +70,9 @@ end
         @test size(conds, 2) == 4
 
         # conds = time, latitude, longitude, altitude
-        for (dt, lat, lon, alt) in eachrow(conds)
+        # for (dt, lat, lon, alt) in eachrow(conds)
+        for ((dt, lat, lon, alt), (exp_elev, exp_zen, exp_az)) in
+            zip(eachrow(conds), eachrow(df_expected))
             if ismissing(alt)
                 obs = Observer(lat, lon)
             else
@@ -78,13 +80,9 @@ end
             end
 
             res = solar_position(obs, dt; alg = PSA(), coeffs = i)
-            # @test isapprox(
-            #     rad2deg(res.elevation),
-            #     df_expected.elevation[row.row],
-            #     atol = 1e-4,
-            # )
-            # @test isapprox(rad2deg(res.zenith), df_expected.zenith[row.row], atol = 1e-4)
-            # @test isapprox(rad2deg(res.azimuth), df_expected.azimuth[row.row], atol = 1e-4)
+            @test isapprox(res.elevation, exp_elev, atol = 1e-4)
+            @test isapprox(res.zenith, exp_zen, atol = 1e-4)
+            @test isapprox(res.azimuth, exp_az, atol = 1e-4)
         end
     end
 end
