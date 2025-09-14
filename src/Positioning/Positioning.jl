@@ -6,6 +6,7 @@ module Positioning
 using Dates: datetime2julian, DateTime, hour, minute, second
 using TimeZones: ZonedDateTime, UTC
 using StaticArrays: SVector
+using Tables
 
 abstract type SolarAlgorithm end
 
