@@ -6,7 +6,7 @@ module Positioning
 using Dates: datetime2julian, DateTime, hour, minute, second
 using TimeZones: ZonedDateTime, UTC
 using StaticArrays: SVector
-using Tables
+using Tables: Tables
 
 abstract type SolarAlgorithm end
 
@@ -68,21 +68,16 @@ All angles are in **radians**.
 """
 function solar_position end
 
-function solar_position(
-    obs::Observer{T},
-    dt::DateTime;
-    alg::SolarAlgorithm = PSA(),
-    kwargs...,
-) where {T}
+function solar_position(obs::Observer, dt::DateTime; alg::SolarAlgorithm = PSA(), kwargs...)
     _solar_position(obs, dt, alg; kwargs...)
 end
 
 function solar_position(
-    obs::Observer{T},
+    obs::Observer,
     dt::ZonedDateTime;
     alg::SolarAlgorithm = PSA(),
     kwargs...,
-) where {T}
+)
     solar_position(obs, DateTime(dt, UTC); alg, kwargs...)
 end
 
@@ -99,8 +94,8 @@ function solar_position(
 end
 
 function solar_position(
-    latitude::Real,
-    longitude::Real,
+    latitude::AbstractFloat,
+    longitude::AbstractFloat,
     dt::Union{DateTime,ZonedDateTime};
     alg::SolarAlgorithm = PSA(),
     kwargs...,
@@ -110,19 +105,95 @@ end
 
 function solar_position(
     dt::Union{DateTime,ZonedDateTime};
-    latitude::Real,
-    longitude::Real,
-    altitude::Real = 0.0,
+    latitude::AbstractFloat,
+    longitude::AbstractFloat,
+    altitude::AbstractFloat = 0.0,
     alg::SolarAlgorithm = PSA(),
     kwargs...,
 )
     solar_position(latitude, longitude, altitude, dt; alg, kwargs...)
 end
 
+function solar_position(
+    obs::Observer,
+    dts::AbstractVector{DateTime};
+    alg::SolarAlgorithm = PSA(),
+    kwargs...,
+)
+    n = length(dts)
+    az = zeros(Float64, n)
+    el = zeros(Float64, n)
+    zn = zeros(Float64, n)
+
+    for (i, dt) in enumerate(dts)
+        pos = solar_position(obs, dt; alg, kwargs...)
+        az[i] = pos.azimuth
+        el[i] = pos.elevation
+        zn[i] = pos.zenith
+    end
+
+    return (; datetime = dts, azimuth = az, elevation = el, zenith = zn)
+end
+
+function solar_position(
+    dts::AbstractVector{DateTime};
+    latitude::AbstractFloat,
+    longitude::AbstractFloat,
+    altitude::AbstractFloat = 0.0,
+    alg::SolarAlgorithm = PSA(),
+    kwargs...,
+)
+    obs = Observer(latitude, longitude, altitude)
+    solar_position(obs, dts; alg, kwargs...)
+end
+
+function solar_position(
+    dts::AbstractVector{ZonedDateTime};
+    latitude::AbstractFloat,
+    longitude::AbstractFloat,
+    altitude::AbstractFloat = 0.0,
+    alg::SolarAlgorithm = PSA(),
+    kwargs...,
+)
+    obs = Observer(latitude, longitude, altitude)
+    dts = DateTime.(dts, UTC)
+    solar_position(obs, dts; alg, kwargs...)
+end
+
+function solar_position!(table, obs::Observer; alg::SolarAlgorithm = PSA(), kwargs...)
+    tbl = Tables.columntable(table)
+    if !haskey(tbl, :datetime)
+        throw(ArgumentError("Input table must have a :datetime column"))
+    end
+
+    dts = tbl[:datetime]
+    result = solar_position(obs, dts; alg, kwargs...)
+
+    # add columns to the original table
+    table.azimuth = result.azimuth
+    table.elevation = result.elevation
+    table.zenith = result.zenith
+
+    return table
+end
+
+function solar_position!(
+    table;
+    latitude::AbstractFloat,
+    longitude::AbstractFloat,
+    altitude::AbstractFloat = 0.0,
+    alg::SolarAlgorithm = PSA(),
+    kwargs...,
+)
+    obs = Observer(latitude, longitude, altitude)
+    solar_position!(table, obs; alg, kwargs...)
+end
+
+
 include("utils.jl")
 include("noaa.jl")
 include("psa.jl")
 
-export NOAA, PSA, Observer, solar_position
+export NOAA, PSA, Observer, solar_position, solar_position!
 
 end
