@@ -13,5 +13,5 @@ Pages = ["95-reference.md"]
 ```
 
 ```@autodocs
-Modules = [SolarPosition]
+Modules = [SolarPosition, SolarPosition.Positioning]
 ```

@@ -68,7 +68,7 @@ function _solar_position(
 
     # elapsed julian days (n) since J2000.0
     jd = Dates.datetime2julian(dt)
-    n = jd - 2451545.0                                                  # Eq. 2 
+    n = jd - 2451545.0                                                  # Eq. 2
 
     # ecliptic coordinates of the sun
     # ecliptic longitude (λₑ), and obliquity of the ecliptic (ϵ)

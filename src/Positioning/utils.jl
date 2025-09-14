@@ -10,6 +10,6 @@ rad2deg(x::Real) = float(x) * (180 / π)
 # fractional hour helper
 fractional_hour(dt::DateTime) = hour(dt) + minute(dt) / 60 + second(dt) / 3600
 
-# constants 
+# constants
 EMR = 6371.01  # Earth Mean Radius in km
 AU = 149597890  # Astronomical Unit in km
