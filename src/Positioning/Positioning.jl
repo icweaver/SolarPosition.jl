@@ -28,14 +28,6 @@ end
 Observer(lat::T, lon::T; altitude = 0.0) where {T} = Observer{T}(lat, lon, altitude)
 Observer(lat::T, lon::T, alt::T) where {T} = Observer{T}(lat, lon, alt)
 
-# include utility functions shared by algorithms
-include("utils.jl")
-
-# solar positioning algorithms
-include("noaa.jl")
-include("psa.jl")
-
-
 """
     SolarPos{T}
 
@@ -47,12 +39,35 @@ struct SolarPos{T<:AbstractFloat}
     zenith::T            # zenith (radians, range [0, π])
 end
 
-
 """
-    solar_position(obs, t; alg) -> SolarPos
+    solar_position(obs::Observer{T}, dt::DateTime; alg::SolarAlgorithm=PSA(), kwargs...) -> SolarPos
+    solar_position(obs::Observer{T}, dt::ZonedDateTime; alg::SolarAlgorithm=PSA(), kwargs...) -> SolarPos
+    solar_position(latitude::T, longitude::T, altitude::T,
+                   dt::Union{DateTime,ZonedDateTime};
+                   alg::SolarAlgorithm=PSA(), kwargs...) -> SolarPos
+                   where {T<:AbstractFloat}
 
-Angles are in radians.
+Compute the apparent solar position for a given observer at time `dt`.
+
+Arguments
+---------
+- `obs::Observer{T}` : Observer location (latitude, longitude, altitude).
+- `latitude, longitude, altitude` : Specify observer location directly.
+- `dt::DateTime` or `ZonedDateTime` : Time at which to compute solar position.
+- `alg::SolarAlgorithm` : Algorithm to use (default: `PSA()`).
+- `kwargs...` : Additional keyword arguments forwarded to the algorithm.
+
+Returns
+-------
+- `SolarPos` : Struct containing solar zenith, azimuth, elevation, etc.
+
+Notes
+-----
+All angles are in **radians**.
 """
+function solar_position end
+
+
 function solar_position(
     obs::Observer{T},
     dt::DateTime;
@@ -70,6 +85,45 @@ function solar_position(
 ) where {T}
     _solar_position(obs, DateTime(dt, UTC), alg; kwargs...)
 end
+
+function solar_position(
+    latitude::T,
+    longitude::T,
+    altitude::T,
+    dt::Union{DateTime,ZonedDateTime};
+    alg::SolarAlgorithm = PSA(),
+    kwargs...,
+) where {T<:AbstractFloat}
+    obs = Observer{T}(latitude, longitude, altitude)
+    solar_position(obs, dt; alg = alg, kwargs...)
+end
+
+function solar_position(
+    latitude::Real,
+    longitude::Real,
+    dt::Union{DateTime,ZonedDateTime};
+    alg::SolarAlgorithm = PSA(),
+    kwargs...,
+)
+    solar_position(latitude, longitude, 0.0, dt; alg = alg, kwargs...)
+end
+
+function solar_position(
+    dt::Union{DateTime,ZonedDateTime};
+    latitude::Real,
+    longitude::Real,
+    altitude::Real = 0.0,
+    alg::SolarAlgorithm = PSA(),
+    kwargs...,
+)
+    solar_position(latitude, longitude, altitude, dt; alg = alg, kwargs...)
+end
+
+
+include("utils.jl")
+include("noaa.jl")
+include("psa.jl")
+
 
 export NOAA, PSA, Observer, solar_position
 
