@@ -43,10 +43,10 @@ end
 """
     solar_position(obs::Observer{T}, dt::DateTime; alg::SolarAlgorithm=PSA(), kwargs...) -> SolarPos
     solar_position(obs::Observer{T}, dt::ZonedDateTime; alg::SolarAlgorithm=PSA(), kwargs...) -> SolarPos
-    solar_position(latitude::T, longitude::T, altitude::T,
-                   dt::Union{DateTime,ZonedDateTime};
-                   alg::SolarAlgorithm=PSA(), kwargs...) -> SolarPos
-                   where {T<:AbstractFloat}
+    solar_position(latitude::T, longitude::T, altitude::T, dt::DateTime;
+                   alg::SolarAlgorithm=PSA(), kwargs...) -> SolarPos where {T<:AbstractFloat}
+    solar_position(latitude::T, longitude::T, altitude::T, dt::ZonedDateTime;
+                   alg::SolarAlgorithm=PSA(), kwargs...) -> SolarPos where {T<:AbstractFloat}
 
 Compute the apparent solar position for a given observer at time `dt`.
 
@@ -85,7 +85,19 @@ function solar_position(
     latitude::T,
     longitude::T,
     altitude::T,
-    dt::Union{DateTime,ZonedDateTime};
+    dt::DateTime;
+    alg::SolarAlgorithm = PSA(),
+    kwargs...,
+) where {T<:AbstractFloat}
+    obs = Observer{T}(latitude, longitude, altitude)
+    solar_position(obs, dt; alg, kwargs...)
+end
+
+function solar_position(
+    latitude::T,
+    longitude::T,
+    altitude::T,
+    dt::ZonedDateTime;
     alg::SolarAlgorithm = PSA(),
     kwargs...,
 ) where {T<:AbstractFloat}
@@ -96,7 +108,7 @@ end
 function solar_position(
     latitude::AbstractFloat,
     longitude::AbstractFloat,
-    dt::Union{DateTime,ZonedDateTime};
+    dt::DateTime;
     alg::SolarAlgorithm = PSA(),
     kwargs...,
 )
@@ -104,7 +116,28 @@ function solar_position(
 end
 
 function solar_position(
-    dt::Union{DateTime,ZonedDateTime};
+    latitude::AbstractFloat,
+    longitude::AbstractFloat,
+    dt::ZonedDateTime;
+    alg::SolarAlgorithm = PSA(),
+    kwargs...,
+)
+    solar_position(latitude, longitude, 0.0, dt; alg, kwargs...)
+end
+
+function solar_position(
+    dt::DateTime;
+    latitude::AbstractFloat,
+    longitude::AbstractFloat,
+    altitude::AbstractFloat = 0.0,
+    alg::SolarAlgorithm = PSA(),
+    kwargs...,
+)
+    solar_position(latitude, longitude, altitude, dt; alg, kwargs...)
+end
+
+function solar_position(
+    dt::ZonedDateTime;
     latitude::AbstractFloat,
     longitude::AbstractFloat,
     altitude::AbstractFloat = 0.0,
