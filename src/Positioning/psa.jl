@@ -67,7 +67,7 @@ function _solar_position(
     p = PSA_PARAMS[coeffs]
 
     # elapsed julian days (n) since J2000.0
-    jd = Dates.datetime2julian(dt)
+    jd = datetime2julian(dt)
     n = jd - 2451545.0                                                  # Eq. 2
 
     # ecliptic coordinates of the sun

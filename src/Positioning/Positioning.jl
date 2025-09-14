@@ -3,7 +3,7 @@ Collection of solar positioning algorithms.
 """
 module Positioning
 
-using Dates: DateTime, hour, minute, second
+using Dates: datetime2julian, DateTime, hour, minute, second
 using TimeZones: ZonedDateTime, UTC
 using StaticArrays: SVector
 
