@@ -160,13 +160,19 @@ function solar_position(
     solar_position(obs, dts; alg, kwargs...)
 end
 
-function solar_position!(table, obs::Observer; alg::SolarAlgorithm = PSA(), kwargs...)
+function solar_position!(
+    table,
+    obs::Observer;
+    dt_col::Symbol = :datetime,
+    alg::SolarAlgorithm = PSA(),
+    kwargs...,
+)
     tbl = Tables.columntable(table)
-    if !haskey(tbl, :datetime)
-        throw(ArgumentError("Input table must have a :datetime column"))
+    if !haskey(tbl, dt_col)
+        throw(ArgumentError("Input table must have a $(dt_col) column"))
     end
 
-    dts = tbl[:datetime]
+    dts = tbl[dt_col]
     result = solar_position(obs, dts; alg, kwargs...)
 
     # add columns to the original table

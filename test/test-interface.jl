@@ -232,9 +232,9 @@ end
         @test all(isfinite, df.zenith)
 
         direct_result = solar_position(obs, dt_vector)
-        @test df.azimuth ≈ direct_result.azimuth
-        @test df.elevation ≈ direct_result.elevation
-        @test df.zenith ≈ direct_result.zenith
+        @test df.azimuth == direct_result.azimuth
+        @test df.elevation == direct_result.elevation
+        @test df.zenith == direct_result.zenith
     end
 
     @testset "Keyword Interface" begin
@@ -248,9 +248,9 @@ end
 
         df2 = DataFrame(datetime = dt_vector, humidity = [60.0, 65.0, 70.0])
         solar_position!(df2, obs)
-        @test df.azimuth ≈ df2.azimuth
-        @test df.elevation ≈ df2.elevation
-        @test df.zenith ≈ df2.zenith
+        @test df.azimuth == df2.azimuth
+        @test df.elevation == df2.elevation
+        @test df.zenith == df2.zenith
     end
 
     @testset "Error Cases" begin
@@ -275,6 +275,22 @@ end
         @test all(isfinite, df.azimuth)
         @test all(isfinite, df.elevation)
         @test all(isfinite, df.zenith)
+    end
+
+    @testset "Custom DateTime Column" begin
+        df = DataFrame(time_utc = dt_vector)
+        result = solar_position!(df, obs; dt_col = :time_utc)
+
+        @test result === df
+        @test "azimuth" in names(df)
+        @test "elevation" in names(df)
+        @test "zenith" in names(df)
+        @test df.time_utc == dt_vector
+
+        direct_result = solar_position(obs, dt_vector)
+        @test df.azimuth == direct_result.azimuth
+        @test df.elevation == direct_result.elevation
+        @test df.zenith == direct_result.zenith
     end
 
 end
