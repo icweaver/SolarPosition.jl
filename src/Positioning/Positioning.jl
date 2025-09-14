@@ -67,7 +67,6 @@ All angles are in **radians**.
 """
 function solar_position end
 
-
 function solar_position(
     obs::Observer{T},
     dt::DateTime;
@@ -83,7 +82,7 @@ function solar_position(
     alg::SolarAlgorithm = PSA(),
     kwargs...,
 ) where {T}
-    _solar_position(obs, DateTime(dt, UTC), alg; kwargs...)
+    solar_position(obs, DateTime(dt, UTC); alg, kwargs...)
 end
 
 function solar_position(
@@ -95,7 +94,7 @@ function solar_position(
     kwargs...,
 ) where {T<:AbstractFloat}
     obs = Observer{T}(latitude, longitude, altitude)
-    solar_position(obs, dt; alg = alg, kwargs...)
+    solar_position(obs, dt; alg, kwargs...)
 end
 
 function solar_position(
@@ -105,7 +104,7 @@ function solar_position(
     alg::SolarAlgorithm = PSA(),
     kwargs...,
 )
-    solar_position(latitude, longitude, 0.0, dt; alg = alg, kwargs...)
+    solar_position(latitude, longitude, 0.0, dt; alg, kwargs...)
 end
 
 function solar_position(
@@ -116,14 +115,12 @@ function solar_position(
     alg::SolarAlgorithm = PSA(),
     kwargs...,
 )
-    solar_position(latitude, longitude, altitude, dt; alg = alg, kwargs...)
+    solar_position(latitude, longitude, altitude, dt; alg, kwargs...)
 end
-
 
 include("utils.jl")
 include("noaa.jl")
 include("psa.jl")
-
 
 export NOAA, PSA, Observer, solar_position
 
