@@ -41,26 +41,42 @@ struct SolarPos{T<:AbstractFloat}
 end
 
 """
-    solar_position(obs::Observer{T}, dt::DateTime; alg::SolarAlgorithm=PSA(), kwargs...) -> SolarPos
-    solar_position(obs::Observer{T}, dt::ZonedDateTime; alg::SolarAlgorithm=PSA(), kwargs...) -> SolarPos
+    solar_position(obs::Observer, dt::DateTime; alg::SolarAlgorithm=PSA(), kwargs...) -> SolarPos
+    solar_position(obs::Observer, dt::ZonedDateTime; alg::SolarAlgorithm=PSA(), kwargs...) -> SolarPos
     solar_position(latitude::T, longitude::T, altitude::T, dt::DateTime;
                    alg::SolarAlgorithm=PSA(), kwargs...) -> SolarPos where {T<:AbstractFloat}
     solar_position(latitude::T, longitude::T, altitude::T, dt::ZonedDateTime;
                    alg::SolarAlgorithm=PSA(), kwargs...) -> SolarPos where {T<:AbstractFloat}
+    solar_position(latitude::AbstractFloat, longitude::AbstractFloat, dt::DateTime;
+                   alg::SolarAlgorithm=PSA(), kwargs...) -> SolarPos
+    solar_position(latitude::AbstractFloat, longitude::AbstractFloat, dt::ZonedDateTime;
+                   alg::SolarAlgorithm=PSA(), kwargs...) -> SolarPos
+    solar_position(dt::DateTime; latitude::AbstractFloat, longitude::AbstractFloat,
+                   altitude::AbstractFloat=0.0, alg::SolarAlgorithm=PSA(), kwargs...) -> SolarPos
+    solar_position(dt::ZonedDateTime; latitude::AbstractFloat, longitude::AbstractFloat,
+                   altitude::AbstractFloat=0.0, alg::SolarAlgorithm=PSA(), kwargs...) -> SolarPos
+    solar_position(obs::Observer, dts::AbstractVector{DateTime};
+                   alg::SolarAlgorithm=PSA(), kwargs...) -> NamedTuple
+    solar_position(dts::AbstractVector{DateTime}; latitude::AbstractFloat, longitude::AbstractFloat,
+                   altitude::AbstractFloat=0.0, alg::SolarAlgorithm=PSA(), kwargs...) -> NamedTuple
+    solar_position(dts::AbstractVector{ZonedDateTime}; latitude::AbstractFloat, longitude::AbstractFloat,
+                   altitude::AbstractFloat=0.0, alg::SolarAlgorithm=PSA(), kwargs...) -> NamedTuple
 
-Compute the apparent solar position for a given observer at time `dt`.
+Compute the apparent solar position for a given observer at time `dt` or vector of times `dts`.
 
 Arguments
 ---------
-- `obs::Observer{T}` : Observer location (latitude, longitude, altitude).
+- `obs::Observer` : Observer location (latitude, longitude, altitude).
 - `latitude, longitude, altitude` : Specify observer location directly.
 - `dt::DateTime` or `ZonedDateTime` : Time at which to compute solar position.
+- `dts::AbstractVector{DateTime}` or `AbstractVector{ZonedDateTime}` : Vector of times for batch computation.
 - `alg::SolarAlgorithm` : Algorithm to use (default: `PSA()`).
 - `kwargs...` : Additional keyword arguments forwarded to the algorithm.
 
 Returns
 -------
-- `SolarPos` : Struct containing solar zenith, azimuth, elevation, etc.
+- `SolarPos` : Struct containing solar zenith, azimuth, elevation (for single time).
+- `NamedTuple` : Named tuple with `datetime`, `azimuth`, `elevation`, `zenith` vectors (for multiple times).
 
 Notes
 -----
@@ -193,6 +209,30 @@ function solar_position(
     solar_position(obs, dts; alg, kwargs...)
 end
 
+"""
+    solar_position!(table, obs::Observer; dt_col::Symbol=:datetime, alg::SolarAlgorithm=PSA(), kwargs...)
+    solar_position!(table; latitude::AbstractFloat, longitude::AbstractFloat,
+                    altitude::AbstractFloat=0.0, alg::SolarAlgorithm=PSA(), kwargs...)
+
+Compute solar positions for all times in a table and add the results as new columns.
+
+Arguments
+---------
+- `table` : Table-like object with datetime column (must support Tables.jl interface).
+- `obs::Observer` : Observer location (latitude, longitude, altitude).
+- `latitude, longitude, altitude` : Specify observer location directly.
+- `dt_col::Symbol` : Name of the datetime column (default: `:datetime`).
+- `alg::SolarAlgorithm` : Algorithm to use (default: `PSA()`).
+- `kwargs...` : Additional keyword arguments forwarded to the algorithm.
+
+Returns
+-------
+- Modified table with added columns: `azimuth`, `elevation`, `zenith`.
+
+Notes
+-----
+All angles are in **radians**. The input table is modified in-place by adding new columns.
+"""
 function solar_position!(
     table,
     obs::Observer;
