@@ -185,6 +185,45 @@ function solar_position(
 end
 
 function solar_position(
+    obs::Observer,
+    dts::AbstractVector{ZonedDateTime};
+    alg::SolarAlgorithm = PSA(),
+    kwargs...,
+)
+    n = length(dts)
+    az = zeros(Float64, n)
+    el = zeros(Float64, n)
+    zn = zeros(Float64, n)
+
+    for (i, dt) in enumerate(dts)
+        pos = solar_position(obs, dt; alg, kwargs...)
+        az[i] = pos.azimuth
+        el[i] = pos.elevation
+        zn[i] = pos.zenith
+    end
+
+    return (; datetime = dts, azimuth = az, elevation = el, zenith = zn)
+end
+
+function solar_position(
+    obs::Observer,
+    dts::AbstractRange{DateTime};
+    alg::SolarAlgorithm = PSA(),
+    kwargs...,
+)
+    solar_position(obs, collect(dts); alg, kwargs...)
+end
+
+function solar_position(
+    obs::Observer,
+    dts::AbstractRange{ZonedDateTime};
+    alg::SolarAlgorithm = PSA(),
+    kwargs...,
+)
+    solar_position(obs, collect(dts); alg, kwargs...)
+end
+
+function solar_position(
     dts::AbstractVector{DateTime};
     latitude::AbstractFloat,
     longitude::AbstractFloat,
@@ -205,8 +244,29 @@ function solar_position(
     kwargs...,
 )
     obs = Observer(latitude, longitude, altitude)
-    dts = DateTime.(dts, UTC)
     solar_position(obs, dts; alg, kwargs...)
+end
+
+function solar_position(
+    dts::AbstractRange{DateTime};
+    latitude::AbstractFloat,
+    longitude::AbstractFloat,
+    altitude::AbstractFloat = 0.0,
+    alg::SolarAlgorithm = PSA(),
+    kwargs...,
+)
+    solar_position(collect(dts); latitude, longitude, altitude, alg, kwargs...)
+end
+
+function solar_position(
+    dts::AbstractRange{ZonedDateTime};
+    latitude::AbstractFloat,
+    longitude::AbstractFloat,
+    altitude::AbstractFloat = 0.0,
+    alg::SolarAlgorithm = PSA(),
+    kwargs...,
+)
+    solar_position(collect(dts); latitude, longitude, altitude, alg, kwargs...)
 end
 
 """

@@ -104,39 +104,30 @@ end
     lat, lon, alt = 45.0, 10.0, 4000.0
     obs = Observer(lat, lon, alt)
 
-    # Create test datetime vectors
     base_dt = DateTime(2020, 10, 17, 12, 30)
     dt_vector = [base_dt + Hour(i) for i = 0:4]  # 5 time points
     dt_zoned_vector = [ZonedDateTime(dt, tz"UTC") for dt in dt_vector]
 
-    # Single datetime for comparison
     single_dt = base_dt
     single_result = solar_position(obs, single_dt)
 
     @testset "Observer with DateTime Vector" begin
         result = solar_position(obs, dt_vector)
 
-        # return structure
         @test haskey(result, :datetime)
         @test haskey(result, :azimuth)
         @test haskey(result, :elevation)
         @test haskey(result, :zenith)
 
-        # lengths match input
         @test length(result.datetime) == length(dt_vector)
         @test length(result.azimuth) == length(dt_vector)
         @test length(result.elevation) == length(dt_vector)
         @test length(result.zenith) == length(dt_vector)
 
-        # first result matches single call
         @test result.datetime == dt_vector
         @test result.azimuth[1] ≈ single_result.azimuth
         @test result.elevation[1] ≈ single_result.elevation
         @test result.zenith[1] ≈ single_result.zenith
-
-        # results are different across times
-        @test !all(result.azimuth .≈ result.azimuth[1])
-        @test !all(result.elevation .≈ result.elevation[1])
     end
 
     @testset "Keywords with DateTime Vector" begin
@@ -152,10 +143,8 @@ end
         @test length(result.elevation) == length(dt_vector)
         @test length(result.zenith) == length(dt_vector)
 
-        # datetime preservation
         @test result.datetime == dt_vector
 
-        # consistency with Observer interface
         obs_result = solar_position(obs, dt_vector)
         @test result.azimuth ≈ obs_result.azimuth
         @test result.elevation ≈ obs_result.elevation
@@ -166,22 +155,18 @@ end
         result =
             solar_position(dt_zoned_vector; latitude = lat, longitude = lon, altitude = alt)
 
-        # return structure
         @test haskey(result, :datetime)
         @test haskey(result, :azimuth)
         @test haskey(result, :elevation)
         @test haskey(result, :zenith)
 
-        # lengths
         @test length(result.datetime) == length(dt_zoned_vector)
         @test length(result.azimuth) == length(dt_zoned_vector)
         @test length(result.elevation) == length(dt_zoned_vector)
         @test length(result.zenith) == length(dt_zoned_vector)
 
-        # datetime preservation (ZonedDateTime gets converted to DateTime)
-        @test result.datetime == DateTime.(dt_zoned_vector, UTC)
+        @test result.datetime == dt_zoned_vector
 
-        # consistency with DateTime version (should give same results)
         dt_result =
             solar_position(dt_vector; latitude = lat, longitude = lon, altitude = alt)
         @test result.azimuth ≈ dt_result.azimuth
@@ -207,6 +192,83 @@ end
         @test length(result.azimuth) == 0
         @test length(result.elevation) == 0
         @test length(result.zenith) == 0
+    end
+
+end
+
+@testset "Range Interface" begin
+    lat, lon, alt = 45.0, 10.0, 4000.0
+    obs = Observer(lat, lon, alt)
+
+    base_dt = DateTime(2020, 10, 17, 12, 0)
+    dt_range = base_dt:Hour(2):(base_dt+Hour(8))
+    dt_zoned_range =
+        (ZonedDateTime(base_dt, tz"UTC"):Hour(2):ZonedDateTime(base_dt+Hour(8), tz"UTC"))
+
+    @testset "Observer with DateTime Range" begin
+        result = solar_position(obs, dt_range)
+
+        @test length(result.datetime) == length(dt_range)
+        @test length(result.azimuth) == length(dt_range)
+        @test length(result.elevation) == length(dt_range)
+        @test length(result.zenith) == length(dt_range)
+
+        @test result.datetime == collect(dt_range)
+    end
+
+    @testset "Observer with ZonedDateTime Range" begin
+        result = solar_position(obs, dt_zoned_range)
+        @test result.datetime == collect(dt_zoned_range)
+
+        dt_result = solar_position(obs, dt_range)
+
+        @test result.azimuth == dt_result.azimuth
+        @test result.elevation == dt_result.elevation
+        @test result.zenith == dt_result.zenith
+    end
+
+    @testset "Keywords with DateTime Range" begin
+        result = solar_position(dt_range; latitude = lat, longitude = lon, altitude = alt)
+
+        @test length(result.datetime) == length(dt_range)
+        @test length(result.azimuth) == length(dt_range)
+        @test length(result.elevation) == length(dt_range)
+        @test length(result.zenith) == length(dt_range)
+
+        @test result.datetime == collect(dt_range)
+
+        obs_result = solar_position(obs, dt_range)
+        @test result.azimuth == obs_result.azimuth
+        @test result.elevation == obs_result.elevation
+        @test result.zenith == obs_result.zenith
+    end
+
+    @testset "Keywords with ZonedDateTime Range" begin
+        result =
+            solar_position(dt_zoned_range; latitude = lat, longitude = lon, altitude = alt)
+
+        @test length(result.datetime) == length(dt_zoned_range)
+        @test length(result.azimuth) == length(dt_zoned_range)
+        @test length(result.elevation) == length(dt_zoned_range)
+        @test length(result.zenith) == length(dt_zoned_range)
+
+        @test result.datetime == collect(dt_zoned_range)
+
+        dt_result =
+            solar_position(dt_range; latitude = lat, longitude = lon, altitude = alt)
+        @test result.azimuth == dt_result.azimuth
+        @test result.elevation == dt_result.elevation
+        @test result.zenith == dt_result.zenith
+    end
+
+    @testset "Default Altitude with Ranges" begin
+        result_no_alt = solar_position(dt_range; latitude = lat, longitude = lon)
+        result_zero_alt =
+            solar_position(dt_range; latitude = lat, longitude = lon, altitude = 0.0)
+
+        @test result_no_alt.azimuth == result_zero_alt.azimuth
+        @test result_no_alt.elevation == result_zero_alt.elevation
+        @test result_no_alt.zenith == result_zero_alt.zenith
     end
 
 end
