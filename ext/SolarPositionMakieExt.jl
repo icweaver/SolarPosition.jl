@@ -72,6 +72,12 @@ function sunpathplot!(ax, data; coords = :polar, t_col = :datetime, kwargs...)
         end
         x = az
         y = el
+        xlims!(ax, 0, 360)
+        ylims!(ax, 0, 90)
+        ax.xlabel = "Azimuth (°)"
+        ax.ylabel = "Elevation (°)"
+        ax.xticks = 0:30:360
+        ax.yticks = 0:10:90
     end
 
     scatter!(

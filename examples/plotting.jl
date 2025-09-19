@@ -1,15 +1,17 @@
 """Plot solar positions using SolarPosition.jl."""
 
 using Dates
+using TimeZones
 using DataFrames
 using GLMakie
 using SolarPosition
 
 # define observer location (latitude, longitude, altitude in meters)
+tz = tz"Asia/Kolkata"
 obs = Observer(28.6, 77.2, 0.0)
 
 # a whole year of hourly timestamps
-times = DateTime(2023):Hour(1):DateTime(2024)
+times = ZonedDateTime(DateTime(2019), tz):Hour(1):ZonedDateTime(DateTime(2020), tz)
 
 # compute solar positions
 positions = solar_position(obs, times)
