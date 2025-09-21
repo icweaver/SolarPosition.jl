@@ -11,7 +11,7 @@ SolarPosition.jl provides a simple, unified interface to a collection of solar p
 algorithms written in pure, performant julia. The position of the sun in the sky is
 based on date, time, and a given observer location.
 
-![solarposition logo](sunpathpolarplot.svg)
+![solarposition logo](sunpathpolarplot.png)
 
 A solar position algorithm is commonly used to calculate the solar zenith and
 azimuth angles, which are essential for various applications such as solar energy systems,

@@ -16,6 +16,9 @@ using CairoMakie
 using Dates
 using TimeZones
 using DataFrames
+
+plotsDir = joinpath(dirname(pathof(SolarPosition)), "..", "docs", "build", "plots")
+mkpath(plotsDir)
 ```
 
 This example notebook is based on the [pvlib sun path example](https://pvlib-python.readthedocs.io/en/stable/gallery/solar-position/plot_sunpath_diagrams.html).
@@ -83,6 +86,8 @@ end
 fig2[2, 1] = Legend(fig2, line_objects, ["Mar 21", "Jun 21", "Dec 21"],
                     orientation = :horizontal, tellheight = true, backgroundcolor = :transparent)
 fig2
+
+save(joinpath(plotsDir,"sunpathpolarplot.png"), fig2)
 ```
 
 The figure-8 patterns are known as [analemmas](https://en.wikipedia.org/wiki/Analemma), which represent the sun's position at the same time of day throughout the year.
