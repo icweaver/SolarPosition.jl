@@ -52,7 +52,7 @@ function _add_hour_labels!(ax, dts, ze, el, az, coords)
             label_az = az_visible[hour_mask][idx]
             label_ze = ze_visible[hour_mask][idx]
             x, y = deg2rad(label_az), label_ze
-        else
+        else  # cartesian coordinates
             idx = argmax(el_visible[hour_mask])
             label_az = az_visible[hour_mask][idx]
             label_el = el_visible[hour_mask][idx]
@@ -73,7 +73,13 @@ end
 
 
 @recipe(SunpathPlot) do scene
-    Theme(colormap = :twilight, markersize = 3, hour_labels = true, colorbar = true)
+    Theme(
+        colormap = :twilight,
+        backgroundcolor = :white,
+        markersize = 3,
+        hour_labels = true,
+        colorbar = true,
+    )
 end
 
 @recipe(SunpathpolarPlot) do scene
@@ -109,7 +115,7 @@ function Makie.plot!(sp::SunpathPlot{<:Tuple})
 
     # add hourly labels if requested
     if sp.hour_labels[]
-        _add_hour_labels!(ax, dts, ze, 90 .- ze, az, :polar)
+        _add_hour_labels!(ax, dts, ze, el, az, :cartesian)
     end
 
     # add colorbar if requested and possible

@@ -16,6 +16,7 @@ makedocs(;
     sitename = "SolarPosition.jl",
     format = Documenter.HTML(;
         canonical = "https://JuliaSolarPV.github.io/SolarPosition.jl",
+        size_threshold = 2^20, # 1 MB
     ),
     pages = [
         "index.md",
