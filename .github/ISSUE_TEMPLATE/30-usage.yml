@@ -11,7 +11,7 @@ body:
 
         - You have checked the [documentation](https://JuliaSolarPV.github.io/SolarPosition.jl) and haven't found enough information
         - There is not an [existing issue](https://github.com/JuliaSolarPV/SolarPosition.jl/issues) with the same question
-        - You have read the [contributing guide](https://JuliaSolarPV.github.io/SolarPosition.jl/dev/90-contributing/)
+        - You have read the [contributing guide](https://JuliaSolarPV.github.io/SolarPosition.jl/dev/contributing/)
         The form below should help you in filling out this issue.
   - type: textarea
     id: description
