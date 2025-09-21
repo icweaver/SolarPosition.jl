@@ -17,7 +17,12 @@ makedocs(;
     format = Documenter.HTML(;
         canonical = "https://JuliaSolarPV.github.io/SolarPosition.jl",
     ),
-    pages = ["index.md"; numbered_pages],
+    pages = [
+        "index.md",
+        "Examples" => ["examples/basic.md", "examples/plotting.md"],
+        "reference.md",
+        "contributing.md",
+    ],
 )
 
 deploydocs(; repo = "github.com/JuliaSolarPV/SolarPosition.jl")

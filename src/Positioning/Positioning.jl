@@ -57,9 +57,19 @@ end
                    altitude::AbstractFloat=0.0, alg::SolarAlgorithm=PSA(), kwargs...) -> SolarPos
     solar_position(obs::Observer, dts::AbstractVector{DateTime};
                    alg::SolarAlgorithm=PSA(), kwargs...) -> NamedTuple
+    solar_position(obs::Observer, dts::AbstractVector{ZonedDateTime};
+                   alg::SolarAlgorithm=PSA(), kwargs...) -> NamedTuple
+    solar_position(obs::Observer, dts::AbstractRange{DateTime};
+                   alg::SolarAlgorithm=PSA(), kwargs...) -> NamedTuple
+    solar_position(obs::Observer, dts::AbstractRange{ZonedDateTime};
+                   alg::SolarAlgorithm=PSA(), kwargs...) -> NamedTuple
     solar_position(dts::AbstractVector{DateTime}; latitude::AbstractFloat, longitude::AbstractFloat,
                    altitude::AbstractFloat=0.0, alg::SolarAlgorithm=PSA(), kwargs...) -> NamedTuple
     solar_position(dts::AbstractVector{ZonedDateTime}; latitude::AbstractFloat, longitude::AbstractFloat,
+                   altitude::AbstractFloat=0.0, alg::SolarAlgorithm=PSA(), kwargs...) -> NamedTuple
+    solar_position(dts::AbstractRange{DateTime}; latitude::AbstractFloat, longitude::AbstractFloat,
+                   altitude::AbstractFloat=0.0, alg::SolarAlgorithm=PSA(), kwargs...) -> NamedTuple
+    solar_position(dts::AbstractRange{ZonedDateTime}; latitude::AbstractFloat, longitude::AbstractFloat,
                    altitude::AbstractFloat=0.0, alg::SolarAlgorithm=PSA(), kwargs...) -> NamedTuple
 
 Compute the apparent solar position for a given observer at time `dt` or vector of times `dts`.
