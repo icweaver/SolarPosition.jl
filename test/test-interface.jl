@@ -79,12 +79,12 @@ end
 
     @testset "DataFrame with Observer" begin
         df = DataFrame(datetime = dt_vector, temperature = [20.0, 21.0, 22.0])
-        result = solar_position!(df, obs)
+        solar_position!(df, obs)
 
-        @test result === df
         @test "azimuth" in names(df)
         @test "elevation" in names(df)
         @test "zenith" in names(df)
+        @test "temperature" in names(df)
         @test df.datetime == dt_vector
         @test df.temperature == [20.0, 21.0, 22.0]
         @test all(isfinite, df.azimuth)
@@ -102,18 +102,17 @@ end
         @test_throws ArgumentError solar_position!(df_no_datetime, obs)
 
         df_empty = DataFrame(datetime = DateTime[])
-        result = solar_position!(df_empty, obs)
-        @test "azimuth" in names(result)
-        @test "elevation" in names(result)
-        @test "zenith" in names(result)
-        @test length(result.azimuth) == 0
+        solar_position!(df_empty, obs)
+        @test "azimuth" in names(df_empty)
+        @test "elevation" in names(df_empty)
+        @test "zenith" in names(df_empty)
+        @test length(df_empty.azimuth) == 0
     end
 
     @testset "Custom DateTime Column" begin
         df = DataFrame(time_utc = dt_vector)
-        result = solar_position!(df, obs; dt_col = :time_utc)
+        solar_position!(df, obs; dt_col = :time_utc)
 
-        @test result === df
         @test "azimuth" in names(df)
         @test "elevation" in names(df)
         @test "zenith" in names(df)
@@ -123,6 +122,24 @@ end
         @test df.azimuth == direct_result.azimuth
         @test df.elevation == direct_result.elevation
         @test df.zenith == direct_result.zenith
+    end
+
+    @testset "Return new Table" begin
+        df = DataFrame(datetime = dt_vector, temperature = [20.0, 21.0, 22.0])
+        result_table = solar_position(df, obs)
+
+        @test result_table isa DataFrame
+        @test "azimuth" in names(result_table)
+        @test "elevation" in names(result_table)
+        @test "zenith" in names(result_table)
+        @test "temperature" in names(result_table)
+        @test result_table.datetime == df.datetime
+        @test result_table.temperature == df.temperature
+
+        direct_result = solar_position(obs, dt_vector)
+        @test result_table.azimuth == direct_result.azimuth
+        @test result_table.elevation == direct_result.elevation
+        @test result_table.zenith == direct_result.zenith
     end
 
 end

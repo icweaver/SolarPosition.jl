@@ -206,12 +206,21 @@ function solar_position!(
     dts = tbl[dt_col]
     result = StructArrays.components(solar_position(obs, dts, alg))
 
-    # add columns to the original table
-    table.azimuth = result.azimuth
-    table.elevation = result.elevation
-    table.zenith = result.zenith
+    # add the result columns to the table
+    for (key, value) in pairs(result)
+        table[!, key] = value
+    end
+end
 
-    return table
+function solar_position(
+    table,
+    obs::Observer{T},
+    alg::SolarAlgorithm = PSA();
+    kwargs...,
+) where {T<:AbstractFloat}
+    table_copy = copy(table)
+    solar_position!(table_copy, obs, alg; kwargs...)
+    return table_copy
 end
 
 include("utils.jl")
