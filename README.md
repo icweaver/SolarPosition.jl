@@ -23,10 +23,10 @@ Here we provide an overview of the solar positioning algorithms currently implem
 in SolarPosition.jl. Each algorithm is described with its reference paper, claimed
 accuracy and implementation status.
 
-| Algorithm | Reference                                                                          | Accuracy | Status |
-| --------- | ---------------------------------------------------------------------------------- | -------- | ------ |
-| PSA       | [Blanco-Muriel et al.](<https://doi.org/10.1016/S0038-092X(00)00156-0>)            | ±0.0083° | ✅     |
-| NOAA      | [Global Monitoring Laboratory](https://gml.noaa.gov/grad/solcalc/calcdetails.html) | ±0.0167° | ❌     |
+| Algorithm | Reference                                                                                       | Accuracy | Status |
+| --------- | ----------------------------------------------------------------------------------------------- | -------- | ------ |
+| PSA       | [Blanco-Muriel et al.](https://www.sciencedirect.com/science/article/abs/pii/S0038092X00001560) | ±0.0083° | ✅     |
+| NOAA      | [Global Monitoring Laboratory](https://gml.noaa.gov/grad/solcalc/calcdetails.html)              | ±0.0167° | ❌     |
 
 ## How to Cite
 
