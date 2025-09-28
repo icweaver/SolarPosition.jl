@@ -1,6 +1,37 @@
-"""PSA Algorithm Implementation"""
+"""
+    $(TYPEDEF)
 
+PSA (Plataforma Solar de Almería) solar position algorithm.
+
+This algorithm computes solar position with high accuracy using empirical coefficients.
+Two coefficient sets are available: 2001 (range 1999-2015) and 2020 (range 2020-2050).
+
+# Fields
+$(TYPEDFIELDS)
+
+# Constructor
+- `PSA()`: Uses 2020 coefficients (default)
+- `PSA(2020)`: Uses 2020 coefficients (range 2020-2050, accuracy ±0.0083°)
+- `PSA(2001)`: Uses 2001 coefficients (range 1999-2015, accuracy ±0.0083°)
+
+# References
+[1] M. Blanco, D. Alarcón, T. López, and M. Lara, "Computing the Solar Vector,"
+    Solar Energy, vol. 70, no. 5, 2001, doi:10.1016/S0038-092X(00)00156-0
+
+[2] M. Blanco, K. Milidonis, and A. Bonanos, "Updating the PSA sun position algorithm,"
+    Solar Energy, vol. 212, 2020, doi:10.1016/j.solener.2020.10.084
+
+# Example
+```julia
+# Use default 2020 coefficients
+pos = solar_position(obs, dt, PSA())
+
+# Use 2001 coefficients for historical data
+pos_historical = solar_position(obs, dt, PSA(2001))
+```
+"""
 struct PSA <: BasicAlg
+    "Coefficient set year (2001 or 2020)"
     coeffs::Int
 end
 
@@ -43,23 +74,6 @@ const PSA_PARAMS = Dict{Int,Vector}(
     ]),
 )
 
-"""
-$(TYPEDSIGNATURES)
-
-Solar position algorithm based on PSA's implementation [1].
-
-PSA was originally published in 2001 [1] with coefficients for the range 1999-2015 and
-updated in 2020 [2] with new coefficients for the range 2020-2050. The algorithm
-computes the solar position (azimuth, elevation, zenith) given an observer's location
-and a timestamp.
-
-[1] M. Blanco, D. Alarcón, T. López, and M. Lara, "Computing the Solar
-Vector," Solar Energy, vol. 70, no. 5, 2001,
-:doi:`10.1016/S0038-092X(00)00156-0`
-[2] M. Blanco, K. Milidonis, and A. Bonanos, "Updating the PSA sun
-position algorithm," Solar Energy, vol. 212, 2020,
-:doi:`10.1016/j.solener.2020.10.084`
-"""
 function _solar_position(obs::Observer{T}, dt::DateTime, alg::PSA) where {T}
     p = PSA_PARAMS[alg.coeffs]
 

@@ -1,5 +1,7 @@
 # [API reference](@id reference)
 
+This page provides comprehensive documentation for all functions and types in SolarPosition.jl.
+
 ## Contents
 
 ```@contents
@@ -12,6 +14,35 @@ Pages = ["reference.md"]
 Pages = ["reference.md"]
 ```
 
-```@autodocs
-Modules = [SolarPosition, SolarPosition.Positioning]
+## Core Functions
+
+```@docs
+SolarPosition.solar_position
+SolarPosition.Positioning.solar_position!
+```
+
+## Observer and Position Types
+
+```@docs
+SolarPosition.Positioning.Observer
+SolarPosition.Positioning.SolPos
+SolarPosition.Positioning.ApparentSolPos
+```
+
+## Algorithm Base Types
+
+SolarPosition.jl uses a type hierarchy for algorithms:
+
+```@docs
+SolarPosition.Positioning.SolarAlgorithm
+SolarPosition.Positioning.BasicAlg
+SolarPosition.Positioning.ApparentAlg
+```
+
+## Internal Functions
+
+These functions are primarily for internal use and algorithm implementations:
+
+```@docs
+SolarPosition.Positioning
 ```

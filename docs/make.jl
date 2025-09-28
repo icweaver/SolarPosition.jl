@@ -23,6 +23,7 @@ makedocs(;
         "index.md",
         "Examples" => ["examples/basic.md", "examples/plotting.md"],
         "reference.md",
+        "algorithms.md",
         "contributing.md",
     ],
 )
