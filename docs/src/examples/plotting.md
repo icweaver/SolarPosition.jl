@@ -34,13 +34,17 @@ tz = tz"Asia/Kolkata"
 obs = Observer(28.6, 77.2, 0.0)
 
 # Generate hourly timestamps for a whole year
-times = ZonedDateTime(DateTime(2019), tz):Hour(1):ZonedDateTime(DateTime(2020), tz)
+times = collect(ZonedDateTime(DateTime(2019), tz):Hour(1):ZonedDateTime(DateTime(2020), tz))
 
-# This returns a NamedTuple of Vectors
+# This returns a StructVector with solar position data
 positions = solar_position(obs, times)
 
-# We can inspect the first few entries by converting to a DataFrame
-first(DataFrame(positions), 5)
+# For plotting, we need to create a DataFrame that includes the timestamps
+df = DataFrame(positions)
+df.datetime = times
+
+# We can inspect the first few entries
+first(df, 5)
 ```
 
 ## Simple Sun Path Plot in Cartesian Coordinates
@@ -50,18 +54,18 @@ We can visualize solar positions in cartesian coordinates using the `sunpathplot
 ```@example plotting
 fig = Figure(backgroundcolor = (:white, 0.0), textcolor= "#f5ab35")
 ax = Axis(fig[1, 1], backgroundcolor = (:white, 0.0))
-sunpathplot!(ax, positions, hour_labels = false)
+sunpathplot!(ax, df, hour_labels = false)
 fig
 ```
 
 ## Polar Coordinates with Hour Labels
 
-We can also work directly with a `DataFrame`.
+We can also work directly with a `DataFrame`. Note that for plotting we need to include
+the datetime information, so we add it to the DataFrame.
 
 Plotting in polar coordinates with `sunpathpolarplot` may yield a more intuitive representation of the solar path. Here, we also enable hourly labels for better readability:
 
 ```@example plotting
-df = DataFrame(positions)
 fig2 = Figure(backgroundcolor = :transparent, textcolor= "#f5ab35", size = (800, 600))
 ax2 = PolarAxis(fig2[1, 1], backgroundcolor = "#1f2424")
 # ax2 = PolarAxis(fig2[1, 1], backgroundcolor = (:white, 0.0))
@@ -72,10 +76,11 @@ line_objects = []
 for (date, label) in [(Date("2019-03-21"), "Mar 21"),
                       (Date("2019-06-21"), "Jun 21"),
                       (Date("2019-12-21"), "Dec 21")]
-    times = ZonedDateTime(DateTime(date), tz):Minute(5):ZonedDateTime(DateTime(date) + Day(1), tz)
+    times = collect(ZonedDateTime(DateTime(date), tz):Minute(5):ZonedDateTime(DateTime(date) + Day(1), tz))
     solpos = solar_position(obs, times)
     above_horizon = solpos.elevation .> 0
     day_df = DataFrame(solpos)
+    day_df.datetime = times
     day_filtered = day_df[above_horizon, :]
     line_obj = lines!(ax2, deg2rad.(day_filtered.azimuth), day_filtered.zenith,
                       linewidth = 2, label = label)

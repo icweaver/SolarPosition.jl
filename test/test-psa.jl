@@ -1,6 +1,8 @@
 """Unit tests for PSA.jl"""
 
 using SolarPosition.Positioning: Observer, PSA, solar_position
+using Dates, TimeZones
+using DataFrames
 
 function expected_2020()
     columns = [:elevation, :zenith, :azimuth]

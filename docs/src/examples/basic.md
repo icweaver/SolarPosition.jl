@@ -48,26 +48,29 @@ println("Elevation (UTC): $(round(position_utc.elevation, digits=2))°")
 ```
 
 It is also possible to calculate solar positions for multiple timestamps at once by
-passing a vector or range of `ZonedDateTime` or `DateTime` objects.
+passing a vector of `ZonedDateTime` or `DateTime` objects.
 
 ```@example basic
 # Generate hourly timestamps for a whole year
 times = ZonedDateTime(DateTime(2019), tz):Hour(1):ZonedDateTime(DateTime(2020), tz)
 
-# This returns a NamedTuple of Vectors
-positions = solar_position(obs, times)
+# This returns a StructArray with solar position data
+positions = solar_position(obs, collect(times))
+```
 
-# We can inspect the first few entries by converting to a DataFrame
+We can inspect the first few entries by converting to a DataFrame:
+
+```@example basic
 first(DataFrame(positions), 5)
 ```
 
-## Passing Latitude and Longitude as keyword arguments
+## Multiple Timestamps Example
 
-Lastly, we show that we can pass latitude and longitude directly without creating an
-`Observer` object. In this case the library will create an `Observer` object for us.
+We can also calculate solar positions for a range of timestamps by creating an
+`Observer` object and collecting the time range into a vector.
 
 ```@example basic
-times = DateTime(2019):Hour(1):DateTime(2020)
-position_direct = solar_position(times; latitude=37.7749, longitude=-122.4194, altitude=100.0)
+times = collect(DateTime(2019):Hour(1):DateTime(2020))
+position_direct = solar_position(obs, times)
 first(DataFrame(position_direct), 5)
 ```

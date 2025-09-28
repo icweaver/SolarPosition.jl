@@ -1,6 +1,8 @@
 """Common test setup code for SolarPosition.jl"""
 
-
+using DataFrames
+using TimeZones
+using Dates
 
 function test_conditions()
     inputs = DataFrame(
@@ -93,9 +95,9 @@ function test_conditions()
     # parse times as ZonedDateTime
     inputs.time = [
         try
-            ZonedDateTime(t, dateformat"yyyy-mm-ddTHH:MM:SSzzzzz")
+            ZonedDateTime(t, dateformat"yyyy-mm-ddTHH:MM:SSzzzz")
         catch
-            ZonedDateTime(t, dateformat"yyyy-mm-ddTHH:MMzzzzz")
+            ZonedDateTime(t, dateformat"yyyy-mm-ddTHH:MMzzzz")
         end for t in inputs.time
     ]
     return inputs

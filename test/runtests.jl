@@ -1,11 +1,8 @@
-using SolarPosition
 using Test
-using DataFrames
-using TimeZones
-using Dates
+using SolarPosition
 
 include("setup.jl")
-# include("Aqua.jl")
+include("Aqua.jl")
 
 #=
 Don't add your tests to runtests.jl. Instead, create files named

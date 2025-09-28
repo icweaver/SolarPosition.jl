@@ -11,7 +11,7 @@ tz = tz"Asia/Kolkata"
 obs = Observer(28.6, 77.2, 0.0)
 
 # a whole year of hourly timestamps
-times = ZonedDateTime(DateTime(2019), tz):Hour(1):ZonedDateTime(DateTime(2020), tz)
+times = collect(ZonedDateTime(DateTime(2019), tz):Hour(1):ZonedDateTime(DateTime(2020), tz))
 positions = solar_position(obs, times)
 
 # plot positions from NamedTuple with hourly labels in polar coordinates
