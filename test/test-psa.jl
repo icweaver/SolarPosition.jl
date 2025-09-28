@@ -1,6 +1,6 @@
 """Unit tests for PSA.jl"""
 
-using SolarPosition.Positioning: solar_position, Observer, PSA
+using SolarPosition.Positioning: Observer, PSA, solar_position
 
 function expected_2020()
     columns = [:elevation, :zenith, :azimuth]
@@ -79,7 +79,7 @@ end
                 obs = Observer(lat, lon, altitude = alt)
             end
 
-            res = solar_position(obs, dt; alg = PSA(), coeffs = i)
+            res = solar_position(obs, dt, PSA(i))
             @test isapprox(res.elevation, exp_elev, atol = 1e-4)
             @test isapprox(res.zenith, exp_zen, atol = 1e-4)
             @test isapprox(res.azimuth, exp_az, atol = 1e-4)

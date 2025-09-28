@@ -2,9 +2,9 @@ module SolarPosition
 
 include("Positioning/Positioning.jl")
 
-using .Positioning: solar_position, solar_position!, Observer, PSA
+using .Positioning: Observer, PSA, NOAA, solar_position, solar_position!
 
-export solar_position, solar_position!, Observer, PSA
+export solar_position, solar_position!, Observer, PSA, NOAA
 
 # to make the makie extension work
 export sunpathplot

@@ -9,16 +9,16 @@ struct NOAA <: SolarAlgorithm end
 """
     _solar_position(
         obs::Observer{T},
-        dt::ZonedDateTime,
+        dt::DateTime,
         ::NOAA,
-    ) -> SolarPos{T}
+    ) -> SolarPosition{T}
 
 NOAA algorithm implementation stub.
 """
-function _solar_position(obs::Observer{T}, dt::ZonedDateTime, ::NOAA) where {T}
+function _solar_position(obs::Observer{T}, dt::DateTime, ::NOAA) where {T}
     azimuth = T(π / 4)     # 45 degrees
     elevation = T(π / 6)   # 30 degrees
     zenith = T(π / 2) - elevation
-    result = SolarPos(azimuth, elevation, zenith)
+    result = SolarPosition(azimuth, elevation, zenith)
     return result
 end

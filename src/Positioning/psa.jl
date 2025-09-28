@@ -11,10 +11,14 @@ position algorithm," Solar Energy, vol. 212, 2020,
 :doi:`10.1016/j.solener.2020.10.084`
 """
 
-struct PSA <: SolarAlgorithm end
+struct PSA <: BasicAlg
+    coeffs::Int
+end
 
-const PSA_PARAMS = Dict{Int,SVector{15,Float64}}(
-    2020 => SVector{15,Float64}(
+PSA() = PSA(2020)  # default to latest coefficients
+
+const PSA_PARAMS = Dict{Int,Vector}(
+    2020 => Vector([
         2.267127827,
         -9.300339267e-4,
         4.895036035,
@@ -30,8 +34,8 @@ const PSA_PARAMS = Dict{Int,SVector{15,Float64}}(
         4.418094944e-5,
         6.697096103,
         6.570984737e-2,
-    ),
-    2001 => SVector{15,Float64}(
+    ]),
+    2001 => Vector([
         2.1429,
         -0.0010394594,
         4.8950630,
@@ -47,7 +51,7 @@ const PSA_PARAMS = Dict{Int,SVector{15,Float64}}(
         0.0000396,
         6.6974243242,
         0.0657098283,
-    ),
+    ]),
 )
 
 """
@@ -58,13 +62,8 @@ const PSA_PARAMS = Dict{Int,SVector{15,Float64}}(
     ) -> SolarPos{T}
 PSA algorithm implementation stub.
 """
-function _solar_position(
-    obs::Observer{T},
-    dt::DateTime,
-    ::PSA;
-    coeffs::Int = 2020,
-) where {T}
-    p = PSA_PARAMS[coeffs]
+function _solar_position(obs::Observer{T}, dt::DateTime, alg::PSA) where {T}
+    p = PSA_PARAMS[alg.coeffs]
 
     # elapsed julian days (n) since J2000.0
     jd = datetime2julian(dt)
@@ -96,5 +95,5 @@ function _solar_position(
     # parallax correction
     θz = θz + (EMR / AU) * sin(θz)                                      # Eq. 15,16
 
-    return SolarPos(mod(rad2deg(γ), 360), rad2deg(π / 2 - θz), rad2deg(θz))
+    return SolPos(mod(rad2deg(γ), 360), rad2deg(π / 2 - θz), rad2deg(θz))
 end
