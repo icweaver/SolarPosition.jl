@@ -1,5 +1,6 @@
 using SolarPosition
 using Documenter
+using DocStringExtensions
 
 DocMeta.setdocmeta!(SolarPosition, :DocTestSetup, :(using SolarPosition); recursive = true)
 

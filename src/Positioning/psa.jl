@@ -1,15 +1,4 @@
-"""
-    PSA
-
-Solar position algorithm based on PSA's implementation [1].
-
-[1] M. Blanco, D. Alarcón, T. López, and M. Lara, "Computing the Solar
-Vector," Solar Energy, vol. 70, no. 5, 2001,
-:doi:`10.1016/S0038-092X(00)00156-0`
-[2] M. Blanco, K. Milidonis, and A. Bonanos, "Updating the PSA sun
-position algorithm," Solar Energy, vol. 212, 2020,
-:doi:`10.1016/j.solener.2020.10.084`
-"""
+"""PSA Algorithm Implementation"""
 
 struct PSA <: BasicAlg
     coeffs::Int
@@ -55,12 +44,21 @@ const PSA_PARAMS = Dict{Int,Vector}(
 )
 
 """
-    _solar_position(
-        obs::Observer{T},
-        dt::DateTime,
-        ::PSA,
-    ) -> SolarPos{T}
-PSA algorithm implementation stub.
+$(TYPEDSIGNATURES)
+
+Solar position algorithm based on PSA's implementation [1].
+
+PSA was originally published in 2001 [1] with coefficients for the range 1999-2015 and
+updated in 2020 [2] with new coefficients for the range 2020-2050. The algorithm
+computes the solar position (azimuth, elevation, zenith) given an observer's location
+and a timestamp.
+
+[1] M. Blanco, D. Alarcón, T. López, and M. Lara, "Computing the Solar
+Vector," Solar Energy, vol. 70, no. 5, 2001,
+:doi:`10.1016/S0038-092X(00)00156-0`
+[2] M. Blanco, K. Milidonis, and A. Bonanos, "Updating the PSA sun
+position algorithm," Solar Energy, vol. 212, 2020,
+:doi:`10.1016/j.solener.2020.10.084`
 """
 function _solar_position(obs::Observer{T}, dt::DateTime, alg::PSA) where {T}
     p = PSA_PARAMS[alg.coeffs]

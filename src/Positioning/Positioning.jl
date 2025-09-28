@@ -5,9 +5,9 @@ module Positioning
 
 using Dates: datetime2julian, DateTime, hour, minute, second
 using TimeZones: ZonedDateTime, UTC
-using StructArrays: StructVector
+using StructArrays: StructArrays
 using Tables: Tables
-using DocStringExtensions: TYPEDFIELDS, TYPEDEF
+using DocStringExtensions: TYPEDFIELDS, TYPEDEF, TYPEDSIGNATURES
 
 abstract type SolarAlgorithm end
 abstract type BasicAlg <: SolarAlgorithm end
@@ -19,7 +19,7 @@ abstract type ApparentAlg <: SolarAlgorithm end
 Observer location (deg  rees, meters). Accepts a type parameter `T` for the
 floating point type to use (e.g. `Float32`, `Float64`).
 
-# Fields
+---
 $(TYPEDFIELDS)
 """
 struct Observer{T<:AbstractFloat}
@@ -52,7 +52,7 @@ Represents a single solar position calculated for a given observer and time.
 
 $(TYPEDFIELDS)
 """
-struct SolPos{T} <: AbstractSolPos
+struct SolPos{T} <: AbstractSolPos where {T<:AbstractFloat}
     "Azimuth (degrees, 0=N, +clockwise, range [-180, 180])"
     azimuth::T
     "Elevation (degrees, range [-90, 90])"
@@ -71,7 +71,7 @@ Also includes apparent elevation and zenith angles.
 
 $(TYPEDFIELDS)
 """
-struct ApparentSolPos{T} <: AbstractSolPos
+struct ApparentSolPos{T} <: AbstractSolPos where {T<:AbstractFloat}
     "Azimuth (degrees, 0=N, +clockwise, range [-180, 180])"
     azimuth::T
     "Elevation (degrees, range [-90, 90])"
@@ -108,7 +108,7 @@ function solar_position(
 end
 
 function solar_position!(
-    pos::StructVector{T},
+    pos::StructArrays.StructVector{T},
     obs::Observer,
     dts::AbstractVector{Union{DateTime,ZonedDateTime}},
     alg::SolarAlgorithm = PSA(),
@@ -117,7 +117,7 @@ function solar_position!(
 end
 
 function solar_position!(
-    pos::StructVector{T},
+    pos::StructArrays.StructVector{T},
     obs::Observer,
     dts::AbstractVector{DateTime},
     alg::SolarAlgorithm = PSA(),
@@ -126,7 +126,7 @@ function solar_position!(
 end
 
 function solar_position!(
-    pos::StructVector{T},
+    pos::StructArrays.StructVector{T},
     obs::Observer,
     dts::AbstractVector{ZonedDateTime},
     alg::SolarAlgorithm = PSA(),
@@ -140,7 +140,7 @@ function solar_position(
     alg::SolarAlgorithm = PSA(),
 ) where {T<:AbstractFloat}
     RetType = result_type(typeof(alg), T)
-    pos = StructVector{RetType}(undef, length(dts))
+    pos = StructArrays.StructVector{RetType}(undef, length(dts))
     solar_position!(pos, obs, dts, alg)
     pos
 end
@@ -151,7 +151,7 @@ function solar_position(
     alg::SolarAlgorithm = PSA(),
 ) where {T<:AbstractFloat}
     RetType = result_type(typeof(alg), T)
-    pos = StructVector{RetType}(undef, length(dts))
+    pos = StructArrays.StructVector{RetType}(undef, length(dts))
     solar_position!(pos, obs, dts, alg)
     pos
 end
@@ -162,7 +162,7 @@ function solar_position(
     alg::SolarAlgorithm = PSA(),
 ) where {T<:AbstractFloat}
     RetType = result_type(typeof(alg), T)
-    pos = StructVector{RetType}(undef, length(dts))
+    pos = StructArrays.StructVector{RetType}(undef, length(dts))
     solar_position!(pos, obs, dts, alg)
     pos
 end
