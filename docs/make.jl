@@ -13,7 +13,7 @@ const numbered_pages = [
 makedocs(;
     modules = [SolarPosition],
     authors = "Stefan de Lange",
-    repo = "https://github.com/JuliaSolarPV/SolarPosition.jl/blob/{commit}{path}#{line}",
+    repo = Documenter.Remotes.GitHub("JuliaSolarPV", "SolarPosition.jl"),
     sitename = "SolarPosition.jl",
     format = Documenter.HTML(;
         canonical = "https://JuliaSolarPV.github.io/SolarPosition.jl",
