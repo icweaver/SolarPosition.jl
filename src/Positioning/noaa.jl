@@ -23,12 +23,15 @@ Full implementation is planned for future releases.
 pos = solar_position(obs, dt, NOAA())
 ```
 """
-struct NOAA <: BasicAlg end
+struct NOAA <: BasicAlg
+    "Difference between terrestial time and UT1 [seconds]"
+    delta_t::Union{Float64,Nothing}
+end
 
-function _solar_position(obs::Observer{T}, dt::DateTime, ::NOAA) where {T}
-    azimuth = T(π / 4)     # 45 degrees
-    elevation = T(π / 6)   # 30 degrees
-    zenith = T(π / 2) - elevation
-    result = SolPos(azimuth, elevation, zenith)
-    return result
+NOAA() = NOAA(69.0)  # default delta_t value
+
+function _solar_position(obs::Observer{T}, dt::DateTime, alg::NOAA) where {T}
+    jd = datetime2julian(dt)
+    jc = (julian_date - 2451545) / 36525.0
+
 end
