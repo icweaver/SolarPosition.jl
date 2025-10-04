@@ -74,8 +74,17 @@ struct Observer{T<:AbstractFloat}
     latitude_rad::T
     "Longitude in radians (automatically computed)"
     longitude_rad::T
+    "sin(latitude) in radians (automatically computed)"
+    sin_lat_rad::T
+    "cos(latitude) in radians (automatically computed)"
+    cos_lat_rad::T
+
     function Observer{T}(lat::T, lon::T, alt::T = zero(T)) where {T<:AbstractFloat}
-        new{T}(lat, lon, alt, deg2rad(lat), deg2rad(lon))
+        lat_rad = deg2rad(lat)
+        lon_rad = deg2rad(lon)
+        sin_lat = sin(lat_rad)
+        cos_lat = cos(lat_rad)
+        new{T}(lat, lon, alt, lat_rad, lon_rad, sin_lat, cos_lat)
     end
 end
 
