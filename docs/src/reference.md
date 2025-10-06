@@ -35,8 +35,15 @@ SolarPosition.jl uses a type hierarchy for algorithms:
 
 ```@docs
 SolarPosition.Positioning.SolarAlgorithm
-SolarPosition.Positioning.BasicAlg
-SolarPosition.Positioning.ApparentAlg
+```
+
+## Refraction Types
+
+Atmospheric refraction correction is controlled via refraction algorithm types:
+
+```@docs
+SolarPosition.Positioning.RefractionAlgorithm
+SolarPosition.Positioning.NoRefraction
 ```
 
 ## Internal Functions

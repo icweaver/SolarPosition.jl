@@ -23,12 +23,34 @@ Full implementation is planned for future releases.
 pos = solar_position(obs, dt, NOAA())
 ```
 """
-struct NOAA <: BasicAlg end
+struct NOAA <: SolarAlgorithm end
 
-function _solar_position(obs::Observer{T}, dt::DateTime, ::NOAA) where {T}
+function _solar_position(obs::Observer{T}, dt::DateTime, ::NOAA, ::NoRefraction) where {T}
     azimuth = T(π / 4)     # 45 degrees
     elevation = T(π / 6)   # 30 degrees
     zenith = T(π / 2) - elevation
     result = SolPos(azimuth, elevation, zenith)
     return result
+end
+
+function _solar_position(
+    obs::Observer{T},
+    dt::DateTime,
+    alg::NOAA,
+    refraction::RefractionAlgorithm,
+) where {T}
+    # First compute basic position
+    basic_pos = _solar_position(obs, dt, alg, NoRefraction())
+
+    # Apply refraction correction (to be implemented by specific refraction algorithms)
+    apparent_elevation = basic_pos.elevation  # placeholder
+    apparent_zenith = basic_pos.zenith  # placeholder
+
+    return ApparentSolPos(
+        basic_pos.azimuth,
+        basic_pos.elevation,
+        basic_pos.zenith,
+        apparent_elevation,
+        apparent_zenith,
+    )
 end
