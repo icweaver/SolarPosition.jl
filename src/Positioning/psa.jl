@@ -30,7 +30,7 @@ pos = solar_position(obs, dt, PSA())
 pos_historical = solar_position(obs, dt, PSA(2001))
 ```
 """
-struct PSA <: BasicAlg
+struct PSA <: SolarAlgorithm
     "Coefficient set year (2001 or 2020)"
     coeffs::Int
 end
@@ -74,7 +74,12 @@ const PSA_PARAMS = Dict{Int,Vector}(
     ]),
 )
 
-function _solar_position(obs::Observer{T}, dt::DateTime, alg::PSA) where {T}
+function _solar_position(
+    obs::Observer{T},
+    dt::DateTime,
+    alg::PSA,
+    refraction::NoRefraction,
+) where {T}
     p = PSA_PARAMS[alg.coeffs]
 
     # elapsed julian days (n) since J2000.0
@@ -110,4 +115,26 @@ function _solar_position(obs::Observer{T}, dt::DateTime, alg::PSA) where {T}
     θz = θz + (EMR / AU) * sin(θz)                                      # Eq. 15,16
 
     return SolPos(mod(rad2deg(γ), 360), rad2deg(π / 2 - θz), rad2deg(θz))
+end
+
+function _solar_position(
+    obs::Observer{T},
+    dt::DateTime,
+    alg::PSA,
+    refraction::RefractionAlgorithm,
+) where {T}
+    # First compute basic position
+    basic_pos = _solar_position(obs, dt, alg, NoRefraction())
+
+    # Apply refraction correction (to be implemented by specific refraction algorithms)
+    apparent_elevation = basic_pos.elevation  # placeholder
+    apparent_zenith = basic_pos.zenith  # placeholder
+
+    return ApparentSolPos(
+        basic_pos.azimuth,
+        basic_pos.elevation,
+        basic_pos.zenith,
+        apparent_elevation,
+        apparent_zenith,
+    )
 end
