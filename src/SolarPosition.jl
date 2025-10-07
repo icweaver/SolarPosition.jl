@@ -1,13 +1,14 @@
 module SolarPosition
 
+include("Refraction/Refraction.jl")
 include("Positioning/Positioning.jl")
 
 using .Positioning: Observer, PSA, NOAA, solar_position, solar_position!
-using .Positioning: RefractionAlgorithm, NoRefraction
 using .Positioning: SolPos, ApparentSolPos
+using .Refraction: RefractionAlgorithm, NoRefraction, HUGHES
 
 export solar_position, solar_position!, Observer, PSA, NOAA
-export RefractionAlgorithm, NoRefraction
+export RefractionAlgorithm, NoRefraction, HUGHES
 export SolPos, ApparentSolPos
 
 # to make the makie extension work

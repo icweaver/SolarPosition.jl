@@ -19,4 +19,4 @@ If the solution to the issue is clear, you can immediately create a pull request
 Otherwise, say what your proposed solution is and wait for a discussion around it.
 
 !!! tip
-Feel free to ping us after a few days if there are no responses.
+    Feel free to ping us after a few days if there are no responses.

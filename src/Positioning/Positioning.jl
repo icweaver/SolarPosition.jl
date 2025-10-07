@@ -28,6 +28,10 @@ using StructArrays: StructArrays
 using Tables: Tables
 using DocStringExtensions: TYPEDFIELDS, TYPEDEF, TYPEDSIGNATURES
 
+# Import Refraction module to access its types
+import ..Refraction
+using ..Refraction: RefractionAlgorithm, NoRefraction
+
 """
     SolarAlgorithm
 
@@ -41,31 +45,6 @@ struct MyAlgorithm <: SolarAlgorithm end
 ```
 """
 abstract type SolarAlgorithm end
-
-"""
-    RefractionAlgorithm
-
-Abstract base type for atmospheric refraction correction algorithms.
-
-Refraction algorithms compute the apparent position of the sun by correcting
-for atmospheric refraction effects.
-
-# Examples
-```julia
-struct MyRefraction <: RefractionAlgorithm end
-```
-"""
-abstract type RefractionAlgorithm end
-
-"""
-    NoRefraction <: RefractionAlgorithm
-
-Indicates that no atmospheric refraction correction should be applied.
-
-This is the default refraction setting for solar position calculations.
-When used, only basic solar position (azimuth, elevation, zenith) is computed.
-"""
-struct NoRefraction <: RefractionAlgorithm end
 
 """
     Observer{T} where {T<:AbstractFloat}
@@ -146,18 +125,6 @@ struct ApparentSolPos{T} <: AbstractSolPos where {T<:AbstractFloat}
     "Apparent zenith (degrees, range [0, 180])"
     apparent_zenith::T
 end
-
-# trait: map algorithm and refraction types to their return types, parameterized by T
-result_type(
-    ::Type{<:SolarAlgorithm},
-    ::Type{NoRefraction},
-    ::Type{T},
-) where {T<:AbstractFloat} = SolPos{T}
-result_type(
-    ::Type{<:SolarAlgorithm},
-    ::Type{<:RefractionAlgorithm},
-    ::Type{T},
-) where {T<:AbstractFloat} = ApparentSolPos{T}
 
 """
     $(TYPEDSIGNATURES)
@@ -257,6 +224,27 @@ pos_noaa = solar_position(obs, dt, NOAA())
 See also: [`solar_position!`](@ref), [`Observer`](@ref), [`PSA`](@ref), [`NOAA`](@ref)
 """
 function solar_position end
+
+function _solar_position(obs, dt, alg::SolarAlgorithm, ::NoRefraction)
+    return _solar_position(obs, dt, alg)
+end
+
+function _solar_position(obs, dt, alg::SolarAlgorithm, refraction::RefractionAlgorithm)
+    pos = _solar_position(obs, dt, alg)
+
+    # apply refraction correction
+    refraction_correction_deg = Refraction.refraction(refraction, pos.elevation)
+    apparent_elevation_deg = pos.elevation + refraction_correction_deg
+    apparent_zenith_deg = 90.0 - apparent_elevation_deg
+
+    return ApparentSolPos(
+        pos.azimuth,
+        pos.elevation,
+        pos.zenith,
+        apparent_elevation_deg,
+        apparent_zenith_deg,
+    )
+end
 
 function solar_position(
     obs::Observer{T},
@@ -409,11 +397,16 @@ function solar_position(
     return table_copy
 end
 
+
+# Helper function to determine return type based on refraction
+result_type(::Type{<:SolarAlgorithm}, ::Type{NoRefraction}, ::Type{T}) where {T} = SolPos{T}
+result_type(::Type{<:SolarAlgorithm}, ::Type{<:RefractionAlgorithm}, ::Type{T}) where {T} =
+    ApparentSolPos{T}
+
 include("utils.jl")
 include("psa.jl")
 include("noaa.jl")
 
 export Observer, PSA, NOAA, solar_position, solar_position!, SolPos, ApparentSolPos
-export RefractionAlgorithm, NoRefraction
 
 end

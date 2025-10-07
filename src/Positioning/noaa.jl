@@ -23,19 +23,17 @@ Full implementation is planned for future releases.
 pos = solar_position(obs, dt, NOAA())
 ```
 """
+
+struct AutoDeltaT end
+
 struct NOAA <: SolarAlgorithm
     "Difference between terrestial time and UT1 [seconds]"
-    delta_t::Union{Float64,Nothing}
+    delta_t::Union{Float64,AutoDeltaT}
 end
 
 NOAA() = NOAA(69.0)  # default delta_t value
 
-function _solar_position(
-    obs::Observer{T},
-    dt::DateTime,
-    alg::NOAA,
-    ::NoRefraction,
-) where {T}
+function _solar_position(obs::Observer{T}, dt::DateTime, alg::NOAA) where {T}
     jd = datetime2julian(dt)
     jc = (jd - 2451545) / 36525.0
 
@@ -44,26 +42,4 @@ function _solar_position(
     zenith = T(π / 2) - elevation
     result = SolPos(azimuth, elevation, zenith)
     return result
-end
-
-function _solar_position(
-    obs::Observer{T},
-    dt::DateTime,
-    alg::NOAA,
-    refraction::RefractionAlgorithm,
-) where {T}
-    # First compute basic position
-    basic_pos = _solar_position(obs, dt, alg, NoRefraction())
-
-    # Apply refraction correction (to be implemented by specific refraction algorithms)
-    apparent_elevation = basic_pos.elevation  # placeholder
-    apparent_zenith = basic_pos.zenith  # placeholder
-
-    return ApparentSolPos(
-        basic_pos.azimuth,
-        basic_pos.elevation,
-        basic_pos.zenith,
-        apparent_elevation,
-        apparent_zenith,
-    )
 end
