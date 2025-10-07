@@ -22,12 +22,12 @@ $(TYPEDFIELDS)
     Solar Energy, vol. 212, 2020, doi:10.1016/j.solener.2020.10.084
 
 # Example
-```julia
-# Use default 2020 coefficients
-pos = solar_position(obs, dt, PSA())
+```jldoctest
+julia> pos = solar_position(obs, dt, PSA())
+SolPos{Float64}(51.2154455981643, -8.618482096636027, 98.61848209663603)
 
-# Use 2001 coefficients for historical data
-pos_historical = solar_position(obs, dt, PSA(2001))
+julia> pos_historical = solar_position(obs, dt, PSA(2001))
+SolPos{Float64}(51.21527503642826, -8.618604682115866, 98.61860468211586)
 ```
 """
 struct PSA <: SolarAlgorithm

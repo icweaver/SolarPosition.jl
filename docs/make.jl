@@ -2,16 +2,24 @@ using SolarPosition
 using Documenter
 using DocStringExtensions
 
-DocMeta.setdocmeta!(SolarPosition, :DocTestSetup, :(using SolarPosition); recursive = true)
+DocMeta.setdocmeta!(
+    SolarPosition,
+    :DocTestSetup,
+    :(using SolarPosition;
+    using Dates;
+    obs = Observer(37.7749, -122.4194, 100.0);
+    dt = DateTime(2023, 6, 21, 12, 0, 0));
+    recursive = true,
+)
 
-const page_rename = Dict("developer.md" => "Developer docs") # Without the numbers
-const numbered_pages = [
+page_rename = Dict("developer.md" => "Developer docs") # Without the numbers
+numbered_pages = [
     file for file in readdir(joinpath(@__DIR__, "src")) if
     file != "index.md" && splitext(file)[2] == ".md"
 ]
 
 makedocs(;
-    modules = [SolarPosition],
+    modules = [SolarPosition, SolarPosition.Positioning, SolarPosition.Refraction],
     authors = "Stefan de Lange",
     repo = Documenter.Remotes.GitHub("JuliaSolarPV", "SolarPosition.jl"),
     sitename = "SolarPosition.jl",

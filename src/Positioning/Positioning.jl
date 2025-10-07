@@ -28,7 +28,6 @@ using StructArrays: StructArrays
 using Tables: Tables
 using DocStringExtensions: TYPEDFIELDS, TYPEDEF, TYPEDSIGNATURES
 
-# Import Refraction module to access its types
 import ..Refraction
 using ..Refraction: RefractionAlgorithm, NoRefraction
 

@@ -1,3 +1,5 @@
+struct AutoDeltaT end
+
 """
     $(TYPEDEF)
 
@@ -18,20 +20,20 @@ Claimed accuracy: ±0.0167° (when fully implemented)
 Full implementation is planned for future releases.
 
 # Example
-```julia
-# Note: Currently returns stub values
-pos = solar_position(obs, dt, NOAA())
+```jldoctest
+julia> pos = solar_position(obs, dt, NOAA());  # Note: Currently returns stub values
+
+julia> typeof(pos)
+SolPos{Float64}
 ```
 """
-
-struct AutoDeltaT end
-
 struct NOAA <: SolarAlgorithm
     "Difference between terrestial time and UT1 [seconds]"
     delta_t::Union{Float64,AutoDeltaT}
 end
 
 NOAA() = NOAA(69.0)  # default delta_t value
+
 
 function _solar_position(obs::Observer{T}, dt::DateTime, alg::NOAA) where {T}
     jd = datetime2julian(dt)

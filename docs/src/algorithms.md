@@ -12,7 +12,7 @@ Solar position algorithms available in SolarPosition.jl.
 The PSA (Plataforma Solar de Almería) algorithm is the default high-accuracy solar position algorithm.
 
 ```@docs
-SolarPosition.Positioning.PSA
+SolarPosition.PSA
 ```
 
 ## [NOAA](@id noaa-algorithm)
@@ -20,5 +20,5 @@ SolarPosition.Positioning.PSA
 The NOAA (National Oceanic and Atmospheric Administration) algorithm provides an alternative implementation.
 
 ```@docs
-SolarPosition.Positioning.NOAA
+SolarPosition.NOAA
 ```

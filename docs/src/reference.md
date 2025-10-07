@@ -42,14 +42,15 @@ SolarPosition.Positioning.SolarAlgorithm
 Atmospheric refraction correction is controlled via refraction algorithm types:
 
 ```@docs
-SolarPosition.Positioning.RefractionAlgorithm
-SolarPosition.Positioning.NoRefraction
+SolarPosition.RefractionAlgorithm
+SolarPosition.NoRefraction
+SolarPosition.HUGHES
+SolarPosition.Refraction.refraction
 ```
 
-## Internal Functions
-
-These functions are primarily for internal use and algorithm implementations:
+## Modules
 
 ```@docs
 SolarPosition.Positioning
+SolarPosition.Refraction
 ```
