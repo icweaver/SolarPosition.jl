@@ -17,7 +17,8 @@ SolarPosition.PSA
 
 ## [NOAA](@id noaa-algorithm)
 
-The NOAA (National Oceanic and Atmospheric Administration) algorithm provides an alternative implementation.
+The NOAA (National Oceanic and Atmospheric Administration) algorithm provides an
+alternative implementation.
 
 ```@docs
 SolarPosition.NOAA
