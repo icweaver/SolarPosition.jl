@@ -11,6 +11,7 @@ To use it, simply import both the `SolarPosition` and `Makie` packages:
 ```@example plotting
 using SolarPosition
 using CairoMakie
+using CairoMakie: Figure, Axis, PolarAxis
 
 # supporting packages
 using Dates
