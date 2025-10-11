@@ -37,45 +37,53 @@ end
 
 PSA() = PSA(2020)  # default to latest coefficients
 
-const PSA_PARAMS = Dict{Int,Vector}(
-    2020 => Vector([
-        2.267127827,
-        -9.300339267e-4,
-        4.895036035,
-        1.720279602e-2,
-        6.239468336,
-        1.720200135e-2,
-        3.338320972e-2,
-        3.497596876e-4,
-        -1.544353226e-4,
-        -8.689729360e-6,
-        4.090904909e-1,
-        -6.213605399e-9,
-        4.418094944e-5,
-        6.697096103,
-        6.570984737e-2,
-    ]),
-    2001 => Vector([
-        2.1429,
-        -0.0010394594,
-        4.8950630,
-        0.017202791698,
-        6.2400600,
-        0.0172019699,
-        0.03341607,
-        0.00034894,
-        -0.0001134,
-        -0.0000203,
-        0.4090928,
-        -6.2140e-09,
-        0.0000396,
-        6.6974243242,
-        0.0657098283,
-    ]),
-)
+# Use a function instead of dictionary to avoid allocations
+@inline function get_psa_params(coeffs::Int)
+    if coeffs == 2020
+        return (
+            2.267127827,
+            -9.300339267e-4,
+            4.895036035,
+            1.720279602e-2,
+            6.239468336,
+            1.720200135e-2,
+            3.338320972e-2,
+            3.497596876e-4,
+            -1.544353226e-4,
+            -8.689729360e-6,
+            4.090904909e-1,
+            -6.213605399e-9,
+            4.418094944e-5,
+            6.697096103,
+            6.570984737e-2,
+        )
+    elseif coeffs == 2001
+        return (
+            2.1429,
+            -0.0010394594,
+            4.8950630,
+            0.017202791698,
+            6.2400600,
+            0.0172019699,
+            0.03341607,
+            0.00034894,
+            -0.0001134,
+            -0.0000203,
+            0.4090928,
+            -6.2140e-09,
+            0.0000396,
+            6.6974243242,
+            0.0657098283,
+        )
+    else
+        error("Unknown PSA coefficient set: $coeffs. Valid options are 2001 or 2020.")
+    end
+end
 
 function _solar_position(obs::Observer{T}, dt::DateTime, alg::PSA) where {T}
-    p = PSA_PARAMS[alg.coeffs]
+    # Get parameters as tuple (allocation-free)
+    p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15 =
+        get_psa_params(alg.coeffs)
 
     # elapsed julian days (n) since J2000.0
     jd = datetime2julian(dt)
@@ -83,11 +91,11 @@ function _solar_position(obs::Observer{T}, dt::DateTime, alg::PSA) where {T}
 
     # ecliptic coordinates of the sun
     # ecliptic longitude (λₑ), and obliquity of the ecliptic (ϵ)
-    Ω = p[1] + p[2] * n                                                 # Eq. 3
-    L = p[3] + p[4] * n                                                 # Eq. 4
-    g = p[5] + p[6] * n                                                 # Eq. 5
-    λₑ = L + p[7] * sin(g) + p[8] * sin(2 * g) + p[9] + p[10] * sin(Ω)  # Eq. 6
-    ϵ = p[11] + p[12] * n + p[13] * cos(Ω)                              # Eq. 7
+    Ω = p1 + p2 * n                                                     # Eq. 3
+    L = p3 + p4 * n                                                     # Eq. 4
+    g = p5 + p6 * n                                                     # Eq. 5
+    λₑ = L + p7 * sin(g) + p8 * sin(2 * g) + p9 + p10 * sin(Ω)          # Eq. 6
+    ϵ = p11 + p12 * n + p13 * cos(Ω)                                    # Eq. 7
 
     # celestial right ascension (ra) and declination (d)
     ra = atan(cos(ϵ) * sin(λₑ), cos(λₑ))                                # Eq. 8
@@ -100,7 +108,7 @@ function _solar_position(obs::Observer{T}, dt::DateTime, alg::PSA) where {T}
     sin_lat = obs.sin_lat_rad
 
     hour = fractional_hour(dt)
-    gmst = p[14] + p[15] * n + hour                                     # Eq. 10
+    gmst = p14 + p15 * n + hour                                         # Eq. 10
     lmst = (gmst * 15 + λt) * π / 180                                   # Eq. 11
     ω = lmst - ra                                                       # Eq. 12
     θz = acos(cos_lat * cos(ω) * cos(δ) + sin(δ) * sin_lat)             # Eq. 13
@@ -109,5 +117,13 @@ function _solar_position(obs::Observer{T}, dt::DateTime, alg::PSA) where {T}
     # parallax correction
     θz = θz + (EMR / AU) * sin(θz)                                      # Eq. 15,16
 
-    return SolPos(mod(rad2deg(γ), 360), rad2deg(π / 2 - θz), rad2deg(θz))
+    # azimuth_deg = rad2deg(γ)
+    # elevation_deg = rad2deg(π / 2 - θz)
+    # zenith_deg = rad2deg(θz)
+
+    # # wrap azimuth to [0, 360) without allocating
+    # azimuth_wrapped = azimuth_deg - 360.0 * floor(azimuth_deg / 360.0)
+
+    # return SolPos(azimuth_wrapped, elevation_deg, zenith_deg)
+    return SolPos{T}(mod(rad2deg(γ), 360.0), rad2deg(π / 2 - θz), rad2deg(θz))
 end

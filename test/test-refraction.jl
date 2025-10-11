@@ -6,21 +6,23 @@ using SolarPosition.Refraction: HUGHES, refraction
 test_elevation_angles() = [-1.0, -0.6, 0.0, 1.0, 4.0, 6.0, 10.0, 90.0]
 
 # expected results for each algorithm (unit: degrees)
-expected_hughes() = [
-    0.32827494,
-    0.54716046,
-    0.47856238,
-    0.360817,
-    0.1875788,
-    0.13769375,
-    0.08750312,
-    0.00000000,
-]
+expected = Dict(
+    "Hughes" => [
+        0.32827494,
+        0.54716046,
+        0.47856238,
+        0.360817,
+        0.1875788,
+        0.13769375,
+        0.08750312,
+        0.00000000,
+    ],
+)
 
 # test configurations: (algorithm_name, constructor, expected_results)
 test_algorithms = [
-    ("Hughes (default)", () -> HUGHES(), expected_hughes()),
-    ("Hughes (custom)", () -> HUGHES(101325.0, 12.0), expected_hughes()),
+    ("Hughes (default)", () -> HUGHES(), expected["Hughes"]),
+    ("Hughes (custom)", () -> HUGHES(101325.0, 12.0), expected["Hughes"]),
 ]
 
 elevations = test_elevation_angles()

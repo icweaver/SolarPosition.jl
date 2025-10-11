@@ -75,8 +75,7 @@ end
 HUGHES() = HUGHES{Float64}(101325.0, 12.0)
 
 function _refraction(model::HUGHES{T}, elevation_deg::T) where {T<:AbstractFloat}
-    elevation_rad = deg2rad(elevation_deg)
-    tan_el = tan(elevation_rad)
+    tan_el = tand(elevation_deg)
     Tw = model.temperature
     Pw = model.pressure
 

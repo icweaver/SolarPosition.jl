@@ -270,7 +270,10 @@ function solar_position!(
     alg::SolarAlgorithm = PSA(),
     refraction::RefractionAlgorithm = NoRefraction(),
 ) where {T<:AbstractSolPos}
-    pos .= solar_position.(Ref(obs), dts, Ref(alg), Ref(refraction))
+    @inbounds for i in eachindex(dts, pos)
+        pos[i] = solar_position(obs, dts[i], alg, refraction)
+    end
+    return pos
 end
 
 function solar_position!(
@@ -280,7 +283,10 @@ function solar_position!(
     alg::SolarAlgorithm = PSA(),
     refraction::RefractionAlgorithm = NoRefraction(),
 ) where {T<:AbstractSolPos}
-    pos .= solar_position.(Ref(obs), dts, Ref(alg), Ref(refraction))
+    @inbounds for i in eachindex(dts, pos)
+        pos[i] = solar_position(obs, dts[i], alg, refraction)
+    end
+    return pos
 end
 
 function solar_position!(
@@ -290,7 +296,10 @@ function solar_position!(
     alg::SolarAlgorithm = PSA(),
     refraction::RefractionAlgorithm = NoRefraction(),
 ) where {T<:AbstractSolPos}
-    pos .= solar_position.(Ref(obs), dts, Ref(alg), Ref(refraction))
+    @inbounds for i in eachindex(dts, pos)
+        pos[i] = solar_position(obs, dts[i], alg, refraction)
+    end
+    return pos
 end
 
 function solar_position(

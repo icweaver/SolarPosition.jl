@@ -51,6 +51,13 @@ end
         @test pos[1] == single_result
         @test pos isa StructVector{SolPos{Float64}}
         @test length(pos) == n_dts
+
+        # test a second time to ensure there are no allocations
+        @test @allocated(solar_position!(pos, obs, dts)) == 0
+        @test all(pos .!= 0.0)
+        @test pos[1] == single_result
+        @test pos isa StructVector{SolPos{Float64}}
+        @test length(pos) == n_dts
     end
 
     @testset "Return new" begin
