@@ -48,7 +48,8 @@ jobs:
           julia --project=docs -e '
             using Documenter: DocMeta, doctest
             using SolarPosition
-            DocMeta.setdocmeta!(SolarPosition, :DocTestSetup, :(using SolarPosition); recursive=true)
+            using Dates
+            DocMeta.setdocmeta!(SolarPosition, :DocTestSetup, :(using SolarPosition; using Dates; obs = Observer(37.7749, -122.4194, 100.0); dt = DateTime(2023, 6, 21, 12, 0, 0)); recursive=true)
             doctest(SolarPosition)'
       - name: Generate and deploy documentation
         run: julia --project=docs docs/make.jl
