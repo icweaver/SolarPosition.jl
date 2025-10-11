@@ -117,13 +117,5 @@ function _solar_position(obs::Observer{T}, dt::DateTime, alg::PSA) where {T}
     # parallax correction
     θz = θz + (EMR / AU) * sin(θz)                                      # Eq. 15,16
 
-    # azimuth_deg = rad2deg(γ)
-    # elevation_deg = rad2deg(π / 2 - θz)
-    # zenith_deg = rad2deg(θz)
-
-    # # wrap azimuth to [0, 360) without allocating
-    # azimuth_wrapped = azimuth_deg - 360.0 * floor(azimuth_deg / 360.0)
-
-    # return SolPos(azimuth_wrapped, elevation_deg, zenith_deg)
     return SolPos{T}(mod(rad2deg(γ), 360.0), rad2deg(π / 2 - θz), rad2deg(θz))
 end

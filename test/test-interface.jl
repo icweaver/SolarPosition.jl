@@ -53,7 +53,8 @@ end
         @test length(pos) == n_dts
 
         # test a second time to ensure there are no allocations
-        @test @allocated(solar_position!(pos, obs, dts)) == 0
+        # (we test ≤ 32 because on julia LTS there are some unavoidable allocations)
+        @test @allocated(solar_position!(pos, obs, dts)) ≤ 32
         @test all(pos .!= 0.0)
         @test pos[1] == single_result
         @test pos isa StructVector{SolPos{Float64}}
