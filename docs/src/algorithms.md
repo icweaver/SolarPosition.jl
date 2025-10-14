@@ -1,4 +1,4 @@
-# [Algorithms](@id algorithms)
+# [Positioning Algorithms](@id algorithms)
 
 Solar position algorithms available in SolarPosition.jl.
 

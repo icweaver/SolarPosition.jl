@@ -19,7 +19,7 @@ numbered_pages = [
 ]
 
 makedocs(;
-    modules = [SolarPosition, SolarPosition.Positioning, SolarPosition.Refraction],
+    modules = [SolarPosition],
     authors = "Stefan de Lange",
     repo = Documenter.Remotes.GitHub("JuliaSolarPV", "SolarPosition.jl"),
     sitename = "SolarPosition.jl",
@@ -32,6 +32,8 @@ makedocs(;
         "Examples" => ["examples/basic.md", "examples/plotting.md"],
         "reference.md",
         "algorithms.md",
+        "refraction.md",
+        "deltat.md",
         "contributing.md",
     ],
 )

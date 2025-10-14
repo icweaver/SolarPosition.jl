@@ -1,7 +1,3 @@
-```@meta
-DocTestSetup = nothing
-```
-
 # [Using the Makie.jl plotting extension](@id plotting-examples)
 
 SolarPosition.jl provides a plotting extension based on [Makie.jl](https://makie.juliaplots.org/stable/).
