@@ -11,9 +11,8 @@ Currently provides a stub implementation for testing purposes.
 # Accuracy
 Claimed accuracy: ±0.0167° (when fully implemented)
 
-# References
-[1] NOAA Global Monitoring Laboratory Solar Position Calculator
-    https://gml.noaa.gov/grad/solcalc/calcdetails.html
+# Literature
+Based on the NOAA solar position calculator [NOAA](@cite).
 
 # Status
 ⚠️  **Note**: This is currently a stub implementation that returns fixed values.

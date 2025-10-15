@@ -1,6 +1,7 @@
 using SolarPosition
 using Documenter
 using DocStringExtensions
+using DocumenterCitations
 
 DocMeta.setdocmeta!(
     SolarPosition,
@@ -11,6 +12,9 @@ DocMeta.setdocmeta!(
     dt = DateTime(2023, 6, 21, 12, 0, 0));
     recursive = true,
 )
+
+# Setup bibliography
+bib = CitationBibliography(joinpath(@__DIR__, "src", "refs.bib"), style = :alpha)
 
 page_rename = Dict("developer.md" => "Developer docs") # Without the numbers
 numbered_pages = [
@@ -27,6 +31,7 @@ makedocs(;
         canonical = "https://JuliaSolarPV.github.io/SolarPosition.jl",
         size_threshold = 2^20, # 1 MB
     ),
+    plugins = [bib],
     pages = [
         "index.md",
         "Examples" => ["examples/basic.md", "examples/plotting.md"],
@@ -34,6 +39,7 @@ makedocs(;
         "algorithms.md",
         "refraction.md",
         "deltat.md",
+        "literature.md",
         "contributing.md",
     ],
 )

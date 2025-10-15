@@ -13,9 +13,9 @@ and other geophysical factors.
 ## Implementation
 
 SolarPosition.jl implements ΔT calculation using polynomial expressions fitted to historical
-observations and modern measurements from atomic clocks:
+observations and modern measurements from atomic clocks, based on [NASADeltaT](@cite) and [MS04](@cite):
 
-- **Historical data (-500 to 1950)**: Based on eclipse observations from Morrison and Stephenson (2004)
+- **Historical data (-500 to 1950)**: Based on eclipse observations
 - **Modern era (1950-2005)**: Direct measurements from atomic clocks and radio observations
 - **Future (2005-2050)**: Extrapolation based on recent trends
 - **Far past/future**: Parabolic extrapolation formula
@@ -84,14 +84,14 @@ println("Year 1900: ΔT ≈ $(round(dt_1900, digits=1)) seconds")
 
 ### Plotting Historical Trend
 
-Visualize how ΔT has changed over time:
+Visualize how ΔT has changed over time, similar to the measured values derived from telescopic observations:
 
 ```@example deltat
 using SolarPosition.Positioning: calculate_deltat
 using CairoMakie
 
-# Calculate ΔT for years 1990-2040
-years = 1990:1:2040
+# Calculate ΔT for years 1600-2000 (historical measurements)
+years = 1600:1:2000
 deltat_values = [calculate_deltat(year, 6) for year in years]
 
 # Create plot with transparent background
@@ -99,14 +99,47 @@ fig = Figure(size=(800, 500), backgroundcolor=:transparent, textcolor="#f5ab35")
 ax = Axis(fig[1, 1],
     xlabel = "Year",
     ylabel = "ΔT (seconds)",
-    title = "Historical and Projected Values of ΔT (1990-2040)",
-    backgroundcolor=:transparent
+    title = "Historical Values of the Earth's Clock Error",
+    backgroundcolor=:transparent,
+    xgridvisible = false,
+    ygridvisible = false,
+    xticks = 1500:100:2000,
+    xminorticks = IntervalsBetween(5),
+    xminorticksvisible = true,
+    yminorticks = IntervalsBetween(5),
+    yminorticksvisible = true
 )
 
-lines!(ax, years, deltat_values, linewidth=2)
+# Plot the measured/calculated values
+lines!(ax, years, deltat_values,
+    linewidth=2.5,
+    color=:steelblue,
+    label="calculated"
+)
+
+# Add a very long-term parabolic trend line
+# Using the formula: ΔT ≈ -20 + 32 * ((year - 1820) / 100)^2
+# This represents the parabolic trend centered around 1820-1825
+trend_years = 1560:10:2050
+trend_values = [-20 + 32 * ((y - 1820) / 100)^2 for y in trend_years]
+lines!(ax, trend_years, trend_values,
+    linewidth=2,
+    color=:steelblue,
+    linestyle=:dash,
+    label="very long-term trend"
+)
+
+axislegend(ax, position=:lb, backgroundcolor=:transparent)
+xlims!(ax, 1500, 2000)
+ylims!(ax, -50, 200)
 
 fig
 ```
+
+This plot is an attempt to reproduce the result of [MS04; Fig 1., page 329](@cite) and
+shows the measured values of ΔT derived from astronomical observations since 1600 CE.
+The dashed line represents the very long-term parabolic trend due to tidal braking of
+Earth's rotation.
 
 ## Accuracy and Limitations
 
@@ -127,8 +160,4 @@ fig
 The uncertainty in ΔT arises because Earth's rotation is affected by unpredictable factors like
 atmospheric circulation, ocean currents, and tectonic events.
 
-## References
-
-1. **NASA GSFC**: [Five Millennium Canon of Solar Eclipses: Delta T](http://eclipse.gsfc.nasa.gov/SEcat5/deltatpoly.html)
-2. **Morrison, L. and Stephenson, F. R. (2004)**: "Historical Values of the Earth's Clock Error ΔT and the Calculation of Eclipses", Journal for the History of Astronomy, Vol. 35, Part 3, pp 327-336
-3. **Astronomical Almanac**: Direct observations from atomic clocks and VLBI measurements
+For more details on the polynomial expressions and methodology, see [NASADeltaT](@cite) and [MS04](@cite).

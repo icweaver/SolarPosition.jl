@@ -42,12 +42,10 @@ The result is then corrected for temperature and pressure:
 \\text{Refract} \\times \\frac{283}{273 + T} \\times \\frac{P}{101325} \\times \\frac{1}{3600}
 ```
 
-# References
-[1] G. W. Hughes, "Engineering Astronomy," Sandia Laboratories, 1985,
-    https://pvpmc.sandia.gov/app/uploads/sites/243/2022/10/Engineering-Astronomy.pdf
-
-[2] J. C. Zimmerman, "Sun-pointing programs and their accuracy,"
-    SANDIA Technical Report SAND-81-0761, 1981, DOI: 10.2172/6377969
+# Literature
+This function was developed by [Hug85](@cite) and was used in the SUNAEP software [Zim81](@cite).
+It is also used to calculate the refraction correction in the NOAA solar position algorithm using
+a fixed pressure of 101325 Pa and a temperature of 10 degrees Celsius.
 
 # Example
 ```julia

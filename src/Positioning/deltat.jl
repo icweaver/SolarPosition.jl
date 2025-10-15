@@ -101,9 +101,8 @@ julia> calculate_deltat(DateTime(2020, 6, 15, 12, 30))
 71.87173085145835
 ```
 
-# References
-- NASA GSFC: http://eclipse.gsfc.nasa.gov/SEcat5/deltatpoly.html
-- Morrison and Stephenson (2004): Historical Values of the Earth's Clock Error ΔT
+# Literature
+The polynomial expressions for ΔT are from [NASADeltaT](@cite), based on the work by [MS04](@cite).
 """
 function calculate_deltat(year::Real, month::Real)
     if year < -1999 || year > 3000

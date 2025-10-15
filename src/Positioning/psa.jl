@@ -14,12 +14,8 @@ $(TYPEDFIELDS)
 - `PSA(2020)`: Uses 2020 coefficients (range 2020-2050, accuracy ±0.0083°)
 - `PSA(2001)`: Uses 2001 coefficients (range 1999-2015, accuracy ±0.0083°)
 
-# References
-[1] M. Blanco, D. Alarcón, T. López, and M. Lara, "Computing the Solar Vector,"
-    Solar Energy, vol. 70, no. 5, 2001, doi:10.1016/S0038-092X(00)00156-0
-
-[2] M. Blanco, K. Milidonis, and A. Bonanos, "Updating the PSA sun position algorithm,"
-    Solar Energy, vol. 212, 2020, doi:10.1016/j.solener.2020.10.084
+# Literature
+This algorithm is based on the work by [BALL01](@cite) and was updated in [BMB20](@cite).
 
 # Example
 ```jldoctest
