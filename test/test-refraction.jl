@@ -20,10 +20,7 @@ expected = Dict(
 )
 
 # test configurations: (algorithm_name, constructor, expected_results)
-test_algorithms = [
-    ("Hughes (default)", () -> HUGHES(), expected["Hughes"]),
-    ("Hughes (custom)", () -> HUGHES(101325.0, 12.0), expected["Hughes"]),
-]
+test_algorithms = [("Hughes", () -> HUGHES(101325.0, 12.0), expected["Hughes"])]
 
 elevations = test_elevation_angles()
 

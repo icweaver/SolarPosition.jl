@@ -138,18 +138,10 @@ fig
 
 This plot is an attempt to reproduce the result of [MS04; Fig 1., page 329](@cite) and
 shows the measured values of ΔT derived from astronomical observations since 1600 CE.
-The dashed line represents the very long-term parabolic trend due to tidal braking of
-Earth's rotation.
 
-## Accuracy and Limitations
+## Accuracy
 
-### Supported Range
-
-- **Defined range**: -1999 to 3000 CE
-- **Warnings**: Issued for dates outside this range
-- **Extrapolation**: Still provides values outside the defined range using parabolic formula
-
-### Accuracy
+The accuracy of ΔT calculations varies depending on the time period:
 
 - **Modern era (1950-2025)**: Very accurate (< 1 second)
 - **Historical (1600-1950)**: Accurate to a few seconds
@@ -157,7 +149,7 @@ Earth's rotation.
 - **Ancient (< 500)**: Accuracy decreases significantly (~50-500 seconds)
 - **Future predictions**: Uncertainty increases with time
 
-The uncertainty in ΔT arises because Earth's rotation is affected by unpredictable factors like
-atmospheric circulation, ocean currents, and tectonic events.
-
-For more details on the polynomial expressions and methodology, see [NASADeltaT](@cite) and [MS04](@cite).
+The uncertainty in ΔT arises because Earth's rotation is affected by unpredictable
+factors like atmospheric circulation, ocean currents, and tectonic events. For more
+details on the polynomial expressions and methodology, see [NASADeltaT](@cite) and
+[MS04](@cite).

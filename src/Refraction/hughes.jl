@@ -70,9 +70,14 @@ struct HUGHES{T} <: RefractionAlgorithm where {T<:AbstractFloat}
     temperature::T
 end
 
-HUGHES() = HUGHES{Float64}(101325.0, 12.0)
+HUGHES() = HUGHES{Float64}(101325.0, 10.0)
 
 function _refraction(model::HUGHES{T}, elevation_deg::T) where {T<:AbstractFloat}
+    # this avoids numerical instability at very high elevations
+    if elevation_deg > T(85.0)
+        return T(0.0)
+    end
+
     tan_el = tand(elevation_deg)
     Tw = model.temperature
     Pw = model.pressure
