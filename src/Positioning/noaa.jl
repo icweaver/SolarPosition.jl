@@ -90,8 +90,7 @@ function _solar_position(obs::Observer{T}, dt::DateTime, alg::NOAA) where {T}
     # true solar time [minutes]
     hour_frac = fractional_hour(dt)
     minutes = hour_frac * 60.0
-    longitude_deg = rad2deg(obs.longitude_rad)
-    true_solar_time = mod(minutes + eot + 4.0 * longitude_deg, 1440.0)
+    true_solar_time = mod(minutes + eot + 4.0 * obs.longitude, 1440.0)
 
     # hour angle [degrees]
     hour_angle = if true_solar_time / 4.0 < 0.0
@@ -100,23 +99,14 @@ function _solar_position(obs::Observer{T}, dt::DateTime, alg::NOAA) where {T}
         true_solar_time / 4.0 - 180.0
     end
 
-    # latitude adjustments for poles (match Python implementation)
-    latitude_deg = rad2deg(obs.latitude_rad)
-    if latitude_deg == 90.0
-        latitude_deg -= 1e-6
-    elseif latitude_deg == -90.0
-        latitude_deg += 1e-6
-    end
-
     # zenith angle [degrees]
     zenith = acosd(
-        sind(latitude_deg) * sind(sun_declin) +
-        cosd(latitude_deg) * cosd(sun_declin) * cosd(hour_angle),
+        obs.sin_lat * sind(sun_declin) + obs.cos_lat * cosd(sun_declin) * cosd(hour_angle),
     )
 
     # azimuth angle [degrees]
-    azimuth_numerator = sind(latitude_deg) * cosd(zenith) - sind(sun_declin)
-    azimuth_denominator = cosd(latitude_deg) * sind(zenith)
+    azimuth_numerator = obs.sin_lat * cosd(zenith) - sind(sun_declin)
+    azimuth_denominator = obs.cos_lat * sind(zenith)
 
     azimuth = if hour_angle > 0.0
         mod(acosd(azimuth_numerator / azimuth_denominator) + 180.0, 360.0)

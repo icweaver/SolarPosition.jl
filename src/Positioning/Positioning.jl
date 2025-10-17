@@ -61,16 +61,25 @@ struct Observer{T<:AbstractFloat}
     longitude::T        # longitude (+E)
     "Altitude above mean sea level (meters)"
     altitude::T         # altitude above MSL
-    "Latitude in radians (automatically computed)"
+    "Latitude in radians"
     latitude_rad::T
-    "Longitude in radians (automatically computed)"
+    "Longitude in radians"
     longitude_rad::T
-    "sin(latitude) in radians (automatically computed)"
-    sin_lat_rad::T
-    "cos(latitude) in radians (automatically computed)"
-    cos_lat_rad::T
+    "sin(latitude)"
+    sin_lat::T
+    "cos(latitude)"
+    cos_lat::T
 
     function Observer{T}(lat::T, lon::T, alt::T = zero(T)) where {T<:AbstractFloat}
+        # apply pole corrections to avoid numerical issues
+        if lat == 90.0
+            lat -= 1e-6
+            @warn "Latitude was 90°. Adjusted to $lat° to avoid singularities."
+        elseif lat == -90.0
+            lat += 1e-6
+            @warn "Latitude was -90°. Adjusted to $lat° to avoid singularities."
+        end
+
         lat_rad = deg2rad(lat)
         lon_rad = deg2rad(lon)
         sin_lat = sin(lat_rad)
