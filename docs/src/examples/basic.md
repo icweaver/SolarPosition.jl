@@ -36,6 +36,22 @@ println("Azimuth: $(round(position.azimuth, digits=2))°")
 println("Elevation: $(round(position.elevation, digits=2))°")
 ```
 
+## Choosing a Solar Position Algorithm
+
+By default, SolarPosition.jl uses the PSA (Plataforma Solar de Almería) algorithm.
+You can also explicitly specify which algorithm to use by passing it as an argument.
+
+```@example basic
+# Use PSA algorithm (default, high accuracy ±0.0083°)
+position_psa = solar_position(obs, zdt, PSA())
+
+# Use NOAA algorithm (±0.0167°)
+position_noaa = solar_position(obs, zdt, NOAA())
+
+println("PSA - Azimuth: $(round(position_psa.azimuth, digits=2))°, Elevation: $(round(position_psa.elevation, digits=2))°")
+println("NOAA - Azimuth: $(round(position_noaa.azimuth, digits=2))°, Elevation: $(round(position_noaa.elevation, digits=2))°")
+```
+
 ## Using DateTime in UTC
 
 Alternatively, we can directly pass a DateTime (assumed to be in UTC)

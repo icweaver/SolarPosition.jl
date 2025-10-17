@@ -42,7 +42,7 @@ accuracy and implementation status.
 | Algorithm | Reference                                                                                       | Accuracy | Status |
 | --------- | ----------------------------------------------------------------------------------------------- | -------- | ------ |
 | PSA       | [Blanco-Muriel et al.](https://www.sciencedirect.com/science/article/abs/pii/S0038092X00001560) | ±0.0083° | ✅     |
-| NOAA      | [Global Monitoring Laboratory](https://gml.noaa.gov/grad/solcalc/calcdetails.html)              | ±0.0167° | ❌     |
+| NOAA      | [Global Monitoring Laboratory](https://gml.noaa.gov/grad/solcalc/calcdetails.html)              | ±0.0167° | ✅     |
 
 ## How to Cite
 

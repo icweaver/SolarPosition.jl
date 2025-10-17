@@ -21,4 +21,4 @@ accuracy and implementation status.
 | Algorithm | Reference       | Accuracy | Status |
 | --------- | --------------- | -------- | ------ |
 | PSA       | [BALL01](@cite) | ±0.0083° | ✅     |
-| NOAA      | [NOAA](@cite)   | ±0.0167° | ❌     |
+| NOAA      | [NOAA](@cite)   | ±0.0167° | ✅     |

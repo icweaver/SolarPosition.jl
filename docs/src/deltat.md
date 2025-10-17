@@ -32,7 +32,7 @@ SolarPosition.Positioning.calculate_deltat
 
 Calculate ΔT for a specific year and month:
 
-```julia
+```@example deltat
 using SolarPosition.Positioning: calculate_deltat
 
 # Calculate ΔT for June 2020
@@ -44,7 +44,7 @@ println("ΔT ≈ $(round(dt, digits=2)) seconds")
 
 For more convenient usage with date objects:
 
-```julia
+```@example deltat
 using SolarPosition.Positioning: calculate_deltat
 using Dates
 
@@ -60,13 +60,17 @@ dt2 = calculate_deltat(datetime)
 using TimeZones
 zdt = ZonedDateTime(2020, 6, 15, 12, 30, 45, tz"UTC")
 dt3 = calculate_deltat(zdt)
+
+println("Date: ΔT ≈ $(round(dt1, digits=2)) seconds")
+println("DateTime: ΔT ≈ $(round(dt2, digits=2)) seconds")
+println("ZonedDateTime: ΔT ≈ $(round(dt3, digits=2)) seconds")
 ```
 
 ### Historical Values
 
 Calculate ΔT for historical dates:
 
-```julia
+```@example deltat
 using SolarPosition.Positioning: calculate_deltat
 
 # Ancient Rome (year 0)
