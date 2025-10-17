@@ -100,8 +100,8 @@ function _solar_position(obs::Observer{T}, dt::DateTime, alg::PSA) where {T}
 
     # computes the local coordinates: azimuth (γ) and zenith angle (θz)
     λt = rad2deg(obs.longitude_rad)
-    cos_lat = obs.cos_lat_rad
-    sin_lat = obs.sin_lat_rad
+    cos_lat = obs.cos_lat
+    sin_lat = obs.sin_lat
 
     hour = fractional_hour(dt)
     gmst = p14 + p15 * n + hour                                         # Eq. 10
