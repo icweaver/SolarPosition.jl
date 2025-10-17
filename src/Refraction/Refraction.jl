@@ -5,6 +5,11 @@ Atmospheric refraction models.
 
 # Exported Types
 - `HUGHES`: Hughes atmospheric refraction model
+- `ARCHER`: Archer atmospheric refraction model
+- `BENNETT`: Bennett atmospheric refraction model
+- `MICHALSKY`: Michalsky atmospheric refraction model
+- `SG2`: Saemundsson-Garfinkel atmospheric refraction model
+- `SPA`: Solar Position Algorithm refraction model
 
 # Exported Functions
 - `refraction`: Apply refraction correction to elevation angle(s)
@@ -65,7 +70,14 @@ function refraction(model::RefractionAlgorithm, elevation::T) where {T<:Abstract
 end
 
 include("hughes.jl")
+include("archer.jl")
+include("bennett.jl")
+include("michalsky.jl")
+include("sg2.jl")
+include("spa.jl")
 
-export RefractionAlgorithm, NoRefraction, HUGHES, refraction
+export RefractionAlgorithm, NoRefraction
+export HUGHES, ARCHER, BENNETT, MICHALSKY, SG2, SPA
+export refraction
 
 end

@@ -4,26 +4,40 @@ Atmospheric refraction correction algorithms available in SolarPosition.jl.
 
 Atmospheric refraction causes the apparent position of the sun to differ from its true geometric position. This effect is most pronounced near the horizon and can be corrected using various atmospheric models.
 
-| Algorithm | Reference      | Atmospheric Parameters | Status |
-| --------- | -------------- | ---------------------- | ------ |
-| Hughes    | [Hug85](@cite) | Pressure, Temperature  | ✅     |
+| Algorithm                                   | Reference      | Atmospheric Parameters | Status |
+| ------------------------------------------- | -------------- | ---------------------- | ------ |
+| [`HUGHES`](@ref SolarPosition.HUGHES)       | [Hug85](@cite) | Pressure, Temperature  | ✅     |
+| [`ARCHER`](@ref SolarPosition.ARCHER)       | [Arc80](@cite) | None                   | ✅     |
+| [`BENNETT`](@ref SolarPosition.BENNETT)     | [Ben82](@cite) | Pressure, Temperature  | ✅     |
+| [`MICHALSKY`](@ref SolarPosition.MICHALSKY) | [Mic88](@cite) | None                   | ✅     |
+| [`SG2`](@ref SolarPosition.SG2)             | [BW12](@cite)  | Pressure, Temperature  | ✅     |
+| [`SPA`](@ref SolarPosition.SPA)             | [RA08](@cite)  | Pressure, Temperature  | ✅     |
 
-To calculate refraction, we can use the `refraction` function:
+To calculate refraction, we can use the [`refraction`](@ref SolarPosition.Refraction.refraction) function:
 
 ```@docs
 SolarPosition.Refraction.refraction
 ```
 
-This function is typically used internally by the `solar_position` function when a
+This function is typically used internally by the [`solar_position`](@ref SolarPosition.solar_position) function when a
 refraction algorithm is specified, but is also a publicly available method.
 
-When using `NoRefraction()` (the default), the `solar_position` function returns a
-`SolPos` struct containing only the true geometric angles (azimuth, elevation, zenith).
-In this case, no refraction correction is applied.
+!!! info
+    When using a refraction algorithm like [`HUGHES`](@ref SolarPosition.HUGHES)`()`,
+    the [`solar_position`](@ref SolarPosition.solar_position) function returns an
+    [`ApparentSolPos`](@ref SolarPosition.Positioning.ApparentSolPos) struct containing
+    both true and apparent angles.
 
 ```@docs
 SolarPosition.NoRefraction
 ```
+
+!!! info
+    When using [`NoRefraction`](@ref SolarPosition.NoRefraction)`()` (the default), the
+    [`solar_position`](@ref SolarPosition.solar_position) function returns a
+    [`SolPos`](@ref SolarPosition.Positioning.SolPos) struct containing only the true
+    geometric angles (azimuth, elevation, zenith). In this case, no refraction
+    correction is applied.
 
 ## [Hughes](@id hughes-refraction)
 
@@ -33,8 +47,62 @@ This model was developed by [Hug85](@cite) and is used in the SUNAEP software [Z
 It's also the basis for the refraction correction in NOAA's solar position calculator (using fixed
 pressure of 101325 Pa and temperature of 10°C).
 
-When using a refraction algorithm like `Hughes()`, the `solar_position` function returns an `ApparentSolPos` struct containing both true and apparent angles.
-
 ```@docs
 SolarPosition.HUGHES
+```
+
+## [Archer](@id archer-refraction)
+
+The Archer refraction model is a cosine-based correction that does not require atmospheric parameters.
+
+This simplified model from [Arc80](@cite) computes refraction based on the zenith angle using
+trigonometric relationships. It's useful when atmospheric data is not available.
+
+```@docs
+SolarPosition.ARCHER
+```
+
+## [Bennett](@id bennett-refraction)
+
+The Bennett refraction model is widely used in marine navigation and accounts for atmospheric conditions.
+
+Developed by [Ben82](@cite), this model provides accurate refraction corrections with adjustments
+for atmospheric pressure and temperature. It's particularly effective for low elevation angles.
+
+```@docs
+SolarPosition.BENNETT
+```
+
+## [Michalsky](@id michalsky-refraction)
+
+The Michalsky refraction model uses a rational polynomial approximation.
+
+From [Mic88](@cite), this algorithm is part of the Astronomical Almanac's method for approximate
+solar position calculations. It includes special handling for very low elevation angles.
+
+```@docs
+SolarPosition.MICHALSKY
+```
+
+## [SG2](@id sg2-refraction)
+
+The SG2 (Second Generation) refraction algorithm is optimized for fast computation over multi-decadal periods.
+
+Developed by [BW12](@cite), this algorithm uses a two-regime approach with different formulas
+for elevations above and below a threshold. It accounts for atmospheric pressure and temperature.
+
+```@docs
+SolarPosition.SG2
+```
+
+## [SPA](@id spa-refraction)
+
+The SPA (Solar Position Algorithm) refraction model is part of NREL's high-accuracy solar position algorithm.
+
+From [RA08](@cite), this is the refraction correction used in NREL's SPA algorithm, which is
+accurate to ±0.0003° over the years -2000 to 6000. It includes a configurable refraction limit
+for below-horizon calculations.
+
+```@docs
+SolarPosition.SPA
 ```

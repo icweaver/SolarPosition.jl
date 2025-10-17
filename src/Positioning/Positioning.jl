@@ -74,10 +74,10 @@ struct Observer{T<:AbstractFloat}
         # apply pole corrections to avoid numerical issues
         if lat == 90.0
             lat -= 1e-6
-            @warn "Latitude was 90°. Adjusted to $lat° to avoid singularities."
+            @warn "Latitude was 90°. Adjusted to $(lat)° to avoid singularities."
         elseif lat == -90.0
             lat += 1e-6
-            @warn "Latitude was -90°. Adjusted to $lat° to avoid singularities."
+            @warn "Latitude was -90°. Adjusted to $(lat)° to avoid singularities."
         end
 
         lat_rad = deg2rad(lat)
