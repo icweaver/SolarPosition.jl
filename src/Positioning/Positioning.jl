@@ -136,6 +136,30 @@ struct ApparentSolPos{T} <: AbstractSolPos where {T<:AbstractFloat}
 end
 
 """
+    $(TYPEDEF)
+
+Solar position result from SPA algorithm including equation of time.
+
+---
+# Fields
+$(TYPEDFIELDS)
+"""
+struct SPASolPos{T} <: AbstractSolPos where {T<:AbstractFloat}
+    "Azimuth (degrees, 0=N, +clockwise, range [-180, 180])"
+    azimuth::T
+    "Elevation (degrees, range [-90, 90])"
+    elevation::T
+    "Zenith = 90 - elevation (degrees, range [0, 180])"
+    zenith::T
+    "Apparent elevation (degrees, range [-90, 90])"
+    apparent_elevation::T
+    "Apparent zenith (degrees, range [0, 180])"
+    apparent_zenith::T
+    "Equation of time (minutes)"
+    equation_of_time::T
+end
+
+"""
     solar_position(obs::Observer, dt::DateTime, alg::SolarAlgorithm=PSA(), refraction::RefractionAlgorithm=NoRefraction())
     solar_position(obs::Observer, dt::ZonedDateTime, alg::SolarAlgorithm=PSA(), refraction::RefractionAlgorithm=NoRefraction())
     solar_position(obs::Observer, dts::AbstractVector{DateTime}, alg::SolarAlgorithm=PSA(), refraction::RefractionAlgorithm=NoRefraction())
@@ -426,9 +450,23 @@ include("psa.jl")
 include("noaa.jl")
 include("walraven.jl")
 include("usno.jl")
+include("spa.jl")
+
+# SPA always returns SPASolPos (includes equation of time) - must be after spa.jl is included
+result_type(::Type{SPA}, ::Type{NoRefraction}, ::Type{T}) where {T} = SPASolPos{T}
+result_type(::Type{SPA}, ::Type{<:RefractionAlgorithm}, ::Type{T}) where {T} = SPASolPos{T}
 
 export Observer,
-    PSA, NOAA, Walraven, USNO, solar_position, solar_position!, SolPos, ApparentSolPos
+    PSA,
+    NOAA,
+    Walraven,
+    USNO,
+    SPA,
+    solar_position,
+    solar_position!,
+    SolPos,
+    ApparentSolPos,
+    SPASolPos
 export calculate_deltat
 
 end

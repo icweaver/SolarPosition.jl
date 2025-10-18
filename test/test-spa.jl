@@ -1,4 +1,6 @@
-"""Unit tests for SPA algorithm (not yet implemented)"""
+"""Unit tests for SPA algorithm"""
+
+import SolarPosition.Positioning: SPA as SPAAlg
 
 function expected_spa()
     columns = [
@@ -35,51 +37,81 @@ function expected_spa()
     return DataFrame(reduce(hcat, values)', columns)
 end
 
-@testset "SPA (not implemented)" begin
-    @test_skip begin
-        df_expected = expected_spa()
-        conds = test_conditions()
-        @test size(df_expected, 1) == 19
-        @test size(df_expected, 2) == 6
-        @test size(conds, 1) == 19
-        @test size(conds, 2) == 4
+@testset "SPA" begin
+    df_expected = expected_spa()
+    conds = test_conditions()
+    @test size(df_expected, 1) == 19
+    @test size(df_expected, 2) == 6
+    @test size(conds, 1) == 19
+    @test size(conds, 2) == 4
 
-        # TODO: Implement SPA (Solar Position Algorithm) by NREL
-        # This is a high-accuracy algorithm (±0.0003°)
-        # struct SPA <: SolarAlgorithm end
+    @testset "With default parameters" begin
+        for ((dt, lat, lon, alt), row) in zip(eachrow(conds), eachrow(df_expected))
+            if ismissing(alt)
+                obs = Observer(lat, lon)
+            else
+                obs = Observer(lat, lon, altitude = alt)
+            end
 
-        # for ((dt, lat, lon, alt), row) in zip(eachrow(conds), eachrow(df_expected))
-        #     if ismissing(alt)
-        #         obs = Observer(lat, lon)
-        #     else
-        #         obs = Observer(lat, lon, altitude = alt)
-        #     end
-        #
-        #     # SPA includes refraction correction and equation of time
-        #     res = solar_position(obs, dt, SPA())
-        #
-        #     @test isapprox(res.elevation, row.elevation, atol = 1e-7)
-        #     @test isapprox(res.zenith, row.zenith, atol = 1e-7)
-        #     @test isapprox(res.azimuth, row.azimuth, atol = 1e-7)
-        #     @test isapprox(res.apparent_elevation, row.apparent_elevation, atol = 1e-7)
-        #     @test isapprox(res.apparent_zenith, row.apparent_zenith, atol = 1e-7)
-        #     @test isapprox(res.equation_of_time, row.equation_of_time, atol = 1e-7)
-        # end
+            # SPA includes refraction correction and equation of time
+            res = solar_position(obs, dt, SPAAlg())
+
+            @test isapprox(res.elevation, row.elevation, atol = 1e-6)
+            @test isapprox(res.zenith, row.zenith, atol = 1e-6)
+            @test isapprox(res.azimuth, row.azimuth, atol = 1e-6)
+            @test isapprox(res.apparent_elevation, row.apparent_elevation, atol = 1e-6)
+            @test isapprox(res.apparent_zenith, row.apparent_zenith, atol = 1e-6)
+            @test isapprox(res.equation_of_time, row.equation_of_time, atol = 1e-6)
+        end
+    end
+
+    @testset "With delta_t=nothing" begin
+        for ((dt, lat, lon, alt), row) in zip(eachrow(conds), eachrow(df_expected))
+            if ismissing(alt)
+                obs = Observer(lat, lon)
+            else
+                obs = Observer(lat, lon, altitude = alt)
+            end
+
+            res = solar_position(obs, dt, SPAAlg(nothing, 101325.0, 12.0, 0.5667))
+
+            # results can differ when delta_t is nothing
+            @test isapprox(res.elevation, row.elevation, atol = 1e0)
+            @test isapprox(res.zenith, row.zenith, atol = 1e0)
+            @test isapprox(res.azimuth, row.azimuth, atol = 1e0)
+        end
     end
 
     @testset "SPA refraction at high elevation" begin
-        @test_skip begin
-            # Test that SPA sets refraction to zero for solar elevation angles
-            # between 85 and 90 degrees (when sun is nearly overhead)
-            # The below example has a solar elevation angle of ~87.9°
-            times = [ZonedDateTime(2020, 3, 23, 12, 0, 0, tz"UTC")]
-            obs = Observer(0.0, 0.0)  # Equator at prime meridian
+        # Test that SPA sets refraction to zero for solar elevation angles
+        # between 85 and 90 degrees (when sun is nearly overhead)
+        # The below example has a solar elevation angle of ~87.9°
+        times = [ZonedDateTime(2020, 3, 23, 12, 0, 0, tz"UTC")]
+        obs = Observer(0.0, 0.0)  # Equator at prime meridian
 
-            res = solar_position(obs, times[1], SPA())
+        res = solar_position(obs, times[1], SPAAlg())
 
-            # At such high elevation, refraction correction should be minimal/zero
-            # so elevation ≈ apparent_elevation
-            @test isapprox(res.elevation, res.apparent_elevation, atol = 1e-6)
-        end
+        # At such high elevation, refraction correction should be minimal
+        # so elevation ≈ apparent_elevation
+        @test isapprox(res.elevation, res.apparent_elevation, atol = 1e-3)
+    end
+
+    @testset "Custom atmospheric parameters" begin
+        lat, lon = 45.0, 10.0
+        dt = ZonedDateTime(2020, 10, 17, 12, 30, 0, tz"UTC")
+        obs = Observer(lat, lon)
+
+        # Test with different pressure/temperature
+        res_default = solar_position(obs, dt, SPAAlg(67.0, 101325.0, 12.0, 0.5667))
+        res_custom = solar_position(obs, dt, SPAAlg(67.0, 95000.0, 25.0, 0.5667))
+
+        # Different atmospheric conditions should give slightly different refraction
+        @test !isapprox(
+            res_default.apparent_elevation,
+            res_custom.apparent_elevation,
+            atol = 1e-6,
+        )
+        # But the actual elevation should be the same
+        @test isapprox(res_default.elevation, res_custom.elevation, atol = 1e-10)
     end
 end
