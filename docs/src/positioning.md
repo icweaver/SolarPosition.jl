@@ -7,7 +7,8 @@ Solar position algorithms available in SolarPosition.jl.
 | [`PSA`](@ref SolarPosition.Positioning.PSA)           | [BALL01](@cite) | ±0.0083°      | ✅     |
 | [`NOAA`](@ref SolarPosition.Positioning.NOAA)         | [NOAA](@cite)   | ±0.0167°      | ✅     |
 | [`Walraven`](@ref SolarPosition.Positioning.Walraven) | [Wal78](@cite)  | ±0.0100°      | ✅     |
-| [`USNO`](@ref SolarPosition.Positioning.USNO)         | [USNO](@cite)   | ±0.0500° | ✅     |
+| [`USNO`](@ref SolarPosition.Positioning.USNO)         | [USNO](@cite)   | ±0.0500°      | ✅     |
+| [`SPA`](@ref SolarPosition.Positioning.SPA)           | [RA08](@cite)   | ±0.0003°      | ✅     |
 
 ## [PSA](@id psa-algorithm)
 
@@ -52,4 +53,17 @@ flexibility for different accuracy requirements.
 
 ```@docs
 SolarPosition.Positioning.USNO
+```
+
+## [SPA](@id spa-algorithm)
+
+The SPA (Solar Position Algorithm) is the highest-accuracy algorithm available in this
+package, with uncertainty of ±0.0003° for years between -2000 and 6000.
+
+The algorithm was published by the National Renewable Energy Laboratory (NREL) in
+[RA08](@cite) and implements a complete heliocentric, geocentric, and topocentric solar
+position calculation with periodic terms for Earth heliocentric longitude and latitude.
+
+```@docs
+SolarPosition.Positioning.SPA
 ```

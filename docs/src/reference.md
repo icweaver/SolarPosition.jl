@@ -27,6 +27,7 @@ SolarPosition.Positioning.solar_position!
 SolarPosition.Positioning.Observer
 SolarPosition.Positioning.SolPos
 SolarPosition.Positioning.ApparentSolPos
+SolarPosition.Positioning.SPASolPos
 ```
 
 ## Algorithm Base Types
