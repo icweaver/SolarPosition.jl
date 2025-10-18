@@ -45,6 +45,19 @@ accuracy and implementation status.
 | NOAA      | [Global Monitoring Laboratory](https://gml.noaa.gov/grad/solcalc/calcdetails.html)              | ±0.0167° | ✅     |
 | Walraven  | [Walraven, 1978](<https://doi.org/10.1016/0038-092X(78)90155-X>)                                | ±0.0100° | ✅     |
 
+## Refraction correction algorithms
+
+Atmospheric refraction correction algorithms available in SolarPosition.jl.
+
+| Algorithm | Reference                                                                                        | Atmospheric Parameters | Status |
+| --------- | ------------------------------------------------------------------------------------------------ | ---------------------- | ------ |
+| HUGHES    | [Hughes, 1985](https://pvpmc.sandia.gov/app/uploads/sites/243/2022/10/Engineering-Astronomy.pdf) | Pressure, Temperature  | ✅     |
+| ARCHER    | Archer et al., 1980                                                                              | None                   | ✅     |
+| BENNETT   | [Bennett, 1982](https://doi.org/10.1017/S0373463300022037)                                       | Pressure, Temperature  | ✅     |
+| MICHALSKY | [Michalsky, 1988](<https://doi.org/10.1016/0038-092X(88)90045-X>)                                | None                   | ✅     |
+| SG2       | [Blanc & Wald, 2012](https://doi.org/10.1016/j.solener.2012.07.018)                              | Pressure, Temperature  | ✅     |
+| SPA       | [Reda & Andreas, 2004](https://doi.org/10.1016/j.solener.2003.12.003)                            | Pressure, Temperature  | ✅     |
+
 ## How to Cite
 
 If you use SolarPosition.jl in your work, please cite using the reference given in [CITATION.cff](https://github.com/JuliaSolarPV/SolarPosition.jl/blob/main/CITATION.cff).
