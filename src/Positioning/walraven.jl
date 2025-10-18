@@ -1,5 +1,5 @@
 """
-    $(TYPEDEF)
+    $(TYPEDSIGNATURES)
 
 Walraven solar position algorithm.
 
@@ -10,8 +10,8 @@ accounts for the 1979 Erratum and correct azimuth quadrant selection.
 Claimed accuracy: ±0.01°
 
 # Literature
-This algorithm is based on [WAL78](@cite) with corrections from the 1979 Erratum [WAL79](@cite)
-and azimuth quadrant correction from [SPE89](@cite).
+This algorithm is based on [Wal78](@cite) with corrections from the 1979 Erratum [Wal79](@cite)
+and azimuth quadrant correction from [Spe89](@cite).
 
 # References
 - R. Walraven, "Calculating the position of the sun," Solar Energy,

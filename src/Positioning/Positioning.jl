@@ -32,7 +32,7 @@ import ..Refraction
 using ..Refraction: RefractionAlgorithm, NoRefraction
 
 """
-    SolarAlgorithm
+    $(TYPEDEF)
 
 Abstract base type for all solar position algorithms.
 
@@ -46,12 +46,13 @@ struct MyAlgorithm <: SolarAlgorithm end
 abstract type SolarAlgorithm end
 
 """
-    Observer{T} where {T<:AbstractFloat}
+    $(TYPEDEF)
 
 Observer location (deg  rees, meters). Accepts a type parameter `T` for the
 floating point type to use (e.g. `Float32`, `Float64`).
 
 ---
+# Fields
 $(TYPEDFIELDS)
 """
 struct Observer{T<:AbstractFloat}
@@ -99,7 +100,7 @@ abstract type AbstractSolPos end
 Represents a single solar position calculated for a given observer and time.
 
 ---
-
+# Fields
 $(TYPEDFIELDS)
 """
 struct SolPos{T} <: AbstractSolPos where {T<:AbstractFloat}
@@ -118,7 +119,7 @@ Represents a single solar position calculated for a given observer and time.
 Also includes apparent elevation and zenith angles.
 
 ---
-
+# Fields
 $(TYPEDFIELDS)
 """
 struct ApparentSolPos{T} <: AbstractSolPos where {T<:AbstractFloat}
@@ -135,7 +136,10 @@ struct ApparentSolPos{T} <: AbstractSolPos where {T<:AbstractFloat}
 end
 
 """
-    $(TYPEDSIGNATURES)
+    solar_position(obs::Observer, dt::DateTime, alg::SolarAlgorithm=PSA(), refraction::RefractionAlgorithm=NoRefraction())
+    solar_position(obs::Observer, dt::ZonedDateTime, alg::SolarAlgorithm=PSA(), refraction::RefractionAlgorithm=NoRefraction())
+    solar_position(obs::Observer, dts::AbstractVector{DateTime}, alg::SolarAlgorithm=PSA(), refraction::RefractionAlgorithm=NoRefraction())
+    solar_position(obs::Observer, dts::AbstractVector{ZonedDateTime}, alg::SolarAlgorithm=PSA(), refraction::RefractionAlgorithm=NoRefraction())
 
 Calculate solar position(s) for given observer location(s) and time(s).
 
@@ -143,16 +147,12 @@ This function computes the solar position (azimuth, elevation, and zenith angles
 an observer's geographic location and timestamp(s). It supports multiple input formats and
 automatically handles time zone conversions.
 
----
-
 # Arguments
 - `obs::Observer`: Observer location with latitude, longitude, and altitude
 - `dt::DateTime` or `dt::ZonedDateTime`: Single timestamp
-- `dts::AbstractVector{DateTime}` or `dts::AbstractVector{ZonedDateTime}`: Multiple timestamps
+- `dts::AbstractVector`: Vector of timestamps (DateTime or ZonedDateTime)
 - `alg::SolarAlgorithm`: Solar positioning algorithm (default: `PSA()`)
 - `refraction::RefractionAlgorithm`: Atmospheric refraction correction (default: `NoRefraction()`)
-
----
 
 # Returns
 - For single timestamps:
