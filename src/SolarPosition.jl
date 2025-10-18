@@ -3,12 +3,12 @@ module SolarPosition
 include("Refraction/Refraction.jl")
 include("Positioning/Positioning.jl")
 
-using .Positioning: Observer, PSA, NOAA, solar_position, solar_position!
+using .Positioning: Observer, PSA, NOAA, Walraven, solar_position, solar_position!
 using .Positioning: SolPos, ApparentSolPos
 using .Refraction: RefractionAlgorithm, NoRefraction
 using .Refraction: HUGHES, ARCHER, BENNETT, MICHALSKY, SG2, SPA
 
-export solar_position, solar_position!, Observer, PSA, NOAA
+export solar_position, solar_position!, Observer, PSA, NOAA, Walraven
 export RefractionAlgorithm, NoRefraction
 export HUGHES, ARCHER, BENNETT, MICHALSKY, SG2, SPA
 export SolPos, ApparentSolPos

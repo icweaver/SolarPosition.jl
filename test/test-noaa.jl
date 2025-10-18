@@ -1,10 +1,5 @@
 """Unit tests for NOAA.jl"""
 
-using SolarPosition.Positioning: Observer, NOAA, solar_position, NoRefraction
-using SolarPosition.Refraction: HUGHES
-using Dates, TimeZones
-using DataFrames
-
 function expected_noaa()
     columns = [:elevation, :apparent_elevation, :zenith, :apparent_zenith, :azimuth]
 

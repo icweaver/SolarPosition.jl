@@ -2,13 +2,16 @@
 
 # using SolarPosition.Positioning: solar_position, solar_position!, Observer, PSA
 using SolarPosition.Positioning:
-    Observer, PSA, NOAA, SolPos, solar_position, solar_position!
+    Observer, PSA, NOAA, Walraven, SolPos, solar_position, solar_position!
 using Dates, TimeZones, Tables, DataFrames
 using StructArrays: StructVector
 using Dates: Hour, @dateformat_str
 
-@testset "Scalar Interface - $alg_name" for (alg_name, alg) in
-                                            [("PSA", PSA()), ("NOAA", NOAA())]
+@testset "Scalar Interface - $alg_name" for (alg_name, alg) in [
+    ("PSA", PSA()),
+    ("NOAA", NOAA()),
+    ("Walraven", Walraven()),
+]
     lat, lon, alt = 45.0, 10.0, 4000.0
     dt_plain = DateTime(2020, 10, 17, 12, 30)
     dt_zoned = ZonedDateTime(2020, 10, 17, 12, 30, tz"UTC")
@@ -29,8 +32,11 @@ using Dates: Hour, @dateformat_str
 
 end
 
-@testset "Vectorized Interface - $alg_name" for (alg_name, alg) in
-                                                [("PSA", PSA()), ("NOAA", NOAA())]
+@testset "Vectorized Interface - $alg_name" for (alg_name, alg) in [
+    ("PSA", PSA()),
+    ("NOAA", NOAA()),
+    ("Walraven", Walraven()),
+]
     lat, lon, alt = 45.0, 10.0, 4000.0
     obs = Observer(lat, lon, alt)
     n_dts = 10
@@ -82,8 +88,11 @@ end
 end
 
 
-@testset "Tables Interface - $alg_name" for (alg_name, alg) in
-                                            [("PSA", PSA()), ("NOAA", NOAA())]
+@testset "Tables Interface - $alg_name" for (alg_name, alg) in [
+    ("PSA", PSA()),
+    ("NOAA", NOAA()),
+    ("Walraven", Walraven()),
+]
     lat, lon, alt = 45.0, 10.0, 4000.0
     obs = Observer(lat, lon, alt)
     base_dt = DateTime(2020, 10, 17, 12, 30)

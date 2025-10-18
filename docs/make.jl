@@ -36,7 +36,7 @@ makedocs(;
         "index.md",
         "Examples" => ["examples/basic.md", "examples/plotting.md"],
         "reference.md",
-        "algorithms.md",
+        "positioning.md",
         "refraction.md",
         "deltat.md",
         "literature.md",

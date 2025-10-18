@@ -1,5 +1,9 @@
 using Test
 using SolarPosition
+using SolarPosition.Positioning: Observer, NOAA, PSA, Walraven, solar_position, NoRefraction
+using SolarPosition.Refraction: HUGHES
+using Dates, TimeZones
+using DataFrames
 
 include("setup.jl")
 include("Aqua.jl")

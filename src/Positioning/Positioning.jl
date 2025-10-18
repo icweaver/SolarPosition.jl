@@ -22,7 +22,7 @@ algorithms such as PSA and NOAA, with support for optional atmospheric refractio
 """
 module Positioning
 
-using Dates: datetime2julian, DateTime, Date, daysinmonth
+using Dates: datetime2julian, DateTime, Date, daysinmonth, dayofyear
 using Dates: year, month, day, hour, minute, second
 using TimeZones: ZonedDateTime, UTC
 using StructArrays: StructArrays
@@ -424,8 +424,10 @@ include("utils.jl")
 include("deltat.jl")
 include("psa.jl")
 include("noaa.jl")
+include("walraven.jl")
 
-export Observer, PSA, NOAA, solar_position, solar_position!, SolPos, ApparentSolPos
+export Observer,
+    PSA, NOAA, Walraven, solar_position, solar_position!, SolPos, ApparentSolPos
 export calculate_deltat
 
 end

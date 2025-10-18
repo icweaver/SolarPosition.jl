@@ -1,4 +1,4 @@
-# [Refraction Algorithms](@id refraction-algorithms)
+# [Refraction Correction](@id refraction-correction)
 
 Atmospheric refraction correction algorithms available in SolarPosition.jl.
 
@@ -23,21 +23,21 @@ This function is typically used internally by the [`solar_position`](@ref SolarP
 refraction algorithm is specified, but is also a publicly available method.
 
 !!! info
-    When using a refraction algorithm like [`HUGHES`](@ref SolarPosition.HUGHES)`()`,
-    the [`solar_position`](@ref SolarPosition.solar_position) function returns an
-    [`ApparentSolPos`](@ref SolarPosition.Positioning.ApparentSolPos) struct containing
-    both true and apparent angles.
+When using a refraction algorithm like [`HUGHES`](@ref SolarPosition.HUGHES)`()`,
+the [`solar_position`](@ref SolarPosition.solar_position) function returns an
+[`ApparentSolPos`](@ref SolarPosition.Positioning.ApparentSolPos) struct containing
+both true and apparent angles.
 
 ```@docs
 SolarPosition.NoRefraction
 ```
 
 !!! info
-    When using [`NoRefraction`](@ref SolarPosition.NoRefraction)`()` (the default), the
-    [`solar_position`](@ref SolarPosition.solar_position) function returns a
-    [`SolPos`](@ref SolarPosition.Positioning.SolPos) struct containing only the true
-    geometric angles (azimuth, elevation, zenith). In this case, no refraction
-    correction is applied.
+When using [`NoRefraction`](@ref SolarPosition.NoRefraction)`()` (the default), the
+[`solar_position`](@ref SolarPosition.solar_position) function returns a
+[`SolPos`](@ref SolarPosition.Positioning.SolPos) struct containing only the true
+geometric angles (azimuth, elevation, zenith). In this case, no refraction
+correction is applied.
 
 ## [Hughes](@id hughes-refraction)
 
