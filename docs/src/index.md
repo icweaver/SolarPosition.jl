@@ -18,7 +18,8 @@ Here we provide an overview of the solar positioning algorithms currently implem
 in SolarPosition.jl. Each algorithm is described with its reference paper, claimed
 accuracy and implementation status.
 
-| Algorithm | Reference       | Accuracy | Status |
-| --------- | --------------- | -------- | ------ |
-| PSA       | [BALL01](@cite) | ±0.0083° | ✅     |
-| NOAA      | [NOAA](@cite)   | ±0.0167° | ✅     |
+| Algorithm                                             | Reference       | Accuracy | Status |
+| ----------------------------------------------------- | --------------- | -------- | ------ |
+| [`PSA`](@ref SolarPosition.Positioning.PSA)           | [BALL01](@cite) | ±0.0083° | ✅     |
+| [`NOAA`](@ref SolarPosition.Positioning.NOAA)         | [NOAA](@cite)   | ±0.0167° | ✅     |
+| [`Walraven`](@ref SolarPosition.Positioning.Walraven) | [Wal78](@cite)  | ±0.0100° | ✅     |

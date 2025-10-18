@@ -1,5 +1,5 @@
 """
-    $(TYPEDSIGNATURES)
+    $(TYPEDEF)
 
 Walraven solar position algorithm.
 
@@ -7,7 +7,7 @@ Walraven's algorithm has a stated accuracy of 0.01 degrees. The implementation
 accounts for the 1979 Erratum and correct azimuth quadrant selection.
 
 # Accuracy
-Claimed accuracy: ±0.01°
+Claimed accuracy: ±0.0100°
 
 # Literature
 This algorithm is based on [Wal78](@cite) with corrections from the 1979 Erratum [Wal79](@cite)

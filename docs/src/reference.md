@@ -17,7 +17,7 @@ Pages = ["reference.md"]
 ## Core Functions
 
 ```@docs
-SolarPosition.solar_position
+SolarPosition.Positioning.solar_position
 SolarPosition.Positioning.solar_position!
 ```
 
@@ -35,7 +35,7 @@ SolarPosition.jl uses a type hierarchy for algorithms:
 
 ```@docs
 SolarPosition.Positioning.SolarAlgorithm
-SolarPosition.RefractionAlgorithm
+SolarPosition.Refraction.RefractionAlgorithm
 ```
 
 ## Modules

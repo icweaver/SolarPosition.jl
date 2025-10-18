@@ -20,7 +20,7 @@ using DocStringExtensions: TYPEDFIELDS, TYPEDEF
 
 
 """
-    RefractionAlgorithm
+    $(TYPEDEF)
 
 Abstract base type for atmospheric refraction correction algorithms.
 
@@ -35,7 +35,7 @@ struct MyRefraction <: RefractionAlgorithm end
 abstract type RefractionAlgorithm end
 
 """
-    NoRefraction <: RefractionAlgorithm
+    $(TYPEDEF)
 
 Indicates that no atmospheric refraction correction should be applied.
 

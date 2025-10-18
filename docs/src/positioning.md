@@ -2,11 +2,11 @@
 
 Solar position algorithms available in SolarPosition.jl.
 
-| Algorithm | Reference       | Accuracy | Status |
-| --------- | --------------- | -------- | ------ |
-| PSA       | [BALL01](@cite) | ±0.0083° | ✅     |
-| NOAA      | [NOAA](@cite)   | ±0.0167° | ✅     |
-| Walraven  | [Wal78](@cite)  | ±0.01°   | ✅     |
+| Algorithm                                             | Reference       | Accuracy | Status |
+| ----------------------------------------------------- | --------------- | -------- | ------ |
+| [`PSA`](@ref SolarPosition.Positioning.PSA)           | [BALL01](@cite) | ±0.0083° | ✅     |
+| [`NOAA`](@ref SolarPosition.Positioning.NOAA)         | [NOAA](@cite)   | ±0.0167° | ✅     |
+| [`Walraven`](@ref SolarPosition.Positioning.Walraven) | [Wal78](@cite)  | ±0.0100° | ✅     |
 
 ## [PSA](@id psa-algorithm)
 
@@ -17,7 +17,7 @@ The algorithm was originally published by [BALL01](@cite) and was later updated 
 [BMB20](@cite) with new coefficients for improved accuracy.
 
 ```@docs
-SolarPosition.PSA
+SolarPosition.Positioning.PSA
 ```
 
 ## [NOAA](@id noaa-algorithm)
@@ -26,13 +26,13 @@ The NOAA (National Oceanic and Atmospheric Administration) algorithm provides an
 alternative implementation based on [NOAA](@cite).
 
 ```@docs
-SolarPosition.NOAA
+SolarPosition.Positioning.NOAA
 ```
 
 ## [Walraven](@id walraven-algorithm)
 
 The Walraven algorithm is a solar position algorithm published in 1978 with stated
-accuracy of ±0.01°.
+accuracy of ±0.0100°.
 
 The algorithm was originally published by [Wal78](@cite) with corrections from the
 1979 Erratum [Wal79](@cite) and azimuth quadrant correction from [Spe89](@cite).
