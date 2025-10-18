@@ -1,30 +1,19 @@
 """
     $(TYPEDEF)
 
-PSA (Plataforma Solar de Almería) solar position algorithm.
+PSA (Plataforma Solar de Almería) solar position algorithm. This algorithm computes
+the solar position with high accuracy using empirical coefficients. Two coefficient sets
+are available: 2001 (range 1999-2015) and 2020 (range 2020-2050).
 
-This algorithm computes solar position with high accuracy using empirical coefficients.
-Two coefficient sets are available: 2001 (range 1999-2015) and 2020 (range 2020-2050).
+# Accuracy
+Claimed accuracy: ±0.004° for 2020 coefficients, ±0.01° for 2001 coefficients.
+
+# Literature
+This algorithm is based on the work by [BALL01](@cite) and was updated for 2020
+coefficients in [BMB20](@cite).
 
 # Fields
 $(TYPEDFIELDS)
-
-# Constructor
-- `PSA()`: Uses 2020 coefficients (default)
-- `PSA(2020)`: Uses 2020 coefficients (range 2020-2050, accuracy ±0.0083°)
-- `PSA(2001)`: Uses 2001 coefficients (range 1999-2015, accuracy ±0.0083°)
-
-# Literature
-This algorithm is based on the work by [BALL01](@cite) and was updated in [BMB20](@cite).
-
-# Example
-```jldoctest
-julia> pos = solar_position(obs, dt, PSA())
-SolPos{Float64}(51.2154455981643, -8.618482096636027, 98.61848209663603)
-
-julia> pos_historical = solar_position(obs, dt, PSA(2001))
-SolPos{Float64}(51.21527503642826, -8.618604682115866, 98.61860468211586)
-```
 """
 struct PSA <: SolarAlgorithm
     "Coefficient set year (2001 or 2020)"

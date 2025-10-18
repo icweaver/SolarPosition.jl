@@ -1,34 +1,20 @@
 """
     $(TYPEDEF)
 
-NOAA (National Oceanic and Atmospheric Administration) solar position algorithm.
-
-This algorithm is based on NOAA's Solar Position Calculator implementation.
-The algorithm is from "Astronomical Algorithms" by Jean Meeus.
+NOAA (National Oceanic and Atmospheric Administration) solar position algorithm. This
+algorithm is based on NOAA's Solar Position Calculator implementation. The algorithm is
+from "Astronomical Algorithms" by Jean Meeus.
 
 # Accuracy
 Claimed accuracy: ±0.0167° from years -2000 to +3000 for latitudes within ±72°.
 For latitudes outside this range, the accuracy is ±0.167°.
 
 # Literature
-Based on the NOAA solar position calculator [NOAA](@cite) and the work by [MEEUS91](@cite).
+Based on the NOAA solar position calculator [NOAA](@cite) and the work by
+[MEEUS91](@cite).
 
 # Fields
 $(TYPEDFIELDS)
-
-# Example
-```jldoctest
-julia> using Dates, TimeZones
-
-julia> obs = Observer(52.52, 13.41);  # Berlin
-
-julia> dt = ZonedDateTime(2024, 6, 21, 12, 0, 0, tz"UTC");
-
-julia> pos = solar_position(obs, dt, NOAA());
-
-julia> typeof(pos)
-SolPos{Float64}
-```
 """
 struct NOAA <: SolarAlgorithm
     "Difference between terrestrial time and UT1 [seconds]. If `nothing`, uses automatic calculation."
