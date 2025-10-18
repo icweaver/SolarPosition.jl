@@ -20,9 +20,8 @@ struct PSA <: SolarAlgorithm
     coeffs::Int
 end
 
-PSA() = PSA(2020)  # default to latest coefficients
+PSA() = PSA(2020)
 
-# Use a function instead of dictionary to avoid allocations
 @inline function get_psa_params(coeffs::Int)
     if coeffs == 2020
         return (

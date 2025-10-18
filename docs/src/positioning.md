@@ -2,11 +2,12 @@
 
 Solar position algorithms available in SolarPosition.jl.
 
-| Algorithm                                             | Reference       | Accuracy | Status |
-| ----------------------------------------------------- | --------------- | -------- | ------ |
-| [`PSA`](@ref SolarPosition.Positioning.PSA)           | [BALL01](@cite) | ±0.0083° | ✅     |
-| [`NOAA`](@ref SolarPosition.Positioning.NOAA)         | [NOAA](@cite)   | ±0.0167° | ✅     |
-| [`Walraven`](@ref SolarPosition.Positioning.Walraven) | [Wal78](@cite)  | ±0.0100° | ✅     |
+| Algorithm                                             | Reference       | Accuracy      | Status |
+| ----------------------------------------------------- | --------------- | ------------- | ------ |
+| [`PSA`](@ref SolarPosition.Positioning.PSA)           | [BALL01](@cite) | ±0.0083°      | ✅     |
+| [`NOAA`](@ref SolarPosition.Positioning.NOAA)         | [NOAA](@cite)   | ±0.0167°      | ✅     |
+| [`Walraven`](@ref SolarPosition.Positioning.Walraven) | [Wal78](@cite)  | ±0.0100°      | ✅     |
+| [`USNO`](@ref SolarPosition.Positioning.USNO)         | [USNO](@cite)   | ±0.0500° | ✅     |
 
 ## [PSA](@id psa-algorithm)
 
@@ -39,4 +40,16 @@ The algorithm was originally published by [Wal78](@cite) with corrections from t
 
 ```@docs
 SolarPosition.Positioning.Walraven
+```
+
+## [USNO](@id usno-algorithm)
+
+The USNO (U.S. Naval Observatory) algorithm provides solar position calculations based
+on formulas from the USNO's Astronomical Applications Department.
+
+The algorithm offers two options for calculating Greenwich mean sidereal time, providing
+flexibility for different accuracy requirements.
+
+```@docs
+SolarPosition.Positioning.USNO
 ```

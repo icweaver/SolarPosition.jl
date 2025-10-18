@@ -425,9 +425,10 @@ include("deltat.jl")
 include("psa.jl")
 include("noaa.jl")
 include("walraven.jl")
+include("usno.jl")
 
 export Observer,
-    PSA, NOAA, Walraven, solar_position, solar_position!, SolPos, ApparentSolPos
+    PSA, NOAA, Walraven, USNO, solar_position, solar_position!, SolPos, ApparentSolPos
 export calculate_deltat
 
 end

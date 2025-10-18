@@ -1,4 +1,4 @@
-"""Unit tests for USNO algorithm (not yet implemented)"""
+"""Unit tests for USNO algorithm"""
 
 function expected_usno()
     columns = [:elevation, :zenith, :azimuth]
@@ -56,85 +56,89 @@ function expected_usno_option_2()
     return DataFrame(reduce(hcat, values)', columns)
 end
 
-@testset "USNO (not implemented)" begin
-    @test_skip begin
-        # TODO: Implement USNO algorithm
-        # struct USNO <: SolarAlgorithm
-        #     delta_t::Union{Nothing, Float64, Vector{Float64}}
-        #     gmst_option::Int  # 1 or 2
-        # end
+@testset "USNO" begin
+    @testset "With default delta_t (gmst_option=1)" begin
+        df_expected = expected_usno()
+        conds = test_conditions()
+        @test size(df_expected, 1) == 19
+        @test size(df_expected, 2) == 3
+        @test size(conds, 1) == 19
+        @test size(conds, 2) == 4
 
-        @testset "Default (gmst_option=1)" begin
-            df_expected = expected_usno()
-            conds = test_conditions()
-            @test size(df_expected, 1) == 19
-            @test size(df_expected, 2) == 3
+        for ((dt, lat, lon, alt), (exp_elev, exp_zen, exp_az)) in
+            zip(eachrow(conds), eachrow(df_expected))
+            if ismissing(alt)
+                obs = Observer(lat, lon)
+            else
+                obs = Observer(lat, lon, altitude = alt)
+            end
 
-            # for ((dt, lat, lon, alt), (exp_elev, exp_zen, exp_az)) in
-            #     zip(eachrow(conds), eachrow(df_expected))
-            #     if ismissing(alt)
-            #         obs = Observer(lat, lon)
-            #     else
-            #         obs = Observer(lat, lon, altitude = alt)
-            #     end
-            #
-            #     res = solar_position(obs, dt, USNO(gmst_option=1))
-            #     @test isapprox(res.elevation, exp_elev, atol = 1e-6)
-            #     @test isapprox(res.zenith, exp_zen, atol = 1e-6)
-            #     @test isapprox(res.azimuth, exp_az, atol = 1e-6)
-            # end
-        end
+            res = solar_position(obs, dt, USNO())
 
-        @testset "gmst_option=2" begin
-            df_expected = expected_usno_option_2()
-            conds = test_conditions()
-
-            # Test with gmst_option=2
-            # Similar structure as above but with USNO(gmst_option=2)
-        end
-
-        @testset "delta_t with nothing" begin
-            # Test that delta_t=nothing works correctly
-            times = [ZonedDateTime(2020, 3, 23, 12, 0, 0, tz"UTC")]
-            obs = Observer(50.0, 10.0)
-
-            # res_default = solar_position(obs, times[1], USNO())
-            # res_nothing = solar_position(obs, times[1], USNO(delta_t=nothing))
-            #
-            # Results may differ when delta_t is nothing
-            # @test !isapprox(res_default.elevation, res_nothing.elevation, atol = 1e-10)
-        end
-
-        @testset "Invalid gmst_option" begin
-            # Test that invalid gmst_option throws error
-            # @test_throws ArgumentError USNO(gmst_option=3)
-            # @test_throws ArgumentError USNO(gmst_option="not_an_option")
+            @test isapprox(res.elevation, exp_elev, atol = 1e-6)
+            @test isapprox(res.zenith, exp_zen, atol = 1e-6)
+            @test isapprox(res.azimuth, exp_az, atol = 1e-6)
         end
     end
 
-    @testset "delta_t array and series input" begin
-        @test_skip begin
-            # Test that delta_t can be specified as either an array or float
-            times = collect(
-                ZonedDateTime(2020, 3, 23, 12, 0, 0, tz"UTC"):Hour(1):ZonedDateTime(
-                    2020,
-                    3,
-                    23,
-                    22,
-                    0,
-                    0,
-                    tz"UTC",
-                ),
-            )
-            obs = Observer(50.0, 10.0)
-            delta_t = fill(67.0, length(times))
+    @testset "With gmst_option=2" begin
+        df_expected = expected_usno_option_2()
+        conds = test_conditions()
 
-            # usno_array = solar_position(obs, times, USNO(delta_t=delta_t))
-            # usno_float = solar_position(obs, times, USNO(delta_t=67.0))
-            #
-            # @test usno_array.elevation ≈ usno_float.elevation
-            # @test usno_array.zenith ≈ usno_float.zenith
-            # @test usno_array.azimuth ≈ usno_float.azimuth
+        for ((dt, lat, lon, alt), (exp_elev, exp_zen, exp_az)) in
+            zip(eachrow(conds), eachrow(df_expected))
+            if ismissing(alt)
+                obs = Observer(lat, lon)
+            else
+                obs = Observer(lat, lon, altitude = alt)
+            end
+
+            res = solar_position(obs, dt, USNO(67.0, 2))
+
+            @test isapprox(res.elevation, exp_elev, atol = 1e-6)
+            @test isapprox(res.zenith, exp_zen, atol = 1e-6)
+            @test isapprox(res.azimuth, exp_az, atol = 1e-6)
         end
+    end
+
+    @testset "With delta_t=nothing" begin
+        df_expected = expected_usno()
+        conds = test_conditions()
+
+        for ((dt, lat, lon, alt), (exp_elev, exp_zen, exp_az)) in
+            zip(eachrow(conds), eachrow(df_expected))
+            if ismissing(alt)
+                obs = Observer(lat, lon)
+            else
+                obs = Observer(lat, lon, altitude = alt)
+            end
+
+            res = solar_position(obs, dt, USNO(nothing, 1))
+
+            # results can differ when delta_t is nothing
+            @test isapprox(res.elevation, exp_elev, atol = 1e0)
+            @test isapprox(res.zenith, exp_zen, atol = 1e0)
+            @test isapprox(res.azimuth, exp_az, atol = 1e0)
+        end
+    end
+
+    @testset "Invalid gmst_option" begin
+        @test_throws ErrorException USNO(67.0, 3)
+        @test_throws ErrorException USNO(67.0, 0)
+    end
+
+    @testset "Solar noon test" begin
+        lat, lon = 0.0, 0.0
+
+        # spring equinox at noon UTC when sun is roughly overhead at prime meridian
+        dt = ZonedDateTime(2024, 3, 20, 12, 0, 0, tz"UTC")
+        obs = Observer(lat, lon)
+
+        res = solar_position(obs, dt, USNO())
+
+        # at equinox and solar noon at equator/prime meridian,
+        # elevation should be close to 90 degrees
+        @test res.elevation > 85.0
+        @test res.zenith < 5.0
     end
 end
