@@ -20,11 +20,11 @@ azimuth angles, which are essential for various applications where the sun is im
 
 ## Acknowledgement
 
-This package is based on the work done by reachers in the field of solar photovoltaics
+This package is based on the work done by researchers in the field of solar photovoltaics
 in the packages [solposx](https://github.com/assessingsolar/solposx) and
 [pvlib-python](https://github.com/pvlib/pvlib-python). In particular the positioning and
-refraction methods have been adapted from [solposx](https://github.com/assessingsolar/solposx), while
-the SPA algorithm and the deltat calculation are ported from [pvlib-python](https://github.com/pvlib/pvlib-python). These packages also provide validation data necessary to ensure
+refraction methods have been adapted from [solposx](https://github.com/assessingsolar/solposx),
+while the SPA algorithm and the deltat calculation are ported from [pvlib-python](https://github.com/pvlib/pvlib-python). These packages also provide validation data necessary to ensure
 correctness of the algorithm implementations.
 
 ## Example Usage

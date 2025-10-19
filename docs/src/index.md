@@ -11,28 +11,46 @@ CurrentModule = SolarPosition
 [![Docs workflow Status](https://github.com/JuliaSolarPV/SolarPosition.jl/actions/workflows/Docs.yml/badge.svg?branch=main)](https://github.com/JuliaSolarPV/SolarPosition.jl/actions/workflows/Docs.yml?query=branch%3Amain)
 [![Aqua QA](https://raw.githubusercontent.com/JuliaTesting/Aqua.jl/master/badge.svg)](https://github.com/JuliaTesting/Aqua.jl)
 
-SolarPosition.jl provides a simple, unified interface to a collection of solar position
-algorithms written in pure, performant julia. The position of the sun in the sky is
-based on date, time, and a given observer location.
+SolarPosition.jl provides a simple, unified interface to a collection of validated solar position
+algorithms written in pure, performant julia.
 
-A solar position algorithm is commonly used to calculate the solar zenith and
-azimuth angles, which are essential for various applications such as solar energy systems,
-building design, and climate studies.
+Solar positioning algorithms are commonly used to calculate the solar zenith and
+azimuth angles, which are essential for various applications where the sun is important, such as:
+
+- Solar energy systems
+- Building design
+- Climate studies
+- Astronomy
+
+## Acknowledgement
+
+This package is based on the work done by reachers in the field of solar photovoltaics
+in the packages [solposx](https://github.com/assessingsolar/solposx) and
+[pvlib-python](https://github.com/pvlib/pvlib-python). In particular the positioning and
+refraction methods have been adapted from [solposx](https://github.com/assessingsolar/solposx), while
+the SPA algorithm and the deltat calculation are ported from [pvlib-python](https://github.com/pvlib/pvlib-python). These packages also provide validation data necessary to ensure
+correctness of the algorithm implementations.
 
 ## Example Usage
 
 ```julia
-using Dates
-using SolarPosition
+julia> using SolarPosition, Dates
 
-# define observer location (latitude, longitude, altitude in meters)
-obs = Observer(52.358134610343214, 4.881269505489815, 0.0)  # Van Gogh Museum
+julia> # define observer location (latitude, longitude, altitude in meters)
+       obs = Observer(52.358134610343214, 4.881269505489815, 0.0)  # Van Gogh Museum
+Observer{Float64}(52.358134610343214, 4.881269505489815, 0.0, 0.9138218391528874, 0.08519422454799269, 0.7918436055968163, 0.6107239182113582)
 
-# a whole year of hourly timestamps
-times = collect(DateTime(2023):Hour(1):DateTime(2024))
+julia> # a whole year of hourly timestamps
+       times = collect(DateTime(2023):Hour(1):DateTime(2024));
 
-# compute solar positions for all timestamps
-positions = solar_position(obs, times)
+julia> # compute solar positions for all timestamps
+       positions = solar_position(obs, times)
+8761-element StructArray(::Vector{Float64}, ::Vector{Float64}, ::Vector{Float64}) with eltype SolPos{Float64}:
+ SolPos{Float64}(7.645796258008522, -60.516077401435986, 150.51607740143598)
+ SolPos{Float64}(33.774266870245846, -57.24907673755472, 147.2490767375547)
+ ⋮
+ SolPos{Float64}(339.955567224588, -59.54193321925232, 149.54193321925231)
+ SolPos{Float64}(7.703667844963789, -60.532796780625304, 150.5327967806253)
 ```
 
 ## Solar positioning algorithms
@@ -45,22 +63,22 @@ accuracy and implementation status.
 | ----------------------------------------------------- | ----------------------------------------------------------------------------------------------- | -------- | ------ |
 | [`PSA`](@ref SolarPosition.Positioning.PSA)           | [Blanco-Muriel et al.](https://www.sciencedirect.com/science/article/abs/pii/S0038092X00001560) | ±0.0083° | ✅     |
 | [`NOAA`](@ref SolarPosition.Positioning.NOAA)         | [Global Monitoring Laboratory](https://gml.noaa.gov/grad/solcalc/calcdetails.html)              | ±0.0167° | ✅     |
-| [`Walraven`](@ref SolarPosition.Positioning.Walraven) | [Wal78](@cite)                                                                                  | ±0.0100° | ✅     |
-| [`USNO`](@ref SolarPosition.Positioning.USNO)         | [USNO](@cite)                                                                                   | ±0.0500° | ✅     |
-| [`SPA`](@ref SolarPosition.Positioning.SPA)           | [RA08](@cite)                                                                                   | ±0.0003° | ✅     |
+| [`Walraven`](@ref SolarPosition.Positioning.Walraven) | [Walraven, 1978](https://doi.org/10.1016/0038-092X(78)90155-X)                                | ±0.0100° | ✅     |
+| [`USNO`](@ref SolarPosition.Positioning.USNO)         | [U.S. Naval Observatory](https://aa.usno.navy.mil/faq/sun_approx)                                | ±0.0500° | ✅     |
+| [`SPA`](@ref SolarPosition.Positioning.SPA)           | [Reda & Andreas, 2008](https://doi.org/10.1016/j.solener.2007.08.003)                            | ±0.0003° | ✅     |
 
 ## Refraction correction algorithms
 
 Atmospheric refraction correction algorithms available in SolarPosition.jl.
 
-| Algorithm                                              | Reference      | Atmospheric Parameters | Status |
-| ------------------------------------------------------ | -------------- | ---------------------- | ------ |
-| [`HUGHES`](@ref SolarPosition.Refraction.HUGHES)       | [Hug85](@cite) | Pressure, Temperature  | ✅     |
-| [`ARCHER`](@ref SolarPosition.Refraction.ARCHER)       | [Arc80](@cite) | None                   | ✅     |
-| [`BENNETT`](@ref SolarPosition.Refraction.BENNETT)     | [Ben82](@cite) | Pressure, Temperature  | ✅     |
-| [`MICHALSKY`](@ref SolarPosition.Refraction.MICHALSKY) | [Mic88](@cite) | None                   | ✅     |
-| [`SG2`](@ref SolarPosition.Refraction.SG2)             | [BW12](@cite)  | Pressure, Temperature  | ✅     |
-| [`SPARefraction`](@ref SolarPosition.Refraction.SPARefraction)             | [RA08](@cite)  | Pressure, Temperature  | ✅     |
+| Algorithm                                              | Reference                                                                                        | Atmospheric Parameters | Status |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------ | ---------------------- | ------ |
+| [`HUGHES`](@ref SolarPosition.Refraction.HUGHES)       | [Hughes, 1985](https://pvpmc.sandia.gov/app/uploads/sites/243/2022/10/Engineering-Astronomy.pdf) | Pressure, Temperature  | ✅     |
+| [`ARCHER`](@ref SolarPosition.Refraction.ARCHER)       | Archer et al., 1980                                                                              | None                   | ✅     |
+| [`BENNETT`](@ref SolarPosition.Refraction.BENNETT)     | [Bennett, 1982](https://doi.org/10.1017/S0373463300022037)                                       | Pressure, Temperature  | ✅     |
+| [`MICHALSKY`](@ref SolarPosition.Refraction.MICHALSKY) | [Michalsky, 1988](https://doi.org/10.1016/0038-092X(88)90045-X)                                | None                   | ✅     |
+| [`SG2`](@ref SolarPosition.Refraction.SG2)             | [Blanc & Wald, 2012](https://doi.org/10.1016/j.solener.2012.07.018)                              | Pressure, Temperature  | ✅     |
+| [`SPARefraction`](@ref SolarPosition.Refraction.SPARefraction)             | [Reda & Andreas, 2004](https://doi.org/10.1016/j.solener.2003.12.003)                            | Pressure, Temperature  | ✅     |
 
 ## How to Cite
 
