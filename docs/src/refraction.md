@@ -11,7 +11,7 @@ Atmospheric refraction causes the apparent position of the sun to differ from it
 | [`BENNETT`](@ref SolarPosition.Refraction.BENNETT)     | [Ben82](@cite) | Pressure, Temperature  | ✅     |
 | [`MICHALSKY`](@ref SolarPosition.Refraction.MICHALSKY) | [Mic88](@cite) | None                   | ✅     |
 | [`SG2`](@ref SolarPosition.Refraction.SG2)             | [BW12](@cite)  | Pressure, Temperature  | ✅     |
-| [`SPA`](@ref SolarPosition.Refraction.SPA)             | [RA08](@cite)  | Pressure, Temperature  | ✅     |
+| [`SPARefraction`](@ref SolarPosition.Refraction.SPARefraction)             | [RA08](@cite)  | Pressure, Temperature  | ✅     |
 
 To calculate refraction, we can use the [`refraction`](@ref SolarPosition.Refraction.refraction) function:
 
@@ -95,14 +95,14 @@ for elevations above and below a threshold. It accounts for atmospheric pressure
 SolarPosition.Refraction.SG2
 ```
 
-## [SPA](@id spa-refraction)
+## [SPARefraction](@id spa-refraction)
 
-The SPA (Solar Position Algorithm) refraction model is part of NREL's high-accuracy solar position algorithm.
+The SPARefraction (Solar Position Algorithm) refraction model is part of NREL's high-accuracy solar position algorithm.
 
 From [RA08](@cite), this is the refraction correction used in NREL's SPA algorithm, which is
 accurate to ±0.0003° over the years -2000 to 6000. It includes a configurable refraction limit
 for below-horizon calculations.
 
 ```@docs
-SolarPosition.Refraction.SPA
+SolarPosition.Refraction.SPARefraction
 ```

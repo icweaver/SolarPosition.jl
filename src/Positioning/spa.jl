@@ -48,9 +48,15 @@ SPA() = SPA(67.0, 101325.0, 12.0, 0.5667)
 """
     $(TYPEDEF)
 
+!!! note "Internal Implementation"
+    This is an internal optimization type not exported to users. Use `Observer` instead.
+
 Optimized observer type for SPA algorithm with pre-computed location-dependent values.
 Will cache terms that depend only on observer location to speed up calculations for
 multiple times at the same location.
+
+# Internal Fields
+$(TYPEDFIELDS)
 """
 struct SPAObserver{T<:AbstractFloat}
     "Geodetic latitude (+N)"

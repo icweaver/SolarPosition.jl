@@ -60,7 +60,7 @@ Atmospheric refraction correction algorithms available in SolarPosition.jl.
 | [`BENNETT`](@ref SolarPosition.Refraction.BENNETT)     | [Ben82](@cite) | Pressure, Temperature  | ✅     |
 | [`MICHALSKY`](@ref SolarPosition.Refraction.MICHALSKY) | [Mic88](@cite) | None                   | ✅     |
 | [`SG2`](@ref SolarPosition.Refraction.SG2)             | [BW12](@cite)  | Pressure, Temperature  | ✅     |
-| [`SPA`](@ref SolarPosition.Refraction.SPA)             | [RA08](@cite)  | Pressure, Temperature  | ✅     |
+| [`SPARefraction`](@ref SolarPosition.Refraction.SPARefraction)             | [RA08](@cite)  | Pressure, Temperature  | ✅     |
 
 ## How to Cite
 
