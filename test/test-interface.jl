@@ -1,14 +1,17 @@
 """Unit tests for solar_position interface variants"""
 
-# using SolarPosition.Positioning: solar_position, solar_position!, Observer, PSA
 using SolarPosition.Positioning:
-    Observer, PSA, NOAA, Walraven, SolPos, solar_position, solar_position!
+    Observer, PSA, NOAA, Walraven, SPA, SolPos, SPASolPos, solar_position, solar_position!
 using Dates, TimeZones, Tables, DataFrames
 using StructArrays: StructVector
 using Dates: Hour, @dateformat_str
 
-@testset "$alg_name" for (alg_name, alg) in
-                         [("PSA", PSA()), ("NOAA", NOAA()), ("Walraven", Walraven())]
+@testset "$alg_name" for (alg_name, alg) in [
+    ("PSA", PSA()),
+    ("NOAA", NOAA()),
+    ("Walraven", Walraven()),
+    ("SPA", SPA()),
+]
 
     @testset "Scalar Interface" begin
         lat, lon, alt = 45.0, 10.0, 4000.0
@@ -41,37 +44,53 @@ using Dates: Hour, @dateformat_str
         single_result = solar_position(obs, single_dt, alg)
 
         @testset "In place" begin
-            pos = StructVector{SolPos{Float64}}((
-                azimuth = zeros(n_dts),
-                elevation = zeros(n_dts),
-                zenith = zeros(n_dts),
-            ))
+            PosType = alg isa SPA ? SPASolPos{Float64} : SolPos{Float64}
+
+            if alg isa SPA
+                pos = StructVector{SPASolPos{Float64}}((
+                    azimuth = zeros(n_dts),
+                    elevation = zeros(n_dts),
+                    zenith = zeros(n_dts),
+                    apparent_elevation = zeros(n_dts),
+                    apparent_zenith = zeros(n_dts),
+                    equation_of_time = zeros(n_dts),
+                ))
+            else
+                pos = StructVector{SolPos{Float64}}((
+                    azimuth = zeros(n_dts),
+                    elevation = zeros(n_dts),
+                    zenith = zeros(n_dts),
+                ))
+            end
 
             solar_position!(pos, obs, dts, alg)
-            @test all(pos .!= 0.0)
+            @test all(pos.azimuth .!= 0.0)
             @test pos[1] == single_result
-            @test pos isa StructVector{SolPos{Float64}}
+            @test pos isa StructVector{PosType}
             @test length(pos) == n_dts
 
-            # test a second time to ensure there are no allocations
-            # (we test ≤ 32 because on julia LTS there are some unavoidable allocations)
-            @test @allocated(solar_position!(pos, obs, dts, alg)) ≤ 32
-            @test all(pos .!= 0.0)
+            # test a second time to ensure there are minimal allocations
+            alloc_limit = alg isa SPA ? 200 : 32
+            @test @allocated(solar_position!(pos, obs, dts, alg)) ≤ alloc_limit
+            @test all(pos.azimuth .!= 0.0)
             @test pos[1] == single_result
-            @test pos isa StructVector{SolPos{Float64}}
+            @test pos isa StructVector{PosType}
             @test length(pos) == n_dts
         end
 
         @testset "Return new" begin
+            # Determine result type based on algorithm
+            PosType = alg isa SPA ? SPASolPos{Float64} : SolPos{Float64}
+
             # DateTime
             pos1 = solar_position(obs, dts, alg)
-            @test pos1 isa StructVector{SolPos{Float64}}
+            @test pos1 isa StructVector{PosType}
             @test length(pos1) == n_dts
             @test pos1[1] == single_result
 
             # ZonedDateTime
             pos2 = solar_position(obs, dts_zoned, alg)
-            @test pos2 isa StructVector{SolPos{Float64}}
+            @test pos2 isa StructVector{PosType}
             @test length(pos2) == n_dts
             @test pos2[1] == single_result
 
@@ -99,10 +118,26 @@ using Dates: Hour, @dateformat_str
             @test all(isfinite, df.elevation)
             @test all(isfinite, df.zenith)
 
+            # SPA algorithm adds additional fields
+            if alg isa SPA
+                @test "apparent_elevation" in names(df)
+                @test "apparent_zenith" in names(df)
+                @test "equation_of_time" in names(df)
+                @test all(isfinite, df.apparent_elevation)
+                @test all(isfinite, df.apparent_zenith)
+                @test all(isfinite, df.equation_of_time)
+            end
+
             direct_result = solar_position(obs, dt_vector, alg)
             @test df.azimuth == direct_result.azimuth
             @test df.elevation == direct_result.elevation
             @test df.zenith == direct_result.zenith
+
+            if alg isa SPA
+                @test df.apparent_elevation == direct_result.apparent_elevation
+                @test df.apparent_zenith == direct_result.apparent_zenith
+                @test df.equation_of_time == direct_result.equation_of_time
+            end
         end
 
         @testset "Error Cases" begin
@@ -115,6 +150,13 @@ using Dates: Hour, @dateformat_str
             @test "elevation" in names(df_empty)
             @test "zenith" in names(df_empty)
             @test length(df_empty.azimuth) == 0
+
+            if alg isa SPA
+                @test "apparent_elevation" in names(df_empty)
+                @test "apparent_zenith" in names(df_empty)
+                @test "equation_of_time" in names(df_empty)
+                @test length(df_empty.apparent_elevation) == 0
+            end
         end
 
         @testset "Custom DateTime Column" begin
@@ -130,6 +172,12 @@ using Dates: Hour, @dateformat_str
             @test df.azimuth == direct_result.azimuth
             @test df.elevation == direct_result.elevation
             @test df.zenith == direct_result.zenith
+
+            if alg isa SPA
+                @test df.apparent_elevation == direct_result.apparent_elevation
+                @test df.apparent_zenith == direct_result.apparent_zenith
+                @test df.equation_of_time == direct_result.equation_of_time
+            end
         end
 
         @testset "Return new Table" begin
@@ -148,6 +196,15 @@ using Dates: Hour, @dateformat_str
             @test result_table.azimuth == direct_result.azimuth
             @test result_table.elevation == direct_result.elevation
             @test result_table.zenith == direct_result.zenith
+
+            if alg isa SPA
+                @test "apparent_elevation" in names(result_table)
+                @test "apparent_zenith" in names(result_table)
+                @test "equation_of_time" in names(result_table)
+                @test result_table.apparent_elevation == direct_result.apparent_elevation
+                @test result_table.apparent_zenith == direct_result.apparent_zenith
+                @test result_table.equation_of_time == direct_result.equation_of_time
+            end
         end
     end
 end
