@@ -30,7 +30,23 @@ correctness of the algorithm implementations.
 ## Example Usage
 
 ```julia
+julia> using SolarPosition, Dates
 
+julia> # define observer location (latitude, longitude, altitude in meters)
+       obs = Observer(52.358134610343214, 4.881269505489815, 0.0)  # Van Gogh Museum
+Observer{Float64}(52.358134610343214, 4.881269505489815, 0.0, 0.9138218391528874, 0.08519422454799269, 0.7918436055968163, 0.6107239182113582)
+
+julia> # a whole year of hourly timestamps
+       times = collect(DateTime(2023):Hour(1):DateTime(2024));
+
+julia> # compute solar positions for all timestamps
+       positions = solar_position(obs, times)
+8761-element StructArray(::Vector{Float64}, ::Vector{Float64}, ::Vector{Float64}) with eltype SolPos{Float64}:
+ SolPos{Float64}(7.645796258008522, -60.516077401435986, 150.51607740143598)
+ SolPos{Float64}(33.774266870245846, -57.24907673755472, 147.2490767375547)
+ ⋮
+ SolPos{Float64}(339.955567224588, -59.54193321925232, 149.54193321925231)
+ SolPos{Float64}(7.703667844963789, -60.532796780625304, 150.5327967806253)
 ```
 
 ## Solar positioning algorithms
