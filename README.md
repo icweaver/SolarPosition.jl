@@ -7,30 +7,30 @@
 [![Docs workflow Status](https://github.com/JuliaSolarPV/SolarPosition.jl/actions/workflows/Docs.yml/badge.svg?branch=main)](https://github.com/JuliaSolarPV/SolarPosition.jl/actions/workflows/Docs.yml?query=branch%3Amain)
 [![Aqua QA](https://raw.githubusercontent.com/JuliaTesting/Aqua.jl/master/badge.svg)](https://github.com/JuliaTesting/Aqua.jl)
 
-SolarPosition.jl provides a simple, unified interface to a collection of solar position
-algorithms written in pure, performant julia. The position of the sun in the sky is
-based on date, time, and a given observer location.
+SolarPosition.jl provides a simple, unified interface to a collection of validated solar position
+algorithms written in pure, performant julia.
 
-![solarposition logo](sunpathpolarplot.png)
+Solar positioning algorithms are commonly used to calculate the solar zenith and
+azimuth angles, which are essential for various applications where the sun is important, such as:
 
-A solar position algorithm is commonly used to calculate the solar zenith and
-azimuth angles, which are essential for various applications such as solar energy systems,
-building design, and climate studies.
+- Solar energy systems
+- Building design
+- Climate studies
+- Astronomy
+
+## Acknowledgement
+
+This package is based on the work done by reachers in the field of solar photovoltaics
+in the packages [solposx](https://github.com/assessingsolar/solposx) and
+[pvlib-python](https://github.com/pvlib/pvlib-python). In particular the positioning and
+refraction methods have been adapted from [solposx](https://github.com/assessingsolar/solposx), while
+the SPA algorithm and the deltat calculation are ported from [pvlib-python](https://github.com/pvlib/pvlib-python). These packages also provide validation data necessary to ensure
+correctness of the algorithm implementations.
 
 ## Example Usage
 
 ```julia
-using Dates
-using SolarPosition
 
-# define observer location (latitude, longitude, altitude in meters)
-obs = Observer(52.358134610343214, 4.881269505489815, 0.0)  # Van Gogh Museum
-
-# a whole year of hourly timestamps
-times = collect(DateTime(2023):Hour(1):DateTime(2024))
-
-# compute solar positions for all timestamps
-positions = solar_position(obs, times)
 ```
 
 ## Solar positioning algorithms
