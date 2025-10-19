@@ -375,7 +375,6 @@ function equation_of_time(M::T, α::T, δψ::T, ε::T) where {T}
 end
 
 function _solar_position(obs::Observer{T}, dt::DateTime, alg::SPA) where {T}
-    # Convert Observer to SPAObserver and dispatch to optimized version
     spa_obs = SPAObserver{T}(obs.latitude, obs.longitude, obs.altitude)
     return _solar_position(spa_obs, dt, alg)
 end
@@ -455,7 +454,7 @@ function _solar_position(obs::SPAObserver{T}, dt::DateTime, alg::SPA) where {T}
     θz0 = 90.0 - e0  # zenith without refraction
 
     # azimuth (same for both apparent and non-apparent)
-    ϕ = topocentric_azimuth_angle(H′, δ′, obs.latitude)
+    az = topocentric_azimuth_angle(H′, δ′, obs.latitude)
 
-    return SPASolPos{T}(ϕ, e0, θz0, e, θz, eot)
+    return SPASolPos{T}(az, e0, θz0, e, θz, eot)
 end

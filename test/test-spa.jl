@@ -81,16 +81,11 @@ end
     end
 
     @testset "SPA refraction at high elevation" begin
-        # Test that SPA sets refraction to zero for solar elevation angles
-        # between 85 and 90 degrees (when sun is nearly overhead)
-        # The below example has a solar elevation angle of ~87.9°
         times = [ZonedDateTime(2020, 3, 23, 12, 0, 0, tz"UTC")]
         obs = Observer(0.0, 0.0)  # Equator at prime meridian
-
         res = solar_position(obs, times[1], SPA())
 
-        # At such high elevation, refraction correction should be minimal
-        # so elevation ≈ apparent_elevation
+        # refraction correction should be minimal
         @test isapprox(res.elevation, res.apparent_elevation, atol = 1e-3)
     end
 
@@ -99,33 +94,30 @@ end
         dt = ZonedDateTime(2020, 10, 17, 12, 30, 0, tz"UTC")
         obs = Observer(lat, lon)
 
-        # Test with different pressure/temperature
+        # test with different pressure/temperature
         res_default = solar_position(obs, dt, SPA(67.0, 101325.0, 12.0, 0.5667))
         res_custom = solar_position(obs, dt, SPA(67.0, 95000.0, 25.0, 0.5667))
 
-        # Different atmospheric conditions should give slightly different refraction
+        # different atmospheric conditions should give slightly different refraction
         @test !isapprox(
             res_default.apparent_elevation,
             res_custom.apparent_elevation,
             atol = 1e-6,
         )
-        # But the actual elevation should be the same
+
         @test isapprox(res_default.elevation, res_custom.elevation, atol = 1e-10)
     end
 
     @testset "Multiple times at same location" begin
-        # Test that SPA works correctly with multiple timestamps at same location
         lat, lon, alt = 40.0, -105.0, 1655.0
         obs = Observer(lat, lon, altitude = alt)
 
-        # Generate multiple timestamps
+        # generate multiple timestamps
         base_dt = DateTime(2023, 6, 21, 0, 0, 0)
         times = [base_dt + Hour(h) for h = 0:23]
-
-        # Compute positions for all times
         results = [solar_position(obs, dt, SPA()) for dt in times]
 
-        # Verify we got 24 results and they're reasonable
+        # verify we got 24 results and they're reasonable
         @test length(results) == 24
         @test all(r -> -180.0 <= r.azimuth <= 360.0, results)
         @test all(r -> -90.0 <= r.elevation <= 90.0, results)
