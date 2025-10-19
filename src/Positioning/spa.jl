@@ -45,6 +45,63 @@ end
 SPA() = SPA(67.0, 101325.0, 12.0, 0.5667)
 
 
+"""
+    $(TYPEDEF)
+
+Optimized observer type for SPA algorithm with pre-computed location-dependent values.
+Will cache terms that depend only on observer location to speed up calculations for
+multiple times at the same location.
+"""
+struct SPAObserver{T<:AbstractFloat}
+    "Geodetic latitude (+N)"
+    latitude::T
+    "Longitude (+E)"
+    longitude::T
+    "Altitude above mean sea level (meters)"
+    altitude::T
+    "Latitude in radians"
+    latitude_rad::T
+    "Longitude in radians"
+    longitude_rad::T
+    "sin(latitude)"
+    sin_lat::T
+    "cos(latitude)"
+    cos_lat::T
+    "Cached u term for parallax (reduced latitude)"
+    u::T
+    "Cached x term for parallax correction"
+    x::T
+    "Cached y term for parallax correction"
+    y::T
+
+    function SPAObserver{T}(lat::T, lon::T, alt::T = zero(T)) where {T<:AbstractFloat}
+        # apply pole corrections to avoid numerical issues
+        if lat == 90.0
+            lat -= 1e-6
+            @warn "Latitude was 90°. Adjusted to $(lat)° to avoid singularities."
+        elseif lat == -90.0
+            lat += 1e-6
+            @warn "Latitude was -90°. Adjusted to $(lat)° to avoid singularities."
+        end
+
+        lat_rad = deg2rad(lat)
+        lon_rad = deg2rad(lon)
+        sin_lat = sin(lat_rad)
+        cos_lat = cos(lat_rad)
+
+        # pre-compute parallax terms
+        u = atan(0.99664719 * tan(lat_rad))
+        x = cos(u) + alt / 6378140.0 * cos_lat
+        y = 0.99664719 * sin(u) + alt / 6378140.0 * sin_lat
+
+        new{T}(lat, lon, alt, lat_rad, lon_rad, sin_lat, cos_lat, u, x, y)
+    end
+end
+
+SPAObserver(lat::T, lon::T; altitude = 0.0) where {T} = SPAObserver{T}(lat, lon, altitude)
+SPAObserver(lat::T, lon::T, alt::T) where {T} = SPAObserver{T}(lat, lon, alt)
+
+
 # heliocentric longitude coefficients (L0-L5)
 include("spa_coefficients.jl")
 
@@ -317,8 +374,13 @@ function equation_of_time(M::T, α::T, δψ::T, ε::T) where {T}
     return E
 end
 
-
 function _solar_position(obs::Observer{T}, dt::DateTime, alg::SPA) where {T}
+    # Convert Observer to SPAObserver and dispatch to optimized version
+    spa_obs = SPAObserver{T}(obs.latitude, obs.longitude, obs.altitude)
+    return _solar_position(spa_obs, dt, alg)
+end
+
+function _solar_position(obs::SPAObserver{T}, dt::DateTime, alg::SPA) where {T}
     δt = if alg.delta_t === nothing
         calculate_deltat(dt)
     else
@@ -367,15 +429,13 @@ function _solar_position(obs::Observer{T}, dt::DateTime, alg::SPA) where {T}
     # observer local hour angle
     H = local_hour_angle(ν, obs.longitude, α)
 
-    # parallax correction
+    # parallax correction - use pre-computed values from SPAObserver
     ξ = equatorial_horizontal_parallax(R)
-    u = u_term(obs.latitude)
-    x = x_term(u, obs.latitude, obs.altitude)
-    y = y_term(u, obs.latitude, obs.altitude)
+    # Note: obs.u, obs.x, obs.y are already computed in SPAObserver constructor
 
     # topocentric sun position
-    Δα = parallax_sun_right_ascension(x, ξ, H, δ)
-    δ′ = topocentric_sun_declination(δ, x, y, ξ, Δα, H)
+    Δα = parallax_sun_right_ascension(obs.x, ξ, H, δ)
+    δ′ = topocentric_sun_declination(δ, obs.x, obs.y, ξ, Δα, H)
     H′ = mod(H - Δα, 360.0)  # topocentric local hour angle
 
     # topocentric elevation (without atmosphere)

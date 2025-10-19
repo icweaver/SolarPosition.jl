@@ -1,7 +1,7 @@
 """
     $(TYPEDEF)
 
-SPA (Solar Position Algorithm) refraction model.
+SPARefraction - SPA (Solar Position Algorithm) refraction model.
 
 Atmospheric refraction correction from the SPA algorithm.
 
@@ -13,9 +13,9 @@ Solar Position Algorithm (SPA).
 $(TYPEDFIELDS)
 
 # Constructor
-- `SPA()`: Uses default parameters: pressure = 101325 Pa, temperature = 12 °C, refraction_limit = -0.5667°
-- `SPA(pressure, temperature)`: Specify custom pressure [Pa] and temperature [°C], uses default refraction_limit
-- `SPA(pressure, temperature, refraction_limit)`: Also specify refraction limit [degrees]
+- `SPARefraction()`: Uses default parameters: pressure = 101325 Pa, temperature = 12 °C, refraction_limit = -0.5667°
+- `SPARefraction(pressure, temperature)`: Specify custom pressure [Pa] and temperature [°C], uses default refraction_limit
+- `SPARefraction(pressure, temperature, refraction_limit)`: Also specify refraction limit [degrees]
 
 # Notes
 The equation to calculate the refraction correction is given by:
@@ -38,14 +38,14 @@ This method was described by [RA08](@cite).
 ```julia
 using SolarPosition
 
-# Create SPA refraction model with default parameters
-spa = SPA()
+# Create SPARefraction model with default parameters
+spa = SPARefraction()
 
 # Or specify custom atmospheric conditions
-spa_custom = SPA(101325.0, 25.0)  # 25°C temperature
+spa_custom = SPARefraction(101325.0, 25.0)  # 25°C temperature
 
 # With custom refraction limit
-spa_limit = SPA(101325.0, 12.0, -1.0)  # Don't correct below -1°
+spa_limit = SPARefraction(101325.0, 12.0, -1.0)  # Don't correct below -1°
 
 # Apply refraction correction to elevation angle
 elevation = 30.0  # degrees
@@ -53,7 +53,7 @@ refraction_correction = refraction(spa, elevation)
 apparent_elevation = elevation + refraction_correction
 ```
 """
-struct SPA{T} <: RefractionAlgorithm where {T<:AbstractFloat}
+struct SPARefraction{T} <: RefractionAlgorithm where {T<:AbstractFloat}
     "Annual average atmospheric pressure [Pascal]"
     pressure::T
     "Annual average temperature [°C]"
@@ -62,11 +62,11 @@ struct SPA{T} <: RefractionAlgorithm where {T<:AbstractFloat}
     refraction_limit::T
 end
 
-SPA() = SPA{Float64}(101325.0, 12.0, -0.5667)
-SPA(pressure::T, temperature::T) where {T<:AbstractFloat} =
-    SPA{T}(pressure, temperature, T(-0.5667))
+SPARefraction() = SPARefraction{Float64}(101325.0, 12.0, -0.5667)
+SPARefraction(pressure::T, temperature::T) where {T<:AbstractFloat} =
+    SPARefraction{T}(pressure, temperature, T(-0.5667))
 
-function _refraction(model::SPA{T}, elevation_deg::T) where {T<:AbstractFloat}
+function _refraction(model::SPARefraction{T}, elevation_deg::T) where {T<:AbstractFloat}
     # Convert pressure from Pascal to hPa/mbar
     pressure_hPa = model.pressure / T(100.0)
 

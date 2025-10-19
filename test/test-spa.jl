@@ -1,7 +1,5 @@
 """Unit tests for SPA algorithm"""
 
-import SolarPosition.Positioning: SPA as SPAAlg
-
 function expected_spa()
     columns = [
         :elevation,
@@ -54,7 +52,7 @@ end
             end
 
             # SPA includes refraction correction and equation of time
-            res = solar_position(obs, dt, SPAAlg())
+            res = solar_position(obs, dt, SPA())
 
             @test isapprox(res.elevation, row.elevation, atol = 1e-6)
             @test isapprox(res.zenith, row.zenith, atol = 1e-6)
@@ -73,7 +71,7 @@ end
                 obs = Observer(lat, lon, altitude = alt)
             end
 
-            res = solar_position(obs, dt, SPAAlg(nothing, 101325.0, 12.0, 0.5667))
+            res = solar_position(obs, dt, SPA(nothing, 101325.0, 12.0, 0.5667))
 
             # results can differ when delta_t is nothing
             @test isapprox(res.elevation, row.elevation, atol = 1e0)
@@ -89,7 +87,7 @@ end
         times = [ZonedDateTime(2020, 3, 23, 12, 0, 0, tz"UTC")]
         obs = Observer(0.0, 0.0)  # Equator at prime meridian
 
-        res = solar_position(obs, times[1], SPAAlg())
+        res = solar_position(obs, times[1], SPA())
 
         # At such high elevation, refraction correction should be minimal
         # so elevation ≈ apparent_elevation
@@ -102,8 +100,8 @@ end
         obs = Observer(lat, lon)
 
         # Test with different pressure/temperature
-        res_default = solar_position(obs, dt, SPAAlg(67.0, 101325.0, 12.0, 0.5667))
-        res_custom = solar_position(obs, dt, SPAAlg(67.0, 95000.0, 25.0, 0.5667))
+        res_default = solar_position(obs, dt, SPA(67.0, 101325.0, 12.0, 0.5667))
+        res_custom = solar_position(obs, dt, SPA(67.0, 95000.0, 25.0, 0.5667))
 
         # Different atmospheric conditions should give slightly different refraction
         @test !isapprox(
@@ -113,5 +111,23 @@ end
         )
         # But the actual elevation should be the same
         @test isapprox(res_default.elevation, res_custom.elevation, atol = 1e-10)
+    end
+
+    @testset "Multiple times at same location" begin
+        # Test that SPA works correctly with multiple timestamps at same location
+        lat, lon, alt = 40.0, -105.0, 1655.0
+        obs = Observer(lat, lon, altitude = alt)
+
+        # Generate multiple timestamps
+        base_dt = DateTime(2023, 6, 21, 0, 0, 0)
+        times = [base_dt + Hour(h) for h = 0:23]
+
+        # Compute positions for all times
+        results = [solar_position(obs, dt, SPA()) for dt in times]
+
+        # Verify we got 24 results and they're reasonable
+        @test length(results) == 24
+        @test all(r -> -180.0 <= r.azimuth <= 360.0, results)
+        @test all(r -> -90.0 <= r.elevation <= 90.0, results)
     end
 end

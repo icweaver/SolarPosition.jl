@@ -77,7 +77,7 @@ include("sg2.jl")
 include("spa.jl")
 
 export RefractionAlgorithm, NoRefraction
-export HUGHES, ARCHER, BENNETT, MICHALSKY, SG2, SPA
+export HUGHES, ARCHER, BENNETT, MICHALSKY, SG2, SPARefraction
 export refraction
 
 end

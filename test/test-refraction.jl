@@ -1,6 +1,7 @@
 """Unit tests for atmospheric refraction algorithms"""
 
-using SolarPosition.Refraction: HUGHES, ARCHER, BENNETT, MICHALSKY, SG2, SPA, refraction
+using SolarPosition.Refraction:
+    HUGHES, ARCHER, BENNETT, MICHALSKY, SG2, SPARefraction, refraction
 
 # test elevation angles in degrees
 test_elevation_angles() = [-1.0, -0.6, 0.0, 1.0, 4.0, 6.0, 10.0, 90.0]
@@ -76,7 +77,7 @@ test_algorithms = [
     ("Bennett", () -> BENNETT(101325.0, 12.0), expected["Bennett"]),
     ("Michalsky", () -> MICHALSKY(), expected["Michalsky"]),
     ("SG2", () -> SG2(101325.0, 12.0), expected["SG2"]),
-    ("SPA", () -> SPA(101325.0, 12.0), expected["SPA"]),
+    ("SPARefraction", () -> SPARefraction(101325.0, 12.0), expected["SPA"]),
 ]
 
 elevations = test_elevation_angles()
@@ -99,10 +100,10 @@ elevations = test_elevation_angles()
     end
 end
 
-@testset "SPA refraction limit" begin
-    @test refraction(SPA(101325.0, 12.0, -1.0), -2.0) == 0.0
-    @test refraction(SPA(101325.0, 12.0, -3.0), -2.0) != 0.0
-    @test refraction(SPA(101325.0, 12.0, -2.0), -2.0) != 0.0
-    @test refraction(SPA(101325.0, 12.0, 0.0), -0.26667) != 0.0
-    @test refraction(SPA(101325.0, 12.0, 0.0), -0.26668) != 1.0
+@testset "SPARefraction refraction limit" begin
+    @test refraction(SPARefraction(101325.0, 12.0, -1.0), -2.0) == 0.0
+    @test refraction(SPARefraction(101325.0, 12.0, -3.0), -2.0) != 0.0
+    @test refraction(SPARefraction(101325.0, 12.0, -2.0), -2.0) != 0.0
+    @test refraction(SPARefraction(101325.0, 12.0, 0.0), -0.26667) != 0.0
+    @test refraction(SPARefraction(101325.0, 12.0, 0.0), -0.26668) != 1.0
 end
