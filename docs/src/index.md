@@ -65,7 +65,7 @@ accuracy and implementation status.
 | [`NOAA`](@ref SolarPosition.Positioning.NOAA)         | [Global Monitoring Laboratory](https://gml.noaa.gov/grad/solcalc/calcdetails.html)              | ±0.0167° | ✅     |
 | [`Walraven`](@ref SolarPosition.Positioning.Walraven) | [Walraven, 1978](https://doi.org/10.1016/0038-092X(78)90155-X)                                | ±0.0100° | ✅     |
 | [`USNO`](@ref SolarPosition.Positioning.USNO)         | [U.S. Naval Observatory](https://aa.usno.navy.mil/faq/sun_approx)                                | ±0.0500° | ✅     |
-| [`SPA`](@ref SolarPosition.Positioning.SPA)           | [Reda & Andreas, 2008](https://doi.org/10.1016/j.solener.2007.08.003)                            | ±0.0003° | ✅     |
+| [`SPA`](@ref SolarPosition.Positioning.SPA)           | [Reda & Andreas, 2004](https://doi.org/10.1016/j.solener.2003.12.003)                           | ±0.0003° | ✅     |
 
 ## Refraction correction algorithms
 

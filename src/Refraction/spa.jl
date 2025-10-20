@@ -32,7 +32,7 @@ refraction is not applied, as the sun is assumed to be below horizon. Note that
 the sun diameter (0.26667°) is added to this limit.
 
 # Literature
-This method was described by [RA08](@cite).
+This method was described by [RA04](@cite).
 
 # Example
 ```julia

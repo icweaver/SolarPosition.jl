@@ -16,7 +16,7 @@ Reda and Andreas (2004, 2007). It accounts for:
 Claimed accuracy: ±0.0003° (±1 arcsecond) for years -2000 to 6000.
 
 # Literature
-This algorithm is based on [RA08](@cite) with corrections from the 2007 corrigendum.
+This algorithm is based on [RA04](@cite) with corrections from the 2007 corrigendum.
 
 # Fields
 $(TYPEDFIELDS)
