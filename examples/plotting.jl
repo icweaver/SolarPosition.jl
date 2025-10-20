@@ -3,7 +3,7 @@
 using Dates
 using TimeZones
 using DataFrames
-using GLMakie
+using CairoMakie
 using SolarPosition
 
 # define observer location (latitude, longitude, altitude in meters)
@@ -15,10 +15,11 @@ times = collect(ZonedDateTime(DateTime(2019), tz):Hour(1):ZonedDateTime(DateTime
 positions = solar_position(obs, times)
 
 # plot positions from NamedTuple with hourly labels in polar coordinates
-sunpathplot(positions)
+df = DataFrame(positions)
+df.datetime = times
+sunpathplot(df)
 
 # plot DataFrame with hourly labels in cartesian coordinates
-df = DataFrame(positions)
 sunpathpolarplot(df, hour_labels = true, colorbar = true)
 
 # plot DataFrame in polar coordinates with hourly labels
