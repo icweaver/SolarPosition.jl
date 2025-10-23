@@ -34,7 +34,7 @@ makedocs(;
     plugins = [bib],
     pages = [
         "index.md",
-        "Examples" => ["examples/basic.md", "examples/plotting.md"],
+        "Examples" => ["examples/getting-started.md", "examples/plotting.md"],
         "reference.md",
         "positioning.md",
         "refraction.md",
