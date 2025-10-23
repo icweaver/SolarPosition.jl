@@ -7,7 +7,7 @@ using Dates, TimeZones
 using DataFrames
 
 include("setup.jl")
-include("Aqua.jl")
+include("linting.jl")
 
 #=
 Don't add your tests to runtests.jl. Instead, create files named
