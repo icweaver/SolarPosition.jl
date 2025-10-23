@@ -92,6 +92,9 @@ end
 Observer(lat::T, lon::T; altitude = 0.0) where {T} = Observer{T}(lat, lon, altitude)
 Observer(lat::T, lon::T, alt::T) where {T} = Observer{T}(lat, lon, alt)
 
+Base.show(io::IO, obs::Observer) =
+    print(io, "Observer(lat=$(obs.latitude)°, lon=$(obs.longitude)°, alt=$(obs.altitude)m)")
+
 abstract type AbstractSolPos end
 
 """
