@@ -1,101 +1,115 @@
 # [Getting Started](@id getting-started)
 
-This section demonstrates basic usage of SolarPosition.jl for calculating solar positions.
+In this tutorial, we introduduce the basics of using `SolarPosition.jl` to calculate solar
+positions.
 
-First, we need to import the package along with some supporting packages. Although not
-strictly necessary, it is common to work with time zone-aware datetimes using the
-`TimeZones.jl` package.
+First, we need to import the `SolarPosition.jl` package along with some supporting
+packages which we need for handling dates and time zones. We also load
+[DataFrames.jl](https://dataframes.juliadata.org/stable/) because it makes it easy to
+work with tabular data.
+
+!!! info
+    The [DateTime](https://docs.julialang.org/en/v1/stdlib/Dates/#Dates.DateTime) type in
+    Julia's standard library does not contain time zone information. When using
+    `DateTime`, **it is assumed to be in UTC**. Although not necessary, it is safer to
+    work with time zone-aware [ZonedDateTime](https://juliatime.github.io/TimeZones.jl/stable/api-public/#ZonedDateTime) from the [TimeZones.jl](https://github.com/JuliaTime/TimeZones.jl)
+    package.
 
 ```@example getting-started
+# mandatory
 using SolarPosition
+using Dates
 
 # supporting packages
-using Dates
-using DataFrames
 using TimeZones
+using DataFrames
 ```
 
-We can define an observer location using the `Observer` struct, which takes latitude,
-longitude, and altitude (in meters) as arguments.
+## Defining a location
+
+We can observe the sun from anywhere on earth. To define an observer location, we use
+the `Observer` struct, which takes latitude, longitude, and optinally altitude
+(in meters) as arguments.
 
 ```@example getting-started
-obs = Observer(37.7749, -122.4194, 100.0)  # San Francisco
+obs = Observer(52.35888, 4.88185, 100.0)  # Van Gogh Museum, Amsterdam
 ```
 
+## Computing the solar vector
+
 Finally, we can calculate the solar position for a specific date and time using the
-`solar_position` function. The time should be provided as a `ZonedDateTime` to ensure
+[`solar_position`](@ref) function. The time should be provided as a `ZonedDateTime` to ensure
 correct handling of time zones.
 
 ```@example getting-started
-tz = tz"America/Los_Angeles"
+tz = TimeZone("Europe/Brussels")
 zdt = ZonedDateTime(2023, 6, 21, 12, 0, 0, tz)  # Summer solstice noon
 position = solar_position(obs, zdt)
-
-println("Solar position at summer solstice noon in San Francisco:")
-println("Azimuth: $(round(position.azimuth, digits=2))°")
-println("Elevation: $(round(position.elevation, digits=2))°")
 ```
 
 ## Choosing a Solar Position Algorithm
 
-By default, SolarPosition.jl uses the PSA (Plataforma Solar de Almería) algorithm.
-You can also explicitly specify which algorithm to use by passing it as an argument.
+By default, [`solar_position`](@ref) uses the [`PSA`](@ref) (Plataforma Solar de
+Almería) algorithm, which has a decent tradeoff between complexity and accuracy. You
+can choose other algorithms as described in the [Solar Positioning Algorithms](../positioning.md)
+section.
+
+First, we repeat the previous calculation using the default PSA algorithm:
 
 ```@example getting-started
-# Use PSA algorithm (default, high accuracy ±0.0083°)
 position_psa = solar_position(obs, zdt, PSA())
+```
 
-# Use NOAA algorithm (±0.0167°)
+Next, we compute the solar position using the NOAA algorithm:
+
+```@example getting-started
 position_noaa = solar_position(obs, zdt, NOAA())
-
-println("PSA - Azimuth: $(round(position_psa.azimuth, digits=2))°, Elevation: $(round(position_psa.elevation, digits=2))°")
-println("NOAA - Azimuth: $(round(position_noaa.azimuth, digits=2))°, Elevation: $(round(position_noaa.elevation, digits=2))°")
 ```
 
-## Using DateTime in UTC
-
-Alternatively, we can directly pass a DateTime (assumed to be in UTC)
+As you can see, the results are very similar. With a claimed acuracy of ±0.0083° for
+PSA and ±0.0167° for NOAA, the differences should be small:
 
 ```@example getting-started
-zdt_utc = DateTime(zdt, UTC)
-position_utc = solar_position(obs, zdt_utc)
-println("Azimuth (UTC): $(round(position_utc.azimuth, digits=2))°")
-println("Elevation (UTC): $(round(position_utc.elevation, digits=2))°")
+delta_azimuth = abs(position_psa.azimuth - position_noaa.azimuth)
+delta_elevation = abs(position_psa.elevation - position_noaa.elevation)
+println("Difference in Azimuth: $(round(delta_azimuth, digits=4))°")
+println("Difference in Elevation: $(round(delta_elevation, digits=4))°")
 ```
 
-It is also possible to calculate solar positions for multiple timestamps at once by
-passing a vector of `ZonedDateTime` or `DateTime` objects.
+Whether the differences are significant depends on your application and required
+accuracy.
+
+## Computing multiple timestamps simultaneously
+
+For more demanding applications, it is often necessary to compute solar positions for
+multiple timestamps at once. `SolarPosition.jl` supports this by passing a vector of
+`ZonedDateTime` or `DateTime` objects to the [`solar_position`](@ref) function. Here, we
+demonstrate this by calculating solar positions for every hour of a full year.
 
 ```@example getting-started
-# Generate hourly timestamps for a whole year
-times = ZonedDateTime(DateTime(2019), tz):Hour(1):ZonedDateTime(DateTime(2020), tz)
-
-# This returns a StructArray with solar position data
-positions = solar_position(obs, collect(times))
+# generate hourly timestamps for a whole year
+dts = collect(ZonedDateTime(DateTime(2023), tz):Hour(1):ZonedDateTime(DateTime(2024), tz))
+positions = solar_position(obs, dts)
 ```
 
-We can inspect the first few entries by converting to a DataFrame:
+!!! info
+    The returned datastructure is a [`StructArray`](https://juliaarrays.github.io/StructArrays.jl/stable/reference/#StructArrays.StructArray) from the [StructArrays.jl](https://github.com/JuliaArrays/StructArrays.jl)
+    package, which behaves similarly to a vector of [`SolPos`](@ref)  structs but is
+    more convenient to work with.
+
+The returned `StructArray` can be easily converted to a `DataFrame` for inspection:
 
 ```@example getting-started
-first(DataFrame(positions), 5)
-```
-
-## Multiple Timestamps
-
-We can also calculate solar positions for a range of timestamps by creating an
-`Observer` object and collecting the time range into a vector.
-
-```@example getting-started
-times = collect(DateTime(2019):Hour(1):DateTime(2020))
-position_direct = solar_position(obs, times)
-first(DataFrame(position_direct), 5)
+df = DataFrame(positions)
+df.datetime = dts  # add datetime information
+first(df, 5)  # show first 5 entries
 ```
 
 ## Broadcasting Over Multiple Locations
 
-You can also use Julia's broadcasting syntax to calculate solar positions for multiple
-locations at the same time. This is useful when you want to compare solar positions at
-different latitudes or longitudes.
+Thanks to Julia's broadcasting syntax it is trivial to calculate solar positions for
+multiple locations simultaneously. This can be useful for example when analyzing solar
+irradiance over a geographic region with multiple measurement stations.
 
 ```@example getting-started
 # Create observers at different latitudes
@@ -104,9 +118,4 @@ observers = Observer.([10.0, 20.0, 30.0], 10.0)
 # Calculate solar position for all locations at a specific time
 dt = DateTime(2020)
 positions_broadcast = solar_position.(observers, dt)
-
-println("Solar positions at different latitudes on $(dt):")
-for (i, (obs, pos)) in enumerate(zip(observers, positions_broadcast))
-    println("Latitude $(obs.latitude)°: Azimuth = $(round(pos.azimuth, digits=2))°, Elevation = $(round(pos.elevation, digits=2))°")
-end
 ```

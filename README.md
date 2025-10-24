@@ -33,21 +33,22 @@ correctness of the algorithm implementations.
 ```julia
 julia> using SolarPosition, Dates
 
-julia> # define observer location (latitude, longitude, altitude in meters)
-       obs = Observer(52.358134610343214, 4.881269505489815, 0.0)  # Van Gogh Museum
-Observer{Float64}(52.358134610343214, 4.881269505489815, 0.0, 0.9138218391528874, 0.08519422454799269, 0.7918436055968163, 0.6107239182113582)
+# define observer location (latitude, longitude, altitude in meters)
+julia> obs = Observer(52.35888, 4.88185, 100.0)  # Van Gogh Museum, Amsterdam
+Observer(latitude=52.35888°, longitude=4.88185°, altitude=100.0m)
 
-julia> # a whole year of hourly timestamps
-       times = collect(DateTime(2023):Hour(1):DateTime(2024));
+# a few hours of timestamps
+julia> times = collect(DateTime(2023, 6, 21, 10):Hour(1):DateTime(2023, 6, 21, 15));
 
-julia> # compute solar positions for all timestamps
-       positions = solar_position(obs, times)
-8761-element StructArray(::Vector{Float64}, ::Vector{Float64}, ::Vector{Float64}) with eltype SolPos{Float64}:
- SolPos{Float64}(7.645796258008522, -60.516077401435986, 150.51607740143598)
- SolPos{Float64}(33.774266870245846, -57.24907673755472, 147.2490767375547)
- ⋮
- SolPos{Float64}(339.955567224588, -59.54193321925232, 149.54193321925231)
- SolPos{Float64}(7.703667844963789, -60.532796780625304, 150.5327967806253)
+# compute solar positions for all timestamps
+julia> positions = solar_position(obs, times)
+6-element StructArray(::Vector{Float64}, ::Vector{Float64}, ::Vector{Float64}) with eltype SolPos{Float64}:
+ SolPos(azimuth=136.1908215897601°, elevation=55.13208390809107°, zenith=34.86791609190893°)
+ SolPos(azimuth=160.3753655770986°, elevation=59.974081481305134°, zenith=30.025918518694862°)
+ SolPos(azimuth=188.3992597996431°, elevation=60.87918930278924°, zenith=29.120810697210757°)
+ SolPos(azimuth=214.62987222053295°, elevation=57.493462259959394°, zenith=32.5065377400406°)
+ SolPos(azimuth=235.5258846451899°, elevation=50.992647293443966°, zenith=39.007352706556034°)
+ SolPos(azimuth=251.77304757136397°, elevation=42.790197455865076°, zenith=47.209802544134924°)
 ```
 
 ## Solar positioning algorithms
