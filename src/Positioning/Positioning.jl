@@ -92,8 +92,10 @@ end
 Observer(lat::T, lon::T; altitude = 0.0) where {T} = Observer{T}(lat, lon, altitude)
 Observer(lat::T, lon::T, alt::T) where {T} = Observer{T}(lat, lon, alt)
 
-Base.show(io::IO, obs::Observer) =
-    print(io, "Observer(lat=$(obs.latitude)°, lon=$(obs.longitude)°, alt=$(obs.altitude)m)")
+Base.show(io::IO, obs::Observer) = print(
+    io,
+    "Observer(latitude=$(obs.latitude)°, longitude=$(obs.longitude)°, altitude=$(obs.altitude)m)",
+)
 
 abstract type AbstractSolPos end
 
@@ -114,6 +116,11 @@ struct SolPos{T} <: AbstractSolPos where {T<:AbstractFloat}
     "Zenith = 90 - elevation (degrees, range [0, 180])"
     zenith::T
 end
+
+Base.show(io::IO, obs::AbstractSolPos) = print(
+    io,
+    "SolPos(azimuth=$(obs.azimuth)°, elevation=$(obs.elevation)°, zenith=$(obs.zenith)°)",
+)
 
 """
     $(TYPEDEF)
