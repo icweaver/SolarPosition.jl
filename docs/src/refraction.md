@@ -1,8 +1,11 @@
 # [Refraction Correction](@id refraction-correction)
 
-Atmospheric refraction correction algorithms available in SolarPosition.jl.
+Atmospheric refraction causes the apparent position of the sun to differ from its true
+geometric position. This effect is most pronounced near the horizon and can be corrected
+using various atmospheric models.
 
-Atmospheric refraction causes the apparent position of the sun to differ from its true geometric position. This effect is most pronounced near the horizon and can be corrected using various atmospheric models.
+`SolarPosition.jl` includes several refraction correction algorithms. Below is a summary
+of the available algorithms:
 
 | Algorithm                                              | Reference      | Atmospheric Parameters | Status |
 | ------------------------------------------------------ | -------------- | ---------------------- | ------ |
@@ -38,6 +41,52 @@ SolarPosition.Refraction.NoRefraction
     [`SolPos`](@ref SolarPosition.Positioning.SolPos) struct containing only the true
     geometric angles (azimuth, elevation, zenith). In this case, no refraction
     correction is applied.
+
+## Comparison of Refraction Models
+
+Several different refraction models have been proposed in the literature. `SolarPosition.jl`
+features six different refraction models. To compare the different refraction models, the
+refraction angle is calculated in the range -1 to 90 degree solar elevation in steps of 0.1 degrees.
+
+```@example refraction-comparison
+using SolarPosition
+using CairoMakie
+
+# Define models and elevation range
+models = [("Archer", SolarPosition.Refraction.ARCHER()), ("Bennett", SolarPosition.Refraction.BENNETT()),
+          ("Hughes", SolarPosition.Refraction.HUGHES()), ("Michalsky", SolarPosition.Refraction.MICHALSKY()),
+          ("SG2", SolarPosition.Refraction.SG2()), ("SPA", SolarPosition.Refraction.SPARefraction())]
+elevation = -1.5:0.1:90.0
+
+# Create figure with two subplots
+fig = Figure(size = (800, 400), backgroundcolor = :transparent, textcolor = "#f5ab35")
+ax1 = Axis(fig[1, 1], xlabel = "True elevation [degrees]",
+    ylabel = "Refraction correction [degrees]", title = "Near Horizon",
+    backgroundcolor = :transparent, xticks = -1:1:4)
+ax2 = Axis(fig[1, 2], xlabel = "True solar elevation [degrees]",
+    ylabel = "Refraction correction [degrees]", title = "Full Range (Log Scale)", yscale = log10, backgroundcolor = :transparent)
+
+# Plot refraction for each model
+for (name, model) in models
+    refr = [SolarPosition.Refraction.refraction(model, e) for e in elevation]
+    lines!(ax1, elevation, refr, label = name)
+    mask = refr .> 0
+    lines!(ax2, elevation[mask], refr[mask])
+end
+
+xlims!(ax1, -1.5, 4); ylims!(ax1, 0, 1.0)
+xlims!(ax2, -1.5, 90); ylims!(ax2, 1e-3, 1.0)
+
+Legend(fig[0, :], ax1, orientation = :horizontal, framevisible = false,
+    tellwidth = false, tellheight = true, nbanks = 1)
+fig
+```
+
+A comparison of the refraction models is visualized above. The plot on the left shows
+refraction for solar elevation angles near sunrise/sunset, where refraction is most
+significant. The plot on the right shows the refraction angles for the entire range
+of solar elevation angles. Note that for the right plot, the y-axis is a log scale,
+which emphasises the difference between the models.
 
 ## [Hughes](@id hughes-refraction)
 

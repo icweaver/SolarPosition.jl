@@ -1,21 +1,17 @@
 # [Plotting with Makie.jl](@id plotting-examples)
 
-SolarPosition.jl provides a plotting extension based on [Makie.jl](https://makie.juliaplots.org/stable/).
+SolarPosition.jl provides a plotting extension for [Makie.jl](https://makie.juliaplots.org/stable/).
 
 To use it, simply import both the `SolarPosition` and `Makie` packages:
 
 ```@example plotting
 using SolarPosition
 using CairoMakie
-using CairoMakie: Figure, Axis, PolarAxis
 
 # supporting packages
 using Dates
 using TimeZones
 using DataFrames
-
-plotsDir = joinpath(dirname(pathof(SolarPosition)), "..", "docs", "build", "plots")
-mkpath(plotsDir)
 ```
 
 This example notebook is based on the [pvlib sun path example](https://pvlib-python.readthedocs.io/en/stable/gallery/solar-position/plot_sunpath_diagrams.html).
@@ -46,7 +42,8 @@ first(df, 5)
 
 ## Simple Sun Path Plot in Cartesian Coordinates
 
-We can visualize solar positions in cartesian coordinates using the `sunpathplot` function:
+We can visualize solar positions in cartesian coordinates using the `sunpathplot`
+function:
 
 ```@example plotting
 fig = Figure(backgroundcolor = (:white, 0.0), textcolor= "#f5ab35")
@@ -60,12 +57,13 @@ fig
 We can also work directly with a `DataFrame`. Note that for plotting we need to include
 the datetime information, so we add it to the DataFrame.
 
-Plotting in polar coordinates with `sunpathpolarplot` may yield a more intuitive representation of the solar path. Here, we also enable hourly labels for better readability:
+Plotting in polar coordinates with `sunpathpolarplot` may yield a more intuitive
+representation of the solar path. Here, we also enable hourly labels for better
+readability:
 
 ```@example plotting
 fig2 = Figure(backgroundcolor = :transparent, textcolor= "#f5ab35", size = (800, 600))
 ax2 = PolarAxis(fig2[1, 1], backgroundcolor = "#1f2424")
-# ax2 = PolarAxis(fig2[1, 1], backgroundcolor = (:white, 0.0))
 sunpathpolarplot!(ax2, df, hour_labels = true)
 
 # Draw individual days
@@ -88,19 +86,25 @@ end
 fig2[2, 1] = Legend(fig2, line_objects, ["Mar 21", "Jun 21", "Dec 21"],
                     orientation = :horizontal, tellheight = true, backgroundcolor = :transparent)
 fig2
-
-# save(joinpath(plotsDir,"sunpathpolarplot.png"), fig2)
 ```
 
-The figure-8 patterns are known as [analemmas](https://en.wikipedia.org/wiki/Analemma), which represent the sun's position at the same time of day throughout the year.
+The figure-8 patterns are known as [analemmas](https://en.wikipedia.org/wiki/Analemma),
+which represent the sun's position at the same time of day throughout the year.
 
-Note that in polar coordinates, the radial distance from the center represents the zenith angle (90° - elevation). Thus, points closer to the center indicate higher elevations. Conversely, a zenith angle of more than 90° (negative elevation) indicates that the sun is below the horizon. Tracing a path from right to left corresponds to the sun's movement from east to west.
+Note that in polar coordinates, the radial distance from the center represents the
+zenith angle (90° - elevation). Thus, points closer to the center indicate higher
+elevations. Conversely, a zenith angle of more than 90° (negative elevation) indicates
+that the sun is below the horizon. Tracing a path from right to left corresponds to the
+sun's movement from east to west.
 
-It tells us when the sun rises, reaches its highest point, and sets. And hence also the length of the day. From the figure we can also read that in June the days are longest, while in December they are shortest.
+It tells us when the sun rises, reaches its highest point, and sets. And hence also the
+length of the day. From the figure we can also read that in June the days are longest,
+while in December they are shortest.
 
 ## Plotting without a custom axis
 
-Finally, we can also create plots without explicitly defining an axis beforehand. This is a more concise way to create plots, but it offers less customization:
+Finally, we can also create plots without explicitly defining an axis beforehand.
+This is a more concise way to create plots, but it offers less customization:
 
 ```@example plotting
 sunpathpolarplot(df, hour_labels = true, colorbar = true)
