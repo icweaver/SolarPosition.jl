@@ -4,6 +4,8 @@ Atmospheric refraction causes the apparent position of the sun to differ from it
 geometric position. This effect is most pronounced near the horizon and can be corrected
 using various atmospheric models.
 
+![Refraction correction comparison](assets/atmospheric_refraction.png)
+
 `SolarPosition.jl` includes several refraction correction algorithms. Below is a summary
 of the available algorithms:
 
@@ -36,17 +38,18 @@ SolarPosition.Refraction.NoRefraction
 ```
 
 !!! info
-    When using [`NoRefraction`](@ref SolarPosition.Refraction.NoRefraction)`()` (the default), the
-    [`solar_position`](@ref SolarPosition.Positioning.solar_position) function returns a
-    [`SolPos`](@ref SolarPosition.Positioning.SolPos) struct containing only the true
-    geometric angles (azimuth, elevation, zenith). In this case, no refraction
-    correction is applied.
+    When using [`NoRefraction`](@ref SolarPosition.Refraction.NoRefraction)`()`
+    (the default), the [`solar_position`](@ref SolarPosition.Positioning.solar_position)
+    function returns a [`SolPos`](@ref SolarPosition.Positioning.SolPos) struct
+    containing only the true geometric angles (azimuth, elevation, zenith). In this
+    case, no refraction correction is applied.
 
 ## Comparison of Refraction Models
 
 Several different refraction models have been proposed in the literature. `SolarPosition.jl`
-features six different refraction models. To compare the different refraction models, the
-refraction angle is calculated in the range -1 to 90 degree solar elevation in steps of 0.1 degrees.
+only implements a subset of them but PRs are always welcome! To compare the different
+refraction models, the refraction angle is calculated in the range -1 to 90 degree solar
+elevation in steps of 0.1 degrees.
 
 ```@example refraction-comparison
 using SolarPosition
@@ -63,7 +66,7 @@ fig = Figure(size = (800, 400), backgroundcolor = :transparent, textcolor = "#f5
 ax1 = Axis(fig[1, 1], xlabel = "True elevation [degrees]",
     ylabel = "Refraction correction [degrees]", title = "Near Horizon",
     backgroundcolor = :transparent, xticks = -1:1:4)
-ax2 = Axis(fig[1, 2], xlabel = "True solar elevation [degrees]",
+ax2 = Axis(fig[1, 2], xlabel = "True elevation [degrees]",
     ylabel = "Refraction correction [degrees]", title = "Full Range (Log Scale)", yscale = log10, backgroundcolor = :transparent)
 
 # Plot refraction for each model
