@@ -103,3 +103,10 @@ function _solar_position(obs::Observer{T}, dt::DateTime, alg::PSA) where {T}
 
     return SolPos{T}(mod(rad2deg(γ), 360.0), rad2deg(π / 2 - θz), rad2deg(θz))
 end
+
+function _solar_position(obs, dt, alg::PSA, ::DefaultRefraction)
+    return _solar_position(obs, dt, alg, NoRefraction())
+end
+
+# PSA with DefaultRefraction returns SolPos (no refraction by default)
+result_type(::Type{PSA}, ::Type{DefaultRefraction}, ::Type{T}) where {T} = SolPos{T}

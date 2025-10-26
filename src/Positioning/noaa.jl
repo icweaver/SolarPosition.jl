@@ -1,9 +1,14 @@
+using ..Refraction: HUGHES, DefaultRefraction
+
 """
     $(TYPEDEF)
 
 NOAA (National Oceanic and Atmospheric Administration) solar position algorithm. This
 algorithm is based on NOAA's Solar Position Calculator implementation. The algorithm is
 from "Astronomical Algorithms" by Jean Meeus.
+
+By default, the NOAA algorithm uses the [`HUGHES`](@ref) atmospheric refraction model
+which is in accordance with the NOAA solar position calculator.
 
 # Accuracy
 Claimed accuracy: ±0.0167° from years -2000 to +3000 for latitudes within ±72°.
@@ -102,3 +107,11 @@ function _solar_position(obs::Observer{T}, dt::DateTime, alg::NOAA) where {T}
 
     return SolPos{T}(azimuth, 90.0 - zenith, zenith)
 end
+
+function _solar_position(obs, dt, alg::NOAA, ::DefaultRefraction)
+    return _solar_position(obs, dt, alg, HUGHES())
+end
+
+# NOAA with DefaultRefraction returns ApparentSolPos (uses HUGHES refraction)
+result_type(::Type{NOAA}, ::Type{DefaultRefraction}, ::Type{T}) where {T} =
+    ApparentSolPos{T}

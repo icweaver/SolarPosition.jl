@@ -8,6 +8,7 @@ using SolarPosition.Positioning:
     USNO,
     SPA,
     SolPos,
+    ApparentSolPos,
     SPASolPos,
     solar_position,
     solar_position!
@@ -53,9 +54,8 @@ using Dates: Hour, @dateformat_str
         single_result = solar_position(obs, single_dt, alg)
 
         @testset "In place" begin
-            PosType = alg isa SPA ? SPASolPos{Float64} : SolPos{Float64}
-
             if alg isa SPA
+                PosType = SPASolPos{Float64}
                 pos = StructVector{SPASolPos{Float64}}((
                     azimuth = zeros(n_dts),
                     elevation = zeros(n_dts),
@@ -64,7 +64,17 @@ using Dates: Hour, @dateformat_str
                     apparent_zenith = zeros(n_dts),
                     equation_of_time = zeros(n_dts),
                 ))
+            elseif alg isa NOAA
+                PosType = ApparentSolPos{Float64}
+                pos = StructVector{ApparentSolPos{Float64}}((
+                    azimuth = zeros(n_dts),
+                    elevation = zeros(n_dts),
+                    zenith = zeros(n_dts),
+                    apparent_elevation = zeros(n_dts),
+                    apparent_zenith = zeros(n_dts),
+                ))
             else
+                PosType = SolPos{Float64}
                 pos = StructVector{SolPos{Float64}}((
                     azimuth = zeros(n_dts),
                     elevation = zeros(n_dts),
@@ -89,7 +99,13 @@ using Dates: Hour, @dateformat_str
 
         @testset "Return new" begin
             # Determine result type based on algorithm
-            PosType = alg isa SPA ? SPASolPos{Float64} : SolPos{Float64}
+            PosType = if alg isa SPA
+                SPASolPos{Float64}
+            elseif alg isa NOAA
+                ApparentSolPos{Float64}
+            else
+                SolPos{Float64}
+            end
 
             # DateTime
             pos1 = solar_position(obs, dts, alg)

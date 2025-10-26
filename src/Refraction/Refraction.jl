@@ -45,6 +45,15 @@ When used, only basic solar position (azimuth, elevation, zenith) is computed.
 struct NoRefraction <: RefractionAlgorithm end
 
 """
+    $(TYPEDEF)
+
+Default refraction model used when no specific model is provided.
+
+This will depend on the solar position algorithm being used.
+"""
+struct DefaultRefraction <: RefractionAlgorithm end
+
+"""
     refraction(model::RefractionAlgorithm, elevation::T) where {T<:AbstractFloat}
 
 Apply atmospheric refraction correction to the given elevation angle(s).
@@ -76,7 +85,7 @@ include("michalsky.jl")
 include("sg2.jl")
 include("spa.jl")
 
-export RefractionAlgorithm, NoRefraction
+export RefractionAlgorithm, NoRefraction, DefaultRefraction
 export HUGHES, ARCHER, BENNETT, MICHALSKY, SG2, SPARefraction
 export refraction
 

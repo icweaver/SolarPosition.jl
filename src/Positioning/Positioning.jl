@@ -29,7 +29,7 @@ using StructArrays: StructArrays
 using Tables: Tables
 using DocStringExtensions: TYPEDFIELDS, TYPEDEF, TYPEDSIGNATURES
 import ..Refraction
-using ..Refraction: RefractionAlgorithm, NoRefraction
+using ..Refraction: RefractionAlgorithm, NoRefraction, DefaultRefraction
 
 """
     $(TYPEDEF)
@@ -203,7 +203,7 @@ automatically handles time zone conversions.
 
 # Returns
 - For single timestamps:
-  - `SolPos` struct when `refraction = NoRefraction()` (default)
+  - `SolPos` struct when `refraction = DefaultRefraction()` (default)
   - `ApparentSolPos` struct when a refraction algorithm is provided
 - For multiple timestamps: `StructVector` of solar position data
 
@@ -305,7 +305,7 @@ function solar_position(
     obs::Observer{T},
     dt::DateTime,
     alg::SolarAlgorithm = PSA(),
-    refraction::RefractionAlgorithm = NoRefraction(),
+    refraction::RefractionAlgorithm = DefaultRefraction(),
 ) where {T<:AbstractFloat}
     _solar_position(obs, dt, alg, refraction)
 end
@@ -314,7 +314,7 @@ function solar_position(
     obs::Observer{T},
     dt::ZonedDateTime,
     alg::SolarAlgorithm = PSA(),
-    refraction::RefractionAlgorithm = NoRefraction(),
+    refraction::RefractionAlgorithm = DefaultRefraction(),
 ) where {T<:AbstractFloat}
     solar_position(obs, DateTime(dt, UTC), alg, refraction)
 end
@@ -324,7 +324,7 @@ function solar_position!(
     obs::Observer,
     dts::AbstractVector{Union{DateTime,ZonedDateTime}},
     alg::SolarAlgorithm = PSA(),
-    refraction::RefractionAlgorithm = NoRefraction(),
+    refraction::RefractionAlgorithm = DefaultRefraction(),
 ) where {T<:AbstractSolPos}
     @inbounds for i in eachindex(dts, pos)
         pos[i] = solar_position(obs, dts[i], alg, refraction)
@@ -337,7 +337,7 @@ function solar_position!(
     obs::Observer,
     dts::AbstractVector{DateTime},
     alg::SolarAlgorithm = PSA(),
-    refraction::RefractionAlgorithm = NoRefraction(),
+    refraction::RefractionAlgorithm = DefaultRefraction(),
 ) where {T<:AbstractSolPos}
     @inbounds for i in eachindex(dts, pos)
         pos[i] = solar_position(obs, dts[i], alg, refraction)
@@ -350,7 +350,7 @@ function solar_position!(
     obs::Observer,
     dts::AbstractVector{ZonedDateTime},
     alg::SolarAlgorithm = PSA(),
-    refraction::RefractionAlgorithm = NoRefraction(),
+    refraction::RefractionAlgorithm = DefaultRefraction(),
 ) where {T<:AbstractSolPos}
     @inbounds for i in eachindex(dts, pos)
         pos[i] = solar_position(obs, dts[i], alg, refraction)
@@ -362,7 +362,7 @@ function solar_position(
     obs::Observer{T},
     dts::AbstractVector{Union{DateTime,ZonedDateTime}},
     alg::SolarAlgorithm = PSA(),
-    refraction::RefractionAlgorithm = NoRefraction(),
+    refraction::RefractionAlgorithm = DefaultRefraction(),
 ) where {T<:AbstractFloat}
     RetType = result_type(typeof(alg), typeof(refraction), T)
     pos = StructArrays.StructVector{RetType}(undef, length(dts))
@@ -374,7 +374,7 @@ function solar_position(
     obs::Observer{T},
     dts::AbstractVector{DateTime},
     alg::SolarAlgorithm = PSA(),
-    refraction::RefractionAlgorithm = NoRefraction(),
+    refraction::RefractionAlgorithm = DefaultRefraction(),
 ) where {T<:AbstractFloat}
     RetType = result_type(typeof(alg), typeof(refraction), T)
     pos = StructArrays.StructVector{RetType}(undef, length(dts))
@@ -386,7 +386,7 @@ function solar_position(
     obs::Observer{T},
     dts::AbstractVector{ZonedDateTime},
     alg::SolarAlgorithm = PSA(),
-    refraction::RefractionAlgorithm = NoRefraction(),
+    refraction::RefractionAlgorithm = DefaultRefraction(),
 ) where {T<:AbstractFloat}
     RetType = result_type(typeof(alg), typeof(refraction), T)
     pos = StructArrays.StructVector{RetType}(undef, length(dts))
@@ -425,7 +425,7 @@ function solar_position!(
     table,
     obs::Observer{T},
     alg::SolarAlgorithm = PSA(),
-    refraction::RefractionAlgorithm = NoRefraction();
+    refraction::RefractionAlgorithm = DefaultRefraction();
     dt_col::Symbol = :datetime,
 ) where {T<:AbstractFloat}
     tbl = Tables.columntable(table)
@@ -453,7 +453,7 @@ function solar_position(
     table,
     obs::Observer{T},
     alg::SolarAlgorithm = PSA(),
-    refraction::RefractionAlgorithm = NoRefraction();
+    refraction::RefractionAlgorithm = DefaultRefraction();
     kwargs...,
 ) where {T<:AbstractFloat}
     table_copy = copy(table)
@@ -473,10 +473,6 @@ include("noaa.jl")
 include("walraven.jl")
 include("usno.jl")
 include("spa.jl")
-
-# SPA always returns SPASolPos (includes equation of time) - must be after spa.jl is included
-result_type(::Type{SPA}, ::Type{NoRefraction}, ::Type{T}) where {T} = SPASolPos{T}
-result_type(::Type{SPA}, ::Type{<:RefractionAlgorithm}, ::Type{T}) where {T} = SPASolPos{T}
 
 export Observer,
     PSA,

@@ -487,3 +487,7 @@ function _solar_position(
         1
     return _solar_position(obs, dt, alg)
 end
+
+# SPA always returns SPASolPos (includes equation of time)
+result_type(::Type{SPA}, ::Type{NoRefraction}, ::Type{T}) where {T} = SPASolPos{T}
+result_type(::Type{SPA}, ::Type{<:RefractionAlgorithm}, ::Type{T}) where {T} = SPASolPos{T}
