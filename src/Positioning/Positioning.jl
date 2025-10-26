@@ -117,11 +117,6 @@ struct SolPos{T} <: AbstractSolPos where {T<:AbstractFloat}
     zenith::T
 end
 
-Base.show(io::IO, obs::AbstractSolPos) = print(
-    io,
-    "SolPos(azimuth=$(obs.azimuth)°, elevation=$(obs.elevation)°, zenith=$(obs.zenith)°)",
-)
-
 """
     $(TYPEDEF)
 
@@ -144,6 +139,17 @@ struct ApparentSolPos{T} <: AbstractSolPos where {T<:AbstractFloat}
     "Apparent zenith (degrees, range [0, 180])"
     apparent_zenith::T
 end
+
+Base.show(io::IO, obs::SolPos) = print(
+    io,
+    "SolPos(azimuth=$(obs.azimuth)°, elevation=$(obs.elevation)°, zenith=$(obs.zenith)°)",
+)
+
+Base.show(io::IO, obs::ApparentSolPos) = print(
+    io,
+    "ApparentSolPos(azimuth=$(obs.azimuth)°, elevation=$(obs.elevation)°, zenith=$(obs.zenith)°,
+    apparent_elevation=$(obs.apparent_elevation)°, apparent_zenith=$(obs.apparent_zenith)°",
+)
 
 """
     $(TYPEDEF)
@@ -168,6 +174,13 @@ struct SPASolPos{T} <: AbstractSolPos where {T<:AbstractFloat}
     "Equation of time (minutes)"
     equation_of_time::T
 end
+
+Base.show(io::IO, obs::SPASolPos) = print(
+    io,
+    "SPASolPos(azimuth=$(obs.azimuth)°, elevation=$(obs.elevation)°, zenith=$(obs.zenith)°,
+    apparent_elevation=$(obs.apparent_elevation)°, apparent_zenith=$(obs.apparent_zenith)°,
+    equation_of_time=$(obs.equation_of_time)min",
+)
 
 """
     solar_position(obs::Observer, dt::DateTime, alg::SolarAlgorithm=PSA(), refraction::RefractionAlgorithm=NoRefraction())
@@ -447,7 +460,6 @@ function solar_position(
     solar_position!(table_copy, obs, alg, refraction; kwargs...)
     return table_copy
 end
-
 
 # helper function to determine return type based on refraction
 result_type(::Type{<:SolarAlgorithm}, ::Type{NoRefraction}, ::Type{T}) where {T} = SolPos{T}
