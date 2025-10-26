@@ -83,4 +83,30 @@ end
             @test isapprox(res.azimuth, exp_az, atol = 1e-6)
         end
     end
+
+    @testset "PSA with refraction returns ApparentSolPos" begin
+        obs = Observer(37.7749, -122.4194, 100.0)
+        dt = DateTime(2023, 6, 21, 18, 0, 0)  # 6 PM UTC, sun should be above horizon
+        res = solar_position(obs, dt, PSA(), BENNETT())
+
+        @test res isa ApparentSolPos
+        @test hasfield(typeof(res), :azimuth)
+        @test hasfield(typeof(res), :elevation)
+        @test hasfield(typeof(res), :zenith)
+        @test hasfield(typeof(res), :apparent_elevation)
+        @test hasfield(typeof(res), :apparent_zenith)
+
+        # when sun is above horizon, apparent elevation should be higher than true elevation
+        if res.elevation > 0
+            @test res.apparent_elevation > res.elevation
+            @test res.apparent_zenith < res.zenith
+        end
+
+        # test with other refraction algorithms
+        algs = [ARCHER(), MICHALSKY(), SG2()]
+        for alg in algs
+            res_alg = solar_position(obs, dt, PSA(), alg)
+            @test res_alg isa ApparentSolPos
+        end
+    end
 end

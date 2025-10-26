@@ -1,7 +1,16 @@
 """Unit tests for solar_position interface variants"""
 
 using SolarPosition.Positioning:
-    Observer, PSA, NOAA, Walraven, SPA, SolPos, SPASolPos, solar_position, solar_position!
+    Observer,
+    PSA,
+    NOAA,
+    Walraven,
+    USNO,
+    SPA,
+    SolPos,
+    SPASolPos,
+    solar_position,
+    solar_position!
 using Dates, TimeZones, Tables, DataFrames
 using StructArrays: StructVector
 using Dates: Hour, @dateformat_str
@@ -206,5 +215,62 @@ using Dates: Hour, @dateformat_str
                 @test result_table.equation_of_time == direct_result.equation_of_time
             end
         end
+    end
+end
+
+@testset "Refraction Integration" begin
+    using SolarPosition.Positioning: ApparentSolPos
+    using SolarPosition.Refraction: BENNETT, HUGHES, ARCHER, MICHALSKY, SG2
+
+    obs = Observer(45.0, 10.0, 100.0)
+    dt = DateTime(2023, 6, 21, 12, 0, 0)
+
+    @testset "$alg_name with refraction" for (alg_name, alg) in [
+        ("PSA", PSA()),
+        ("NOAA", NOAA()),
+        ("Walraven", Walraven()),
+        ("USNO", USNO()),
+    ]
+        @testset "Returns ApparentSolPos with $refr_name" for (refr_name, refr) in [
+            ("BENNETT", BENNETT()),
+            ("HUGHES", HUGHES()),
+            ("ARCHER", ARCHER()),
+            ("MICHALSKY", MICHALSKY()),
+            ("SG2", SG2()),
+        ]
+            res = solar_position(obs, dt, alg, refr)
+            @test res isa ApparentSolPos
+            @test hasfield(typeof(res), :azimuth)
+            @test hasfield(typeof(res), :elevation)
+            @test hasfield(typeof(res), :zenith)
+            @test hasfield(typeof(res), :apparent_elevation)
+            @test hasfield(typeof(res), :apparent_zenith)
+
+            # Basic sanity checks
+            @test isfinite(res.azimuth)
+            @test isfinite(res.elevation)
+            @test isfinite(res.apparent_elevation)
+            @test abs(res.apparent_elevation - res.elevation) < 1.0  # Refraction is typically < 1 degree
+        end
+    end
+
+    @testset "SPA with refraction returns SPASolPos" begin
+        # SPA has its own refraction handling, so it always returns SPASolPos
+        # and ignores external refraction algorithms
+        res = @test_logs (:warn, r"SPA algorithm has its own refraction") solar_position(
+            obs,
+            dt,
+            SPA(),
+            BENNETT(),
+        )
+        @test res isa SPASolPos
+        @test hasfield(typeof(res), :azimuth)
+        @test hasfield(typeof(res), :elevation)
+        @test hasfield(typeof(res), :zenith)
+        @test hasfield(typeof(res), :apparent_elevation)
+        @test hasfield(typeof(res), :apparent_zenith)
+        @test hasfield(typeof(res), :equation_of_time)
+
+        @test isfinite(res.equation_of_time)
     end
 end

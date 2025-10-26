@@ -464,3 +464,26 @@ function _solar_position(obs::SPAObserver{T}, dt::DateTime, alg::SPA) where {T}
 
     return SPASolPos{T}(az, e0, θz0, e, θz, eot)
 end
+
+# SPA-specific method for NoRefraction to avoid ambiguity
+function _solar_position(
+    obs::Observer{T},
+    dt::DateTime,
+    alg::SPA,
+    ::Refraction.NoRefraction,
+) where {T}
+    return _solar_position(obs, dt, alg)
+end
+
+# SPA has its own internal refraction handling, so when a refraction algorithm is provided,
+# we ignore it and use SPA's built-in refraction
+function _solar_position(
+    obs::Observer{T},
+    dt::DateTime,
+    alg::SPA,
+    refraction::Refraction.RefractionAlgorithm,
+) where {T}
+    @warn "SPA algorithm has its own refraction correction. The provided refraction algorithm will be ignored." maxlog =
+        1
+    return _solar_position(obs, dt, alg)
+end
