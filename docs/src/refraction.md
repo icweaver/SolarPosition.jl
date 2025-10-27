@@ -4,7 +4,21 @@ Atmospheric refraction causes the apparent position of the sun to differ from it
 geometric position. This effect is most pronounced near the horizon and can be corrected
 using various atmospheric models.
 
+The correction formula for elevation is:
+
+```math
+e_{apparent} = e_{true} + R
+```
+
+Where:
+
+- ``e_{apparent}`` is the apparent solar elevation angle (degrees)
+- ``e_{true}`` is the true solar elevation angle (degrees)
+- ``R`` is the refraction correction (degrees), calculated based on the chosen refraction model
+
 ![Refraction correction comparison](assets/atmospheric_refraction.png)
+Figure 1: Atmospheric refraction causes the sun to appear higher in the sky than its
+true position, especially near the horizon. Image source: [Wikimedia Commons](@cite wikimedia_atmospheric_refraction).
 
 `SolarPosition.jl` includes several refraction correction algorithms. Below is a summary
 of the available algorithms:
@@ -28,7 +42,7 @@ This function is typically used internally by the [`solar_position`](@ref SolarP
 refraction algorithm is specified, but is also a publicly available method.
 
 !!! info
-    When using a refraction algorithm like [`HUGHES`](@ref SolarPosition.Refraction.HUGHES)`()`,
+    When using a refraction algorithm like [`HUGHES`](@ref SolarPosition.Refraction.HUGHES),
     the [`solar_position`](@ref SolarPosition.Positioning.solar_position) function returns an
     [`ApparentSolPos`](@ref SolarPosition.Positioning.ApparentSolPos) struct containing
     both true and apparent angles.
@@ -38,11 +52,22 @@ SolarPosition.Refraction.NoRefraction
 ```
 
 !!! info
-    When using [`NoRefraction`](@ref SolarPosition.Refraction.NoRefraction)`()`
+    When using [`NoRefraction`](@ref SolarPosition.Refraction.NoRefraction)
     (the default), the [`solar_position`](@ref SolarPosition.Positioning.solar_position)
     function returns a [`SolPos`](@ref SolarPosition.Positioning.SolPos) struct
     containing only the true geometric angles (azimuth, elevation, zenith). In this
     case, no refraction correction is applied.
+
+## Default refraction model
+
+The [`DefaultRefraction`](@ref SolarPosition.Refraction.DefaultRefraction) type is a
+special marker that indicates to use the default refractionbehavior for the selected
+solar position algorithm. For most algorithms, this means no refraction correction
+(i.e., equivalent to [`NoRefraction`](@ref SolarPosition.Refraction.NoRefraction)).
+
+```@docs
+SolarPosition.Refraction.DefaultRefraction
+```
 
 ## Comparison of Refraction Models
 

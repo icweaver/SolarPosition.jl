@@ -57,13 +57,13 @@ Here we provide an overview of the solar positioning algorithms currently implem
 in SolarPosition.jl. Each algorithm is described with its reference paper, claimed
 accuracy and implementation status.
 
-| Algorithm | Reference                                                                                       | Accuracy | Status |
-| --------- | ----------------------------------------------------------------------------------------------- | -------- | ------ |
-| PSA       | [Blanco-Muriel et al.](https://www.sciencedirect.com/science/article/abs/pii/S0038092X00001560) | ±0.0083° | ✅     |
-| NOAA      | [Global Monitoring Laboratory](https://gml.noaa.gov/grad/solcalc/calcdetails.html)              | ±0.0167° | ✅     |
-| Walraven  | [Walraven, 1978](<https://doi.org/10.1016/0038-092X(78)90155-X>)                                | ±0.0100° | ✅     |
-| USNO      | [U.S. Naval Observatory](https://aa.usno.navy.mil/faq/sun_approx)                               | ±0.0500° | ✅     |
-| SPA       | [Reda & Andreas, 2004](https://doi.org/10.1016/j.solener.2003.12.003)                           | ±0.0003° | ✅     |
+| Algorithm | Reference                                                                                       | Accuracy | Default Refraction | Status |
+| --------- | ----------------------------------------------------------------------------------------------- | -------- | ------------------ | ------ |
+| PSA       | [Blanco-Muriel et al.](https://www.sciencedirect.com/science/article/abs/pii/S0038092X00001560) | ±0.0083° | None               | ✅     |
+| NOAA      | [Global Monitoring Laboratory](https://gml.noaa.gov/grad/solcalc/calcdetails.html)              | ±0.0167° | HUGHES             | ✅     |
+| Walraven  | [Walraven, 1978](<https://doi.org/10.1016/0038-092X(78)90155-X>)                                | ±0.0100° | None               | ✅     |
+| USNO      | [U.S. Naval Observatory](https://aa.usno.navy.mil/faq/sun_approx)                               | ±0.0500° | None               | ✅     |
+| SPA       | [Reda & Andreas, 2004](https://doi.org/10.1016/j.solener.2003.12.003)                           | ±0.0003° | Built-in           | ✅     |
 
 ## Refraction correction algorithms
 

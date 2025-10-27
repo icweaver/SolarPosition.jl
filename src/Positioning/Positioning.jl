@@ -1,11 +1,10 @@
 """
     Positioning
 
-Collection of solar positioning algorithms and related functionality.
-
-This module provides the core solar position calculation algorithms, observer location handling,
-and result types for SolarPosition.jl. It includes implementations of various solar position
-algorithms such as PSA and NOAA, with support for optional atmospheric refraction corrections.
+This module provides the core solar position calculation algorithms, observer location
+handling, and result types for SolarPosition.jl. It includes implementations of various
+solar position algorithms such as PSA and NOAA, with support for optional atmospheric
+refraction corrections.
 
 # Exported Types
 - [`Observer`](@ref): Geographic observer location
