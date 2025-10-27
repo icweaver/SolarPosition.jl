@@ -28,7 +28,7 @@ using DataFrames
 ## Defining a location
 
 We can observe the sun from anywhere on earth. To define an observer location, we use
-the `Observer` struct, which takes latitude, longitude, and optinally altitude
+the `Observer` struct, which takes latitude, longitude, and optionally altitude
 (in meters) as arguments.
 
 ```@example getting-started
@@ -66,7 +66,7 @@ Next, we compute the solar position using the NOAA algorithm:
 position_noaa = solar_position(obs, zdt, NOAA())
 ```
 
-As you can see, the results are very similar. With a claimed acuracy of ±0.0083° for
+As you can see, the results are very similar. With a claimed accuracy of ±0.0083° for
 PSA and ±0.0167° for NOAA, the differences should be small:
 
 ```@example getting-started

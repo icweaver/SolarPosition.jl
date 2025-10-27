@@ -61,7 +61,7 @@ SolarPosition.Refraction.NoRefraction
 ## Default refraction model
 
 The [`DefaultRefraction`](@ref SolarPosition.Refraction.DefaultRefraction) type is a
-special marker that indicates to use the default refractionbehavior for the selected
+special marker that indicates to use the default refraction behavior for the selected
 solar position algorithm. For most algorithms, this means no refraction correction
 (i.e., equivalent to [`NoRefraction`](@ref SolarPosition.Refraction.NoRefraction)).
 
@@ -96,10 +96,10 @@ ax2 = Axis(fig[1, 2], xlabel = "True elevation [degrees]",
 
 # Plot refraction for each model
 for (name, model) in models
-    refr = [SolarPosition.Refraction.refraction(model, e) for e in elevation]
-    lines!(ax1, elevation, refr, label = name)
-    mask = refr .> 0
-    lines!(ax2, elevation[mask], refr[mask])
+    ref = [SolarPosition.Refraction.refraction(model, e) for e in elevation]
+    lines!(ax1, elevation, ref, label = name)
+    mask = ref .> 0
+    lines!(ax2, elevation[mask], ref[mask])
 end
 
 xlims!(ax1, -1.5, 4); ylims!(ax1, 0, 1.0)
@@ -114,7 +114,7 @@ A comparison of the refraction models is visualized above. The plot on the left 
 refraction for solar elevation angles near sunrise/sunset, where refraction is most
 significant. The plot on the right shows the refraction angles for the entire range
 of solar elevation angles. Note that for the right plot, the y-axis is a log scale,
-which emphasises the difference between the models.
+which emphasizes the difference between the models.
 
 ## [Hughes](@id hughes-refraction)
 

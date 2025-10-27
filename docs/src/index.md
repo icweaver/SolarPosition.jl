@@ -25,7 +25,7 @@ azimuth angles, which are essential for various applications where the sun is im
 
 ## Acknowledgement
 
-This package is based on the work done by reachers in the field of solar photovoltaics
+This package is based on the work done by readers in the field of solar photovoltaics
 in the packages [solposx](https://github.com/assessingsolar/solposx) and
 [pvlib-python](https://github.com/pvlib/pvlib-python). In particular the positioning and
 refraction methods have been adapted from [solposx](https://github.com/assessingsolar/solposx), while
