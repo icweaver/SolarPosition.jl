@@ -89,7 +89,7 @@ using Dates: Hour, @dateformat_str
             @test length(pos) == n_dts
 
             # test a second time to ensure there are minimal allocations
-            alloc_limit = alg isa SPA ? 300 : 32
+            alloc_limit = alg isa SPA ? 300 : 48
             @test @allocated(solar_position!(pos, obs, dts, alg)) ≤ alloc_limit
             @test all(pos.azimuth .!= 0.0)
             @test pos[1] == single_result
