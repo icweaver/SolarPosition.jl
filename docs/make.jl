@@ -25,10 +25,10 @@ numbered_pages = [
 makedocs(;
     modules = [SolarPosition],
     authors = "Stefan de Lange",
-    repo = Documenter.Remotes.GitHub("JuliaSolarPV", "SolarPosition.jl"),
+    repo = Documenter.Remotes.GitHub("JuliaAstro", "SolarPosition.jl"),
     sitename = "SolarPosition.jl",
     format = Documenter.HTML(;
-        canonical = "https://JuliaSolarPV.github.io/SolarPosition.jl",
+        canonical = "https://JuliaAstro.github.io/SolarPosition.jl",
         size_threshold = 2^20, # 1 MB
     ),
     plugins = [bib],
@@ -44,4 +44,4 @@ makedocs(;
     ],
 )
 
-deploydocs(; repo = "github.com/JuliaSolarPV/SolarPosition.jl")
+deploydocs(; repo = "github.com/JuliaAstro/SolarPosition.jl")

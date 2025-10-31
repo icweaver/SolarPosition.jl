@@ -25,12 +25,12 @@ ConfigIndentation: 2
 ExplicitImportsChecklist: exclude_all_qualified_accesses_are_public
 JuliaIndentation: 4
 JuliaMinCIVersion: lts
-JuliaMinVersion: '1.10'
+JuliaMinVersion: "1.10"
 License: MIT
 LicenseCopyrightHolders: Stefan de Lange
 MarkdownIndentation: 2
 PackageName: SolarPosition
-PackageOwner: JuliaSolarPV
+PackageOwner: JuliaAstro
 PackageUUID: 5b9d1343-a731-5a90-8730-7bf8d89bf3eb
 RunJuliaNightlyOnCI: false
 StrategyConfirmIncluded: true
